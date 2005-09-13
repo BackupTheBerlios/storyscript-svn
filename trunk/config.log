@@ -1,0 +1,3 @@
+file SConstruct,line 8:
+	Configure(confdir = .sconf_temp)
+

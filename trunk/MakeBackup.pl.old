@@ -1,0 +1,93 @@
+#!/usr/bin/perl
+
+#For automatic code backups
+#This is use to delete any unessisary file and then use 7zip to make a zipfile
+
+$PackageName = "SSI";
+$BackupDirectory = "../Backup";
+
+#Feel free to use whatever zip program you prefer
+#Uncomment which one you want.  Comment out the others.
+
+## 7-Zip (My personal favorite)
+$ZipProgram = "7za";
+$ZipOptions = " a -mx=9";
+$ExcludeOption = "-x!";
+$ZipExten = "7z";
+
+## bzip2
+#$ZipProgram = "tar";
+#$ZipOptions = " -cvjf";
+#$ExcludeOption = "--exclude=";
+#$ZipExten = "tar.bz2";
+
+## gzip
+#$ZipProgram = "tar";
+#$ZipOptions = "-cvzf";
+#$ExcludeOption = "--exclude=";
+#$ZipExten = "tar.gz";
+
+
+
+#These are files that should not be deleted, but
+#also should not be included in the zip
+@ExcludeFiles = 
+    ("win32/" . $PackageName . ".ncb",
+    "linux/" . (lc $PackageName) . ".kdevelop.pcs",
+    "win32/Release/*",
+    "win32/Debug/*",
+    "bin/*",
+    "linux/*.o",
+    "linux/*.a",
+    "win32/*.dll",
+    "win32/*.exe",
+    "linux/" . $PackageName );
+
+
+use File::Copy;
+
+print "Daniel Jones' Auto-Backup Script v4\n";
+print "____________________________________________\n";
+
+
+$ExcludeCommand = "";
+
+print "Excluding Files:\n";
+foreach $i (@ExcludeFiles)
+{
+    print "\t" . $i . "\n";
+    
+    $ExcludeCommand .= $ExcludeOption . $i . " ";
+}
+
+print "\n\nZipping Files...\n"; 
+
+#Figure out the file name:
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
+                                        = localtime(time);
+$year += 1900; #Just a fix for how year is returned
+
+
+#You can set up the time stamp however you like.
+$timestamp = "$year.$mon.$mday-$hour.$min.$sec";
+
+
+$ZipFile = "$PackageName--$timestamp.$ZipExten";
+           
+$ZipFile = "\"$BackupDirectory/$ZipFile\"";
+
+$Command = $ZipProgram . " " .
+		   $ExcludeCommand . " " .
+		   $ZipOptions . " " .
+		   $ZipFile . " *";
+
+system( $Command );
+
+
+print "\nDone ;-)\n";
+print "Backed up to: $ZipFile\n";
+
+
+print "____________________________________________\n";
+
+system("PAUSE");

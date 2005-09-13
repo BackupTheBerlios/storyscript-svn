@@ -1,0 +1,19 @@
+Source code for the S^2 Language Interpreter
+
+
+Directory Layout:
+
+include: all the header files
+src: all the source files
+win32: build stuff and files specific to win32 build
+linux: build stuff and file specific to linux
+bin: the latest build gets copied here
+
+
+Build Instructions:
+
+Win32:
+Just open up the .sln file in visual studio and build the thing.
+
+Linux:
+To be announced.
