@@ -742,6 +742,12 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 	else if( LowPrecedenceOp == EXTRA_BINOP_ExponentAssign ){
 		pResultant = (*pLeftVar = *(pLeftVar->operator_pow( *pRightVar ) ) );
 	}
+	else if( LowPrecedenceOp == EXTRA_BINOP_Concat ){
+		pResultant = pLeftVar->operator_concat( *pRightVar );
+	}
+	else if( LowPrecedenceOp == EXTRA_BINOP_ConcatAssign ){
+		pResultant = (*pLeftVar = *(pLeftVar->operator_concat( *pRightVar ) ) );
+	}
 	// =
 	else if( LowPrecedenceOp == EXTRA_BINOP_Assign ){
 		pResultant = (*pLeftVar = *pRightVar);

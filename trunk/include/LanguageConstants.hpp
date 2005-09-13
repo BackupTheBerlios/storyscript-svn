@@ -68,8 +68,10 @@ enum ExtraDesc
 	EXTRA_BINOP_DivideAssign,
 	EXTRA_BINOP_Exponent,
 	EXTRA_BINOP_ExponentAssign,
-	EXTRA_BINOP_Mod,
-	EXTRA_BINOP_ModAssign,
+//	EXTRA_BINOP_Mod,
+//	EXTRA_BINOP_ModAssign,
+	EXTRA_BINOP_Concat,
+	EXTRA_BINOP_ConcatAssign,
 	EXTRA_BINOP_LargerThan,
 	EXTRA_BINOP_LargerThanOrEqual,
 	EXTRA_BINOP_LessThan,
@@ -164,8 +166,10 @@ extern const SS::STRING LC_Divide;
 extern const SS::STRING LC_DivideAssign;
 extern const SS::STRING LC_Exponent;
 extern const SS::STRING LC_ExponentAssign;
-extern const SS::STRING LC_Mod;
-extern const SS::STRING LC_ModAssign;
+//extern const SS::STRING LC_Mod;
+//extern const SS::STRING LC_ModAssign;
+extern const SS::STRING LC_Concat;
+extern const SS::STRING LC_ConcatAssign;
 extern const SS::STRING LC_LargerThan;
 extern const SS::STRING LC_LargerThanOrEqual;
 extern const SS::STRING LC_LessThan;

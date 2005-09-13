@@ -5,7 +5,7 @@ using namespace SS;
 
 
 const SS::STRING SS::SSI_VERSION( TXT("0 (Chernobyl)") );
-const SS::STRING SS::SSI_BUILDNUM( TXT("13 (SEMI-STABLE)") );
+const SS::STRING SS::SSI_BUILDNUM( TXT("14 (SEMI-STABLE)") );
 const SS::STRING SS::SSI_PLATFORM = 
 	#if defined(PLAT_WIN32)
 		TXT("Win32");

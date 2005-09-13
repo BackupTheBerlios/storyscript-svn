@@ -53,7 +53,7 @@ class Interpreter;
 //This allows me the treat the base arguments for ScopeObject constructors as one thing.
 #define SS_DECLARE_BASE_ARGS const SS::STRING& BaseName, bool IsStatic, bool IsConst
 #define SS_BASE_ARGS BaseName, IsStatic, IsConst
-#define SS_BASE_ARGS_DEFAULTS UNNAMMED, false, false
+#define SS_BASE_ARGS_DEFAULTS UNNAMMED, false, true
 extern SS_API const STRING UNNAMMED;
 
 

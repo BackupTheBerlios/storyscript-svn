@@ -136,11 +136,13 @@ Word ReaderSource::GetNextWord()
 			if( TempChar == TerminalChar )
 			{
 				//terminal case for out-strings
+				/*
 				if( Peek() == TerminalChar )
 				{
 					Get(); //skip past quote
 					FastForward(); //skip past any whitespace
 				}
+				*/
 
 				//Check for adjacent strings (eg: "Hello " "World" )
 				FastForward();
@@ -156,7 +158,7 @@ Word ReaderSource::GetNextWord()
 						//Output something like: (out = "Foo")
 	
 						QueuedWords.push( Word( LC_Output, WORDTYPE_IDENTIFIER ) );
-						QueuedWords.push( Word( WORDTYPE_BINARYOPERATOR, EXTRA_BINOP_Assign ) );
+						QueuedWords.push( Word( WORDTYPE_BINARYOPERATOR, EXTRA_BINOP_PlusAssign ) );
 						QueuedWords.push( Word( TempString, WORDTYPE_STRINGLITERAL ) );
 						QueuedWords.push( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Right ) );
 						

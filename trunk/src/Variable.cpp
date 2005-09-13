@@ -256,70 +256,74 @@ VariableBasePointer VariableBase::UndefinedOp( const SS::STRING& Op) const
 
 
 VariableBasePointer VariableBase::operator+(const VariableBase&) const{
-    return UndefinedOp( TXT("+") );
+    return UndefinedOp( TXT("Addition") );
 }
 
 VariableBasePointer VariableBase::operator-(const VariableBase&) const{
-	return UndefinedOp( TXT("-") );
+	return UndefinedOp( TXT("Subtraction") );
 }
 
 VariableBasePointer VariableBase::operator*(const VariableBase&) const{
-	return UndefinedOp( TXT("*") );
+	return UndefinedOp( TXT("Multiplication") );
 }
 
 VariableBasePointer VariableBase::operator/(const VariableBase&) const{
-	return UndefinedOp( TXT("/") );
+	return UndefinedOp( TXT("Division") );
 }
 
 VariableBasePointer VariableBase::operator_pow( const VariableBase& ) const{
-	return UndefinedOp( TXT("**") );
+	return UndefinedOp( TXT("Exponentation") );
+}
+
+VariableBasePointer VariableBase::operator_concat( const VariableBase& ) const{
+	return UndefinedOp( TXT("Concatenation") );
 }
 
 VariableBasePointer VariableBase::operator=(const VariableBase&){
-	return UndefinedOp( TXT("=") );
+	return UndefinedOp( TXT("Assignment") );
 }
 
 
 VariableBasePointer VariableBase::operator==(const VariableBase&) const{
-	return UndefinedOp( TXT("==") );
+	return UndefinedOp( TXT("Equal") );
 }
 
 VariableBasePointer VariableBase::operator!=(const VariableBase&) const{
-	return UndefinedOp( TXT("!=") );
+	return UndefinedOp( TXT("Not-Equal") );
 }
 
 VariableBasePointer VariableBase::operator>=(const VariableBase&) const{
-	return UndefinedOp( TXT(">=") );
+	return UndefinedOp( TXT("Greater-Than-Or-Equal") );
 }
 
 VariableBasePointer VariableBase::operator<=(const VariableBase&) const{
-	return UndefinedOp( TXT("<=") );
+	return UndefinedOp( TXT("Less-Than-Or-Equal") );
 }
 
 VariableBasePointer VariableBase::operator>(const VariableBase&) const{
-	return UndefinedOp( TXT(">") );
+	return UndefinedOp( TXT("Greater-Than") );
 }
 
 VariableBasePointer VariableBase::operator<(const VariableBase&) const{
-	return UndefinedOp( TXT("<") );
+	return UndefinedOp( TXT("Less-Than") );
 }
 
 VariableBasePointer VariableBase::operator&&(const VariableBase&) const{
-	return UndefinedOp( TXT("&&") );
+	return UndefinedOp( TXT("Logical-And") );
 }
 
 VariableBasePointer VariableBase::operator||(const VariableBase&) const{
-	return UndefinedOp( TXT("||") );
+	return UndefinedOp( TXT("Logical-Or") );
 }
 
 
 //Unary ops
 VariableBasePointer VariableBase::op_not() const{
-	return UndefinedOp( TXT("unary not") );
+	return UndefinedOp( TXT("Unary-Not") );
 }
 
 VariableBasePointer VariableBase::op_neg() const{
-	return UndefinedOp( TXT("unary -") );
+	return UndefinedOp( TXT("Negation") );
 }
 
 
@@ -597,6 +601,17 @@ VariableBasePointer Variable::operator_pow( const VariableBase& X ) const
 	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, NewN ) );
 }
 
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Concatenation operator
+*/
+VariableBasePointer Variable::operator_concat( const VariableBase& X ) const
+{
+	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, 
+								this->GetStringData() + X.GetStringData() ) );
+	
+}
 
 
 

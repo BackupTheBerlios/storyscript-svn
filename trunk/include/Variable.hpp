@@ -69,6 +69,8 @@ public:
 	virtual VariableBasePointer operator*(const VariableBase&) const;
 	virtual VariableBasePointer operator/(const VariableBase&) const;
 	virtual VariableBasePointer operator_pow( const VariableBase& ) const;
+	virtual VariableBasePointer operator_concat( const VariableBase& ) const;
+	
 	virtual VariableBasePointer operator=(const VariableBase&);
 
 
@@ -146,6 +148,7 @@ public:
 	VariableBasePointer operator*(const VariableBase&) const;
 	VariableBasePointer operator/(const VariableBase&) const;
 	VariableBasePointer operator_pow( const VariableBase& ) const;
+	VariableBasePointer operator_concat( const VariableBase& ) const;
 	VariableBasePointer operator=(const VariableBase&);
 
 	
