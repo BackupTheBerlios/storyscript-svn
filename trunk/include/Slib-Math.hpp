@@ -185,11 +185,15 @@ public:
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- pi
- NOTES: Returns pi to a given precision.  More commonly used as a special variable.
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Rounds to the nearest integer.  Rounds halfways away from 0.
 */
+SS_DECLARE_OPERATOR(Int);
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Rounds to the next lowest integer.
+*/
+SS_DECLARE_OPERATOR(Floor);
 
 
 

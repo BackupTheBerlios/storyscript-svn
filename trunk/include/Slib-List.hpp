@@ -18,6 +18,8 @@ namespace SLib{
 	
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: The scope in which all the list related function reside
+		This is a fucking stupid idea to name the class the same as SS::List.
+		Just for the record.
 */
 class List : public Scope
 {
@@ -76,6 +78,10 @@ private:
 	
 };
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Simple reverses a list that it is given.  Doesn't modify the original.
+*/
+SS_DECLARE_OPERATOR(Reverse);
 
 
 }} //End namespaces

@@ -10,6 +10,7 @@
 #include "Slib-List.hpp"
 #include "List.hpp"
 #include "LanguageConstants.hpp"
+#include "CreationFuncs.hpp"
 
 using namespace SS;
 using namespace SS::SLib;
@@ -32,6 +33,7 @@ void SLib::List::RegisterPredefined()
 	Register( ScopeObjectPointer( new Push( TXT("push"), true, true ) ) );
 	Register( ScopeObjectPointer( new Pop( TXT("pop"), true, true ) ) );
 	Register( ScopeObjectPointer( new Sort( TXT("sort"), true, true ) ) );
+	Register( ScopeObjectPointer( new Reverse( TXT("reverse"), true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -145,7 +147,14 @@ VariableBasePointer Pop::Operate( VariableBasePointer X )
 VariableBasePointer Sort::Operate( VariableBasePointer X )
 {
 	ListPointer ListX = X->GetListPtr()->MakeFlatList();
-	return QuickSort( ListX, 0, ListX->GetInternalList().size() );
+	ListPointer pNewList( CreateObject<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
+	
+	//If I don't SetConst to false, it will do the compound assignment trick.
+	pNewList->SetConst( false );
+	*pNewList = *ListX;
+	pNewList->SetConst( true );
+	
+	return QuickSort( pNewList, 0, pNewList->GetInternalList().size() );
 }
 
 
@@ -203,4 +212,26 @@ int Sort::Compare( VariableBasePointer X, VariableBasePointer Y )
 	int result = X->GetStringData().compare( Y->GetStringData() );	
 	if( result == 0 ) return 0;
 	else return result < 0 ? -1 : 1;
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Reverses any list it is given.  Doesn't modify the orignal.
+*/
+VariableBasePointer Reverse::Operate( VariableBasePointer X )
+{
+	//We MUST store pTmp, or (if it is a temporary) the gc will delete it.
+	ListPointer pTmp = X->GetListPtr()->MakeFlatList();
+	ListType& Arg = pTmp->GetInternalList();
+	
+	ListPointer pNewList( CreateObject<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
+	
+	ListType::reverse_iterator i;
+	for( i = Arg.rbegin(); i != Arg.rend(); i++ )
+	{
+		pNewList->Push( *i );		
+	}
+	
+		
+	return pNewList;
 }

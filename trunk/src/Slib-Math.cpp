@@ -45,6 +45,8 @@ void Math::RegisterPredefined()
 	Register( ScopeObjectPointer( new atan( TXT("atan"), true, true ) ) );
 	Register( ScopeObjectPointer( new max( TXT("man"), true, true ) ) );
 	Register( ScopeObjectPointer( new min( TXT("min"), true, true ) ) );
+	Register( ScopeObjectPointer( new Int( TXT("int"), true, true ) ) );
+	Register( ScopeObjectPointer( new Floor( TXT("floor"), true, true ) ) );
 }
 
 
@@ -179,7 +181,7 @@ VariableBasePointer SS::SLib::atan::Operate( VariableBasePointer X )
 */
 VariableBasePointer SS::SLib::max::Operate( VariableBasePointer X )
 {
-    const ListType& TheList = X->GetListPtr()->GetInternalList();
+	const ListType& TheList = X->GetListPtr()->MakeFlatList()->GetInternalList();
 
 	VariableBasePointer Result = TheList[0];
 
@@ -198,7 +200,7 @@ NOTES: The maximum function.
 */
 VariableBasePointer SS::SLib::min::Operate( VariableBasePointer X )
 {
-	const ListType& TheList = X->GetListPtr()->GetInternalList();
+	const ListType& TheList = X->GetListPtr()->MakeFlatList()->GetInternalList();
 
 	VariableBasePointer Result = TheList[0];
 
@@ -211,4 +213,25 @@ VariableBasePointer SS::SLib::min::Operate( VariableBasePointer X )
 }
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Rounds the number to the nearest integer.
+*/
+VariableBasePointer Int::Operate( VariableBasePointer X )
+{
+	NumType Tmp;
+	mpfr_round( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
+	
+	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Rounds to the next lowest integer.
+*/
+VariableBasePointer Floor::Operate( VariableBasePointer X )
+{
+	NumType Tmp;
+	mpfr_floor( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
+	
+	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
+}
 

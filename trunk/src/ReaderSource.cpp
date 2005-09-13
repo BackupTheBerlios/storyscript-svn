@@ -175,32 +175,8 @@ Word ReaderSource::GetNextWord()
 				if( CharCode == EOF_CHAR ){
 					ThrowParserAnomaly( TXT("Unexpected end of file."), ANOMALY_EOF );
 				}
-
-				switch( CharCode )
-				{
-					case 'n':
-						TempString += '\n';
-						break;
-
-					case '\\':
-						TempString += '\\';
-						break;
-
-					case '\"':
-						TempString += '\"';
-						break;
-
-					case '\'':
-						TempString += '\'';
-						break;
-
-					case '`':
-						TempString += '`';
-						break;
-
-					default:
-						TempString += CharCode;
-				}
+				
+				TempString += CharCode;
 			}
 			else if( IsNewline( TempChar  ) && !IsWhitespace( TempString[ TempString.length() - 1] ) )
 			{
