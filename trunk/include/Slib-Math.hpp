@@ -12,6 +12,7 @@
 
 #include "Scope.hpp"
 #include "Operator.hpp"
+#include "SpecialVars.hpp"
 
 namespace SS{
 namespace SLib{
@@ -194,6 +195,88 @@ SS_DECLARE_OPERATOR(Int);
  NOTES: Rounds to the next lowest integer.
 */
 SS_DECLARE_OPERATOR(Floor);
+
+
+
+//class MathConstPrec;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Abstract Base Class that provides the basis for mathematical constant
+ 		magic vars.
+*/
+class MathConst : public SpecialVarBase
+{
+public:
+	MathConst( SS_DECLARE_BASE_ARGS );
+	
+	VarType GetVariableType() const;
+
+	NumType    GetNumData() const;
+	BoolType   GetBoolData()   const;
+	StringType GetStringData() const;
+	
+	friend class MathConstPrec;
+	
+protected:
+	virtual void Generate() const = 0;
+	
+	mutable NumType mBufferValue;
+	
+};
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: A special version of precision made for MathConst.
+*/
+class MathConstPrec : public SpecialVarBase
+{
+	public:
+		MathConstPrec( const SS::STRING& Name, MathConst& Parent,
+					   bool Static = false, bool Const = false );
+
+		VariableBasePointer operator=( const VariableBase& );
+	
+		VarType GetVariableType() const;
+
+		NumType GetNumData() const;
+		BoolType GetBoolData() const;
+		StringType GetStringData() const;
+	
+	private:
+		MathConst& mParent;		
+};
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Magical Pi!
+*/
+class Pi : public MathConst
+{
+public:
+	Pi( SS_DECLARE_BASE_ARGS );
+	
+private:
+	void Generate() const;
+};
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Magical e!
+*/
+class Euler : public MathConst
+{
+public:
+	Euler( SS_DECLARE_BASE_ARGS );
+	
+private:
+	void Generate() const;
+};
+		
+		
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Magical log2!
+*/
+
 
 
 

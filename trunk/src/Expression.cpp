@@ -44,15 +44,24 @@ public:
 	LooseIdentifier( const STRING& LooseID ) : LooseID( LooseID )
 	{}
 	
-	StringType GetStringData() { ThrowError(); }
-	BoolType GetBoolData() { ThrowError(); }
-	NumType GetNumData() { ThrowError(); }
+	StringType GetStringData() const{
+		ThrowError(); 
+		return StringType();
+	}
+	BoolType GetBoolData() const {
+		ThrowError(); 
+		return BoolType();
+	}
+	NumType GetNumData()  const {
+		ThrowError(); 
+		return NumType();
+	}
 	
 	const STRING& GetLooseIDName(){ return LooseID; };
 	
 				
 private:
-	void ThrowError()
+	void ThrowError() const
 	{
 		STRING Tmp = TXT("Cannot find object named \'");
 		Tmp += LooseID;

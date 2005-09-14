@@ -9,6 +9,8 @@
 #include "mpfrxx.h"
 #include "mpfr.h"
 
+#include <boost/lexical_cast.hpp>
+
 
 using namespace SS;
 using namespace SS::SLib;
@@ -34,6 +36,7 @@ Math::Math()
 //
 void Math::RegisterPredefined()
 {
+	//Functions
 	Register( ScopeObjectPointer( new sqrt( TXT("sqrt"), true, true ) ) );	
 	Register( ScopeObjectPointer( new abs( TXT("abs"), true, true ) ) );
 	Register( ScopeObjectPointer( new mean( TXT("mean"), true, true ) ) );
@@ -47,6 +50,10 @@ void Math::RegisterPredefined()
 	Register( ScopeObjectPointer( new min( TXT("min"), true, true ) ) );
 	Register( ScopeObjectPointer( new Int( TXT("int"), true, true ) ) );
 	Register( ScopeObjectPointer( new Floor( TXT("floor"), true, true ) ) );
+	
+	//Magic Variables
+	Register( ScopeObjectPointer( new Pi( TXT("pi"), true, true ) ) );
+	Register( ScopeObjectPointer( new Euler( TXT("e"), true, true ) ) );
 }
 
 
@@ -235,3 +242,161 @@ VariableBasePointer Floor::Operate( VariableBasePointer X )
 	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: ctor
+*/
+MathConstPrec::MathConstPrec( const SS::STRING& Name, MathConst& Parent,
+							  bool Static /*= false*/, bool Const /*= false*/ )
+	: SpecialVarBase( Name, Static, Const ),
+	  mParent(Parent)
+{
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Along with assigning to the var, it tells the MathConst to update.
+ 		Hmm..this looks oddly familiar to PrecisionVar::operator= ...
+*/
+VariableBasePointer MathConstPrec::operator=( const VariableBase& X )
+{
+	static const NumType MinPrecision( MPFR_PREC_MIN );
+	static const NumType MaxPrecision( MPFR_PREC_MAX );
+    
+
+	if( X.GetNumData() < MinPrecision )
+	{
+		STRING tmp = TXT("Tried to set precision to \'");
+		tmp += X.GetStringData();
+		tmp += TXT("\'.  Can't handle lower than \'");
+		tmp += boost::lexical_cast<STRING>( MPFR_PREC_MIN );
+		tmp += TXT("\'.");
+		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
+	}
+	
+	if( X.GetNumData() > MaxPrecision )
+	{
+		STRING tmp = TXT("Tried to set precision to \'");
+		tmp += X.GetStringData();
+		tmp += TXT("\'.  Can't handle higher than \'");
+		tmp += boost::lexical_cast<STRING>( MPFR_PREC_MAX );
+		tmp += TXT("\'.");
+		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
+	}
+
+	mpfr_prec_t NewPrec = X.GetNumData().get_ui();
+	mParent.mBufferValue.set_prec( NewPrec );
+	
+	//regenerate the constant
+	mParent.Generate();
+
+	return GetVariableBasePtr();
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Prefered type: number
+*/
+VarType MathConstPrec::GetVariableType() const
+{
+	return VARTYPE_NUM;	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Get___Data...
+*/
+NumType MathConstPrec::GetNumData() const
+{
+	return NumType( mParent.mBufferValue.get_prec() );
+}
+
+BoolType MathConstPrec::GetBoolData() const
+{
+	return GetBoolDataFromNum();
+}
+
+StringType MathConstPrec::GetStringData() const
+{
+	return GetStringDataFromNum();
+}
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: 
+*/
+MathConst::MathConst( SS_DECLARE_BASE_ARGS )
+	: SpecialVarBase( SS_BASE_ARGS )
+{
+	bool WasConst = mConst;
+	SetConst( false );
+	Register( ScopeObjectPointer( new MathConstPrec( LC_Precision, *this, true, true ) ) );
+	SetConst( WasConst );
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Prefered type: num
+*/
+VarType MathConst::GetVariableType() const
+{
+	return VARTYPE_NUM;	
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Get the actual value.
+*/
+NumType MathConst::GetNumData() const
+{
+	static bool FirstCall = true;
+	if( FirstCall ){
+		 Generate();
+		 FirstCall = false;
+	}
+	
+	return mBufferValue;
+}
+
+BoolType MathConst::GetBoolData() const
+{
+	return GetBoolDataFromNum();
+}
+
+StringType MathConst::GetStringData() const
+{
+	return GetStringDataFromNum();
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Pi ctor
+*/
+Pi::Pi( SS_DECLARE_BASE_ARGS )
+	: MathConst( SS_BASE_ARGS )
+{
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Generate pi!
+*/
+void Pi::Generate() const
+{
+	mpfr_const_pi( mBufferValue.get_mpfr_t(), GMP_RNDN );	
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Euler ctor
+*/
+Euler::Euler( SS_DECLARE_BASE_ARGS )
+	: MathConst( SS_BASE_ARGS )
+{
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Generate pi!
+*/
+void Euler::Generate() const
+{
+	mpfr_const_euler( mBufferValue.get_mpfr_t(), GMP_RNDN );	
+}

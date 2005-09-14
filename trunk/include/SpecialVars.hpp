@@ -81,7 +81,7 @@ public:
 	BoundFlagVar( const SS::STRING& Name, bool& Flag, 
 				  bool Static = false, bool Const = false );
 	
-	VariableBasePointer operator=(const VariableBase&);
+	virtual VariableBasePointer operator=(const VariableBase&);
 
 	VarType GetVariableType() const;
 
@@ -105,7 +105,7 @@ public:
 	BoundStringVar( const SS::STRING& Name, SS::STRING& String,
 					bool Static = false, bool Const = false );
 
-	VariableBasePointer operator=( const VariableBase& );
+	virtual VariableBasePointer operator=( const VariableBase& );
 
 	VarType GetVariableType() const;
 
@@ -129,7 +129,7 @@ public:
 	BoundNumVar( const SS::STRING& Name, NumType& Num,
 		bool Static = false, bool Const = false );
 
-	VariableBasePointer operator=( const VariableBase& );
+	virtual VariableBasePointer operator=( const VariableBase& );
 
 	VarType GetVariableType() const;
 
