@@ -19,7 +19,8 @@ Bookmark::Bookmark( const SS::STRING& FileName,
 	: FileName(FileName),
       Position(Position),
 	  Line(Line),
-	  CurrentScope(CurrentScope)
+	  CurrentScope(CurrentScope),
+	  CurrentStaticScope(CurrentStaticScope)
 {
 }
 
