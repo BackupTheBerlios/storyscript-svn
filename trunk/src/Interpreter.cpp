@@ -330,16 +330,14 @@ void Interpreter::Parse( BlockPointer pBlock, bool SayBlock /*=true*/ )
 		mpInterface->LogMessage( tmp );
 	}
 
-	ScopePointer pOldScope = mpCurrentScope;
 	Bookmark OldPos = GetCurrentPos();
-	
-	/*
-	if( mpCurrentFile->EndOfFile() )
+    
+	//This is needed for any kind of recurssion to be possible.
+	if( pBlock == mpCurrentStaticScope && mpCurrentScope != mpCurrentStaticScope)
 	{
-		OldPos.Position = 0;
-		OldPos.Line = 1;
+        mpCurrentStaticScope->UnImport( mpCurrentScope );
 	}
-	*/
+
 
 	//Clear all non-static variables
 	pBlock->Clear();
@@ -365,6 +363,11 @@ void Interpreter::Parse( BlockPointer pBlock, bool SayBlock /*=true*/ )
 
 	//This should also reset the scopes
 	SetPos( OldPos );
+
+	//ReImport the old instance
+	if( pBlock == mpCurrentStaticScope && mpCurrentScope != mpCurrentStaticScope ){
+		mpCurrentStaticScope->Import( mpCurrentScope );
+	}
 
 	if( !SayBlock ) return;
 
@@ -431,7 +434,12 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	unsigned int BracketCount = 0;
 	WordType LastWordType = WORDTYPE_UNKNOWN;
 
-	Expression WordBuffer;
+	//I'm going to put this on the heap to take some of the
+	//pressure of the stack during recursion.
+	boost::shared_ptr<Expression> pWordBuffer( new Expression );
+	Expression& WordBuffer = *pWordBuffer;
+
+	//Expression WordBuffer;
 
 	//This is a shortcut, so when something is determined to be an expression,
 	//it will just throw everything up to the ';' into the buffer and let

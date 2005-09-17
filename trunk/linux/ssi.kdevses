@@ -1,47 +1,43 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="10" >
-  <Doc0 NumberOfViews="1" URL="file:///workspace2/ssi/include/Slib-Math.hpp" >
-   <View0 line="219" Type="Source" />
+ <DocsAndViews NumberOfDocuments="9" >
+  <Doc0 NumberOfViews="1" URL="file:///workspace2/ssi/src/Interpreter.cpp" >
+   <View0 line="615" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///workspace2/ssi/src/Slib-Math.cpp" >
-   <View0 line="244" Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:///workspace2/ssi/src/Expression.cpp" >
+   <View0 line="344" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///workspace2/ssi/include/SpecialVars.hpp" >
-   <View0 line="205" Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:///workspace2/ssi/src/ReaderSource.cpp" >
+   <View0 line="204" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///workspace2/ssi/src/SpecialVars.cpp" >
-   <View0 line="459" Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:///workspace2/ssi/src/Slib-Common.cpp" >
+   <View0 line="62" Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///workspace2/ssi/include/Operator.hpp" >
-   <View0 line="0" Type="Source" />
+  <Doc4 NumberOfViews="1" URL="file:///workspace2/ssi/src/Block.cpp" >
+   <View0 line="56" Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///workspace2/ssi/include/ScopeObject.hpp" >
-   <View0 line="0" Type="Source" />
+  <Doc5 NumberOfViews="1" URL="file:///workspace2/ssi/src/Scope.cpp" >
+   <View0 line="359" Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///workspace2/ssi/src/Variable.cpp" >
-   <View0 line="403" Type="Source" />
+  <Doc6 NumberOfViews="1" URL="file:///workspace2/ssi/include/List.hpp" >
+   <View0 line="83" Type="Source" />
   </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///workspace2/ssi/src/Interpreter.cpp" >
-   <View0 line="73" Type="Source" />
+  <Doc7 NumberOfViews="1" URL="file:///workspace2/ssi/src/List.cpp" >
+   <View0 line="18" Type="Source" />
   </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///workspace2/ssi/src/Interface.cpp" >
-   <View0 line="0" Type="Source" />
+  <Doc8 NumberOfViews="1" URL="file:///workspace2/ssi/src/LanguageConstants.cpp" >
+   <View0 line="150" Type="Source" />
   </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/3.4.4/include/g%2B%2B-v3/bits/stl_construct.h" >
-   <View0 line="106" Type="Source" />
-  </Doc9>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
    <breakpointList>
-    <breakpoint0 location="/workspace2/ss/interpreter/ssi/src/Slib-Common.cpp:62" type="1" condition="" enabled="1" />
-    <breakpoint1 location="/workspace2/ss/interpreter/ssi/src/ReaderSource.cpp:399" type="1" condition="" enabled="1" />
-    <breakpoint2 location="/workspace2/ssi/src/Interpreter.cpp:112" type="1" condition="" enabled="1" />
-    <breakpoint3 location="/workspace2/ssi/src/Interpreter.cpp:52" type="1" condition="" enabled="1" />
-    <breakpoint4 location="/workspace2/ssi/src/Interpreter.cpp:129" type="1" condition="" enabled="1" />
-    <breakpoint5 location="/workspace2/ssi/src/Interpreter.cpp:54" type="1" condition="" enabled="1" />
+    <breakpoint0 location="/workspace2/ssi/src/Expression.cpp:636" type="1" condition="" enabled="1" />
+    <breakpoint1 location="/workspace2/ssi/src/Interpreter.cpp:963" type="1" condition="" enabled="1" />
+    <breakpoint2 location="/workspace2/ssi/src/Interpreter.cpp:952" type="1" condition="" enabled="1" />
+    <breakpoint3 location="/workspace2/ssi/src/ReaderSource.cpp:205" type="1" condition="" enabled="1" />
+    <breakpoint4 location="/workspace2/ssi/src/Expression.cpp:345" type="1" condition="" enabled="1" />
    </breakpointList>
   </kdevdebugger>
   <kdevbookmarks>

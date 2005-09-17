@@ -436,7 +436,7 @@ void ReaderSource::GotoLine( unsigned long LineNumber )
 */
 ReaderPos ReaderSource::GetPos() const
 {
-	return mBufferPos;
+	return (ReaderPos)mBufferPos;
 }
 
 

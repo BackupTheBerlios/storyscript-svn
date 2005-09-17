@@ -16,7 +16,7 @@ using namespace SS;
 
 
 //The global empty list variable
-const ListPointer SS::gpEmptyList;
+ListPointer SS::gpEmptyList;
 
 //const ListPointer SS::gpEmptyList( new List( SS::STRING(), true, true ) );
 

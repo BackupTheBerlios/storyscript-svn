@@ -72,7 +72,7 @@ public:
 	VariableBasePointer Operate( VariableBasePointer );
 	
 private:
-	ListPointer QuickSort( ListPointer, unsigned int Begin, unsigned int End );
+	ListPointer QuickSort( ListPointer, unsigned long Begin, unsigned long End );
 	
 	virtual int Compare( VariableBasePointer x, VariableBasePointer y );
 	

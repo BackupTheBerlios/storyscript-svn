@@ -154,22 +154,22 @@ VariableBasePointer Sort::Operate( VariableBasePointer X )
 	*pNewList = *ListX;
 	pNewList->SetConst( true );
 	
-	return QuickSort( pNewList, 0, pNewList->GetInternalList().size() );
+	return QuickSort( pNewList, 0, (unsigned long)pNewList->GetInternalList().size() );
 }
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This where it gets done.
 */
-ListPointer Sort::QuickSort( ListPointer TheList, unsigned int Begin, unsigned int End )
+ListPointer Sort::QuickSort( ListPointer TheList, unsigned long Begin, unsigned long End )
 {
 	if( End > Begin + 1)
 	{
 		ListType& ActualList = TheList->GetInternalList();
 		VariableBasePointer Pivot = ActualList[Begin];
 		VariableBasePointer Temp; //For swaps
-		unsigned int Left = Begin + 1;
-		unsigned int Right = End;
+		unsigned long Left = Begin + 1;
+		unsigned long Right = End;
 		
 		while( Right > Left )
 		{

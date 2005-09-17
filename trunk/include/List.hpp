@@ -81,7 +81,7 @@ private:
 };
 
 
-extern const ListPointer gpEmptyList;
+extern ListPointer gpEmptyList;
 
 
 

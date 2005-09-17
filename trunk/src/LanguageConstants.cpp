@@ -7,6 +7,11 @@ Created: 6:5:2005   17:39
 
 
 #include "LanguageConstants.hpp"
+
+//To initialize gpEmptyList
+#include "CreationFuncs.hpp"
+#include "List.hpp"
+
 using namespace SS;
 
 #include <clocale>
@@ -130,6 +135,10 @@ void SS::InitConstants(){
 		LC_DecimalPoint = NormalizeString( pLconv->decimal_point );
 	}
 	LC_ThousandsSep = NormalizeString( pLconv->thousands_sep );
+	
+	
+	//VERY IMPORTANT THAT THIS GETS SET
+	gpEmptyList = CreateObject<List>( STRING(), true, true );
 
 
 

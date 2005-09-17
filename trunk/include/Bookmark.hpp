@@ -4,6 +4,7 @@
 
 #include "Types.hpp"
 #include "ReaderSource.hpp"
+#include "DLLExport.hpp"
 
 namespace SS{
 

@@ -3,7 +3,13 @@ import glob
 #Define a builder that creates backups
 #BackupBuild = Builder(action = 'perl MakeBackup.pl')
 
-env = Environment( CCFLAGS='-g' );
+env = Environment()
+debug = ARGUMENTS.get('debug', 0 )
+if int(debug):
+	env.Append(CCFLAGS = '-g')
+else:
+	env.Append(CCFLAGS = '-O2' )
+
 #env.Append( BUILDERS = {'backup' : BackupBuild } )
 conf = Configure(env)
 env = conf.Finish()
