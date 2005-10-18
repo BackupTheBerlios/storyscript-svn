@@ -1,3 +1,10 @@
+/*
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: S-Lib functions/mvars that are used for more advanced math operations.
+*/
 
 #include "Slib-Math.hpp"
 #include "LanguageConstants.hpp"
@@ -46,7 +53,7 @@ void Math::RegisterPredefined()
 	Register( ScopeObjectPointer( new asin( TXT("asin"), true, true ) ) );
 	Register( ScopeObjectPointer( new acos( TXT("acos"), true, true ) ) );
 	Register( ScopeObjectPointer( new atan( TXT("atan"), true, true ) ) );
-	Register( ScopeObjectPointer( new max( TXT("man"), true, true ) ) );
+	Register( ScopeObjectPointer( new max( TXT("max"), true, true ) ) );
 	Register( ScopeObjectPointer( new min( TXT("min"), true, true ) ) );
 	Register( ScopeObjectPointer( new Int( TXT("int"), true, true ) ) );
 	Register( ScopeObjectPointer( new Floor( TXT("floor"), true, true ) ) );

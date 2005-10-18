@@ -1,9 +1,9 @@
 /*
-    Slib-Time.hpp
-    --------------------------
-    Standard Library Time Functions.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-	Created:	28:5:2005   20:47
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: S-Lib functions/mvars that are used to maniuplate time.
 */
 
 #if !defined(SS_Slib_Time)

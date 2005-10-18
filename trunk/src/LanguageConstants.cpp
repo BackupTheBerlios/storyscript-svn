@@ -1,8 +1,10 @@
 /*
-LanguageConstants.cpp
-----------------------
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-Created: 6:5:2005   17:39
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: This is a list of language constants that can be changed to effect
+	in the source file to rename operators, etc.
 */
 
 
@@ -33,7 +35,7 @@ SS::STRING LC_ThousandsSep = TXT(",");
 const SS::STRING LC_Precision = TXT("precision");
 
 
-const SS::STRING LC_Length = TXT("length");
+const SS::STRING LC_Length = TXT("size");
 const SS::STRING LC_Name( TXT("name") );
 const SS::STRING LC_FullName( TXT("fullname") );
 const SS::STRING LC_EndBlock = TXT("end");
@@ -103,10 +105,10 @@ const SS::STRING LC_NameOfBracket  = TXT("|");
 
 //SLib Stuff
 const SS::STRING LC_SL_Time = TXT("SSTime");
-const SS::STRING LC_SL_Time_Time = TXT("CurrentTime");
-const SS::STRING LC_SL_Time_ElapsedSeconds = TXT("ElapsedSeconds");
-const SS::STRING LC_SL_Time_TimeZone = TXT("TimeZone");
-const SS::STRING LC_SL_Time_Date = TXT("Date");
+const SS::STRING LC_SL_Time_Time = TXT("time");
+const SS::STRING LC_SL_Time_ElapsedSeconds = TXT("elapsed_seconds");
+const SS::STRING LC_SL_Time_TimeZone = TXT("timezone");
+const SS::STRING LC_SL_Time_Date = TXT("date");
 
 const SS::STRING LC_SL_Math = TXT("SSMath");
 

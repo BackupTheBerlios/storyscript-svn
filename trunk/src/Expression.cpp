@@ -1,9 +1,10 @@
 /*
-ScriptFile.cpp
-----------------------
-Defs for the Expression class.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-Created: 20:06:2005   (MY CLOCK IS BROKEN!)
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: Contains defs for the Expression class which is responsible for
+	interpreting and executing expressions.
 */
 
 

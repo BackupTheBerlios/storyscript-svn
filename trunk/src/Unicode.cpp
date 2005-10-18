@@ -1,8 +1,10 @@
 /*
-	Unicode.cpp
-	----------------------
-	Created: Fri, Jan 30 2004, 0:12
-	Description: 
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: More or less just a wrapper for either UseWideChar or UseNarrowChar.
+	With some other good functions.
 	
 */
 

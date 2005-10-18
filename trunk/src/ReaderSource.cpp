@@ -1,3 +1,12 @@
+/*
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: The abstract base class that is responsible for reading from the script
+	from a source and tokenizing it.
+*/
+
 #include "ReaderSource.hpp"
 #include "HelperFuncs.hpp"
 #include "ParserAnomaly.hpp"

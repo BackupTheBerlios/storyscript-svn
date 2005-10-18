@@ -1,9 +1,9 @@
 /*
-List.cpp
-----------------------
-Definitions for the List class.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-Created: 27:4:2005   13:28
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: Definitions for the List class; a dynamicaly sized list.
 */
 
 #include "List.hpp"
@@ -336,6 +336,13 @@ VariableBasePointer List::Remove( const VariableBasePointer Index )
 */
 VariableBasePointer List::Insert( const VariableBasePointer Index )
 {
+	//This catches a bug where an extra element is added when
+	//+[] is called with an index >= to the size.
+	if( *Index >= *Length() )
+	{
+		return (*this)[Index];
+	}
+
 	unsigned int RealIndex = DetermineRealIndex(*Index);
 	mList.insert( mList.begin() + RealIndex, CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
 	return mList[RealIndex];
@@ -347,7 +354,7 @@ VariableBasePointer List::Insert( const VariableBasePointer Index )
  NOTES: Returns the length of the list.
 */
 VariableBasePointer List::Length() const{
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, (NumType)(unsigned int)mList.size() );
+	return CreateVariable( SS_BASE_ARGS_DEFAULTS, (NumType)(unsigned long)mList.size() );
 }
 
 

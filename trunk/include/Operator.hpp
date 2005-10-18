@@ -1,10 +1,13 @@
 /*
- Operator.hpp
- ----------------------
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: 
  Basis for custom operators and built in operators/functions.
- 
  Created: 24:5:2005   11:26
- */
+*/
+
  
  #if !defined(SS_Operator)
  #define SS_Operator

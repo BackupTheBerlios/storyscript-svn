@@ -1,10 +1,9 @@
 /*
-    Slib-Common.cpp
-    --------------------------
-    Standard library functions that are automatically
-	imported into the global scope.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-	Created:	20:06:2005    (DONT KNOW THE DAMN TIME!)
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: S-Lib functions/mvars that are miscilaneous and used often.
 */
 
 #include "Slib-Common.hpp"
@@ -15,18 +14,11 @@
 #include "Interpreter.hpp"
 #include "Interface.hpp"
 
-//Needed by PickOne
-#include <boost/random.hpp>
-#include "HelperFuncs.hpp"
-#include "List.hpp"
+
 
 #include "CreationFuncs.hpp"
 
 
-//I may need to put this somewhere else if it
-//turns out that its needed other places.
-boost::mt19937 gRNG;
-//boost::uniform_smallint< boost::mt19937, unsigned int > gRNG;
 
 
 
@@ -52,7 +44,6 @@ Common::Common()
 void Common::RegisterPredefined()
 {
 	Register( ScopeObjectPointer( new print( TXT("print"), true, true ) ) );
-	Register( ScopeObjectPointer( new PickOne( TXT("PickOne"), true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -65,28 +56,5 @@ VariableBasePointer print::Operate( VariableBasePointer X )
 	return X;
 }
 
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: This little guy will randomly pick on of the elements from the list
- 		and return it.
-*/
-VariableBasePointer PickOne::Operate( VariableBasePointer X )
-{
-	ListPointer pList = X->GetListPtr()->MakeFlatList();
-
-	if( pList->GetInternalList().size() == 0 ) return CreateVariable( SS_BASE_ARGS_DEFAULTS, false );
-
-	boost::uniform_int<unsigned int> DistributedRandom( 0, (unsigned int)pList->GetInternalList().size() - 1 );
-	return pList->GetInternalList()[ DistributedRandom( gRNG ) ];
-	
-	/*
-	ListPointer pList = X->GetListPtr();
-	double Random = RNG();
-	unsigned int ListSize = pList->GetInternalList().size();
-	
-	unsigned int Index = (unsigned int)( Random * (double)ListSize );
-	return pList->GetInternalList()[Index];
-	*/
-}
 
 

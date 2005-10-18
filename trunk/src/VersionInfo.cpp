@@ -1,3 +1,11 @@
+/*
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: Just some quick defines for keeping track of the version.
+	See the header for details.
+*/
 
 #include "VersionInfo.hpp"
 

@@ -16,4 +16,4 @@ Win32:
 Just open up the .sln file in visual studio and build the thing.
 
 Linux:
-To be announced.
+S^2 makes use of the python based SCons build system.  You must have this installed to build the interpreter.  Once you do, its as simple as running "scons" and "scons install".  (Also "scons --clean" will remove compiled binaries similarly to "make clean".)

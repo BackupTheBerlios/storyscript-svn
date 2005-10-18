@@ -1,3 +1,11 @@
+/*
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: Contains declarations for the Character class.
+*/
+
 #if !defined(SS_Character)
 #define SS_Character
 

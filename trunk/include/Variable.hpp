@@ -1,11 +1,9 @@
 /*
-Variable.hpp
-----------------------
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
 
-Created: 19:9:2004   19:36
-
-23:9:2004	23:55 - It compiles!  It compiles!!!
+NOTES: The variable interface and implementation.
 */
 
 #if !defined(SS_Variable)
@@ -19,8 +17,9 @@ Created: 19:9:2004   19:36
 
 /*
 I'm using the MPFR library to handle multiple-precision floating point
-numbers.  It is based off the GNU MP (GMP) library, but it is not the version
-that is included with the latest release of GMP.  The C++ wrapper however is
+numbers.  It is based off the GNU MP (GMP) library, but it is NOT the version
+that is included with the latest release of GMP.  The version GMP includes is
+as of now too old for my purposes. The C++ wrapper however is
 the one included with GMP, however I modified it to take advantage of the
 newer features included with the version of MPFR I'm using.
 

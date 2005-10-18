@@ -12,6 +12,17 @@
 #include "LanguageConstants.hpp"
 #include "CreationFuncs.hpp"
 
+//Needed by PickOne
+#include <boost/random.hpp>
+#include "HelperFuncs.hpp"
+#include "List.hpp"
+
+//I may need to put this somewhere else if it
+//turns out that its needed other places.
+boost::mt19937 gRNG;
+//boost::uniform_smallint< boost::mt19937, unsigned int > gRNG;
+
+
 using namespace SS;
 using namespace SS::SLib;
 
@@ -34,6 +45,7 @@ void SLib::List::RegisterPredefined()
 	Register( ScopeObjectPointer( new Pop( TXT("pop"), true, true ) ) );
 	Register( ScopeObjectPointer( new Sort( TXT("sort"), true, true ) ) );
 	Register( ScopeObjectPointer( new Reverse( TXT("reverse"), true, true ) ) );
+	Register( ScopeObjectPointer( new PickOne( TXT("pickone"), true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -234,4 +246,28 @@ VariableBasePointer Reverse::Operate( VariableBasePointer X )
 	
 		
 	return pNewList;
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: This little guy will randomly pick on of the elements from the list
+ 		and return it.
+*/
+VariableBasePointer PickOne::Operate( VariableBasePointer X )
+{
+	ListPointer pList = X->GetListPtr()->MakeFlatList();
+
+	if( pList->GetInternalList().size() == 0 ) return CreateVariable( SS_BASE_ARGS_DEFAULTS, false );
+
+	boost::uniform_int<unsigned int> DistributedRandom( 0, (unsigned int)pList->GetInternalList().size() - 1 );
+	return pList->GetInternalList()[ DistributedRandom( gRNG ) ];
+	
+	/*
+	ListPointer pList = X->GetListPtr();
+	double Random = RNG();
+	unsigned int ListSize = pList->GetInternalList().size();
+	
+	unsigned int Index = (unsigned int)( Random * (double)ListSize );
+	return pList->GetInternalList()[Index];
+	*/
 }

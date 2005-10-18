@@ -1,10 +1,9 @@
 /*
-    Slib-Common.hpp
-    --------------------------
-    Standard library functions that are automatically
-	imported into the global scope.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-	Created:	20:06:2005    (DONT KNOW THE DAMN TIME!)
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: S-Lib functions/mvars that are miscilaneous and used often.
 */
 
 #if !defined(SS_Slib_Common)
@@ -43,10 +42,7 @@ public:
 	VariableBasePointer Operate( VariableBasePointer );
 };
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
- NOTES: Randomly chooses one element from the list and returns it.
-*/
-SS_DECLARE_OPERATOR(PickOne);
+
 
 
 }} //namespaces

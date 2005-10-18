@@ -1,12 +1,10 @@
 /*
-    Slib-Time.cpp
-    --------------------------
-    
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-	Created:	28:5:2005   21:06
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: S-Lib functions/mvars that are used to maniuplate time.
 */
-
-
 
 #include "Slib-Time.hpp"
 #include "LanguageConstants.hpp"
@@ -47,10 +45,10 @@ Time::Time()
 */
 void Time::RegisterPredefined()
 {
-	Register( ScopeObjectPointer( new TimeVar       ( LC_SL_Time_Time, true, true ) ) );
-	Register( ScopeObjectPointer( new ElapsedSeconds( LC_SL_Time_ElapsedSeconds, true, true ) ) );
-	Register( ScopeObjectPointer( new DateVar       ( LC_SL_Time_Date, true, true ) ) );
-	Register( ScopeObjectPointer( new TimeZoneVar   ( LC_SL_Time_TimeZone, true, true ) ) );
+	Register( ScopeObjectPointer( new TimeVar       ( TXT("time"), true, true ) ) );
+	Register( ScopeObjectPointer( new ElapsedSeconds( TXT("elapsed_seconds"), true, true ) ) );
+	Register( ScopeObjectPointer( new DateVar       ( TXT("date"), true, true ) ) );
+	Register( ScopeObjectPointer( new TimeZoneVar   ( TXT("timezone"), true, true ) ) );
 }
 
 

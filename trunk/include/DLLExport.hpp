@@ -1,5 +1,9 @@
- /*--------------------
- 
+/*
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: 
  This file is specially made so that all the special
  exporting code for windows dll files is in one
  place, and can be turned off all at once when compiling
@@ -7,8 +11,7 @@
  
  Mainly just all the empty class declarations that are 
  used to export stuff from other libraries.
- 
- */
+*/
 
 //Keep this include at the top
 #include "Defines.hpp"

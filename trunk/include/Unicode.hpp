@@ -1,14 +1,9 @@
 /*
-	Unicode.hpp
-	----------------------
-	Created: Thu, Jan 29 2004, 1:48
-	Description: This is the DCJ standard unicode header.
-	
-	TODO:
-	-Write alternative unicode functions.
-	
-	Changelog:
-	
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: More or lessj ust a wrapper for either UseWideChar or UseNarrowChar.
 */
 
 #if !defined(SS_Unicode)

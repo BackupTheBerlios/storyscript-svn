@@ -1,43 +1,25 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="9" >
-  <Doc0 NumberOfViews="1" URL="file:///workspace2/ssi/src/Interpreter.cpp" >
-   <View0 line="615" Type="Source" />
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///workspace2/ssi/src/Expression.cpp" >
-   <View0 line="344" Type="Source" />
-  </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///workspace2/ssi/src/ReaderSource.cpp" >
-   <View0 line="204" Type="Source" />
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///workspace2/ssi/src/Slib-Common.cpp" >
-   <View0 line="62" Type="Source" />
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///workspace2/ssi/src/Block.cpp" >
-   <View0 line="56" Type="Source" />
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///workspace2/ssi/src/Scope.cpp" >
-   <View0 line="359" Type="Source" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///workspace2/ssi/include/List.hpp" >
-   <View0 line="83" Type="Source" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///workspace2/ssi/src/List.cpp" >
-   <View0 line="18" Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///workspace2/ssi/src/LanguageConstants.cpp" >
-   <View0 line="150" Type="Source" />
-  </Doc8>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevdebugger>
    <breakpointList>
-    <breakpoint0 location="/workspace2/ssi/src/Expression.cpp:636" type="1" condition="" enabled="1" />
-    <breakpoint1 location="/workspace2/ssi/src/Interpreter.cpp:963" type="1" condition="" enabled="1" />
-    <breakpoint2 location="/workspace2/ssi/src/Interpreter.cpp:952" type="1" condition="" enabled="1" />
-    <breakpoint3 location="/workspace2/ssi/src/ReaderSource.cpp:205" type="1" condition="" enabled="1" />
-    <breakpoint4 location="/workspace2/ssi/src/Expression.cpp:345" type="1" condition="" enabled="1" />
+    <breakpoint0 location="/workspace2/ssi/src/Expression.cpp:346" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint0>
+    <breakpoint1 location="/workspace2/ssi/src/Expression.cpp:637" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint1>
+    <breakpoint2 location="/workspace2/ssi/src/Interpreter.cpp:954" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint2>
+    <breakpoint3 location="/workspace2/ssi/src/Interpreter.cpp:965" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint3>
+    <breakpoint4 location="/workspace2/ssi/src/ReaderSource.cpp:214" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint4>
    </breakpointList>
   </kdevdebugger>
   <kdevbookmarks>

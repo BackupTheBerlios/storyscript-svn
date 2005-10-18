@@ -1,5 +1,12 @@
 #!/usr/bin/perl
 
+#
+#This is part of the  StoryScript (AKA SS, S^2, SSqared, etc) #software, and is
+#
+#Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+#
+#Full licence information is included in the file named #"licence".
+#
 
 #For automatic code backups
 #This is use to delete any unessisary file and then use 7zip to make a zipfile

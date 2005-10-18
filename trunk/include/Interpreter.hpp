@@ -1,10 +1,11 @@
 /*
-Interpreter.hpp
-----------------------
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-Created: 30:8:2004   13:27
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: Contains declarations for the Interprer class which handles the bulk
+	of all the parsing.
 */
-
 
 
 #if !defined(SS_INTERPRETER)

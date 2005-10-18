@@ -1,10 +1,10 @@
 /*
-LanguageConstants.hpp
-----------------------
-A list of constants.  Allows me to make global changes to the language
-with one edit.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-Created: 27:4:2005   14:40
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: This is a list of language constants that can be changed to effect
+	in the source file to rename operators, etc.
 */
 
 #if !defined( SS_LanguageConstants )

@@ -1,10 +1,9 @@
 /*
-List.hpp
-----------------------
-The list object which holds other objects and stuff.
-This is the replacement to the depricated VarList/BlockList bullshit.
+Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-Created: 27:4:2005   12:55
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+
+NOTES: Declaratios for the List class; a dynamicaly sized list.
 */
 
 #if !defined(SS_List)
