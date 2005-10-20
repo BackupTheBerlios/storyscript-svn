@@ -1,0 +1,12 @@
+use SSTime;
+print ElapsedSeconds;
+
+var i = 400;
+while( i > 0 ){
+	i -= 1;
+}
+
+print ElapsedSeconds;
+print "\
+";
+print ElapsedSeconds;

@@ -1,0 +1,21 @@
+If you are reading this, you've managed to find the super ultra-secret storyscript svn repository.  Congradulations!
+
+Now onto business:
+"ssi" contains the source for the actual interpreter.  It compiles as a shared library (or windows dll).  In order to compile it you need to a few things installed:
+-Boost Libraries, Available at http://boost.org/
+-GNU MP BigNum Library, Available at http://www.swox.com/gmp/
+-MPFR Library (the version included with GMP will NOT work.  Its just too damn old), Available at http://www.mpfr.org/
+-SCons is needed to do the actual building, Available at http://www.scons.org/
+
+"ssiconsole" contains a command line interface for the interpreter.  The only other thing you need for this (besides ssi, of course) is a curses library. On linux, etc that means ncurses (http://www.gnu.org/software/ncurses/ncurses.html), or windows probably pdcurses (http://pdcurses.sourceforge.net/).
+
+"ssdocs" contains the (very incomplete) documentation for StoryScript language.  What can I say?  It's a work in progress.
+
+
+If you are having trouble finding Windows builds of any of the dependencies, email you and I can hook you up.
+
+Yours Truely,
+Daniel Jones 
+(DanielCJones@gmail.com)
+
+

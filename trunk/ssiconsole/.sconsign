@@ -1,0 +1,6 @@
+}qU
+SSIConsoleq(cSCons.Node.FS
+BuildInfo
+qoq}q(UbsigqU de05d78d6117d7fa4aa3468e931a3476qU	bimplicitq]q	Ubdependsq
+]qUbdependsigsq]qUbactsigqU 6015ae3dd072c2c0f1791fd4142af8b9qUbimplicitsigsq]qUbactqUDg++ -o SSIConsole Console.o ConsoleInterface.o main.o -lSSI -lcursesqUbsourcesq]q(Usrc/Console.oqUsrc/ConsoleInterface.oqU
+src/main.oqeUbsourcesigsq]q(U aec5ce02a3b88bc0a8050ea5cd85da88qU e280aef119712990ffd8fa7b5a7b2273qU 43ba1dbe2fb5bb0840247f003ce336a7qeubs.

@@ -1,0 +1,20 @@
+env = Environment( CCFLAGS='-O2' )
+conf = Configure(env)
+env = conf.Finish()
+
+src = Split("""
+	src/Console.cpp
+	src/ConsoleInterface.cpp
+	src/main.cpp
+	""")
+
+#Main Program
+SSIConsole = env.Program( 'SSIConsole', src, CPPPATH = ['include', '../ssi/include'], LIBS=['SSI', 'curses'])
+BinCopy = env.Install( './bin', SSIConsole )
+env.Alias( 'MainBuild', [SSIConsole, BinCopy] )
+
+Default( 'MainBuild' )
+
+#Install
+env.InstallAs('/usr/bin/SSI', SSIConsole )
+env.Alias( 'install', '/usr/bin/SSI' )

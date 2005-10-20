@@ -1,0 +1,1100 @@
+%
+% Copyright (c) 2004-2005 Daniel Jones % (DanielCJones@gmail.com)
+% 
+% This is part of the  StoryScript (AKA: SS, S^2, % SSqared, etc) software.  Full license information % is included in the file in the top directory % named "license".
+% 
+% NOTES: Contains declarations for the Anomaly class,
+% 	which serves as the base exception type.
+% 
+
+\documentclass{book}
+\usepackage{SSDoc}
+
+\definecolor{TitleRed}{rgb}{0.4,0.0,0.0}
+
+\title{The \textcolor{TitleRed}{\SSquared} Programming Language}
+\author{Daniel C. Jones\\DanielCJones@gmail.com}
+
+\begin{document}
+
+
+%
+% TITLE PAGE
+%
+
+\maketitle
+
+%
+% TABLE OF CONTENTS
+%
+
+\tableofcontents
+
+
+%
+% CHAPTER I
+%
+
+\chapter{Preface}
+
+
+\section{Introduction}
+If you are reading this document, you probably have an interest in
+interactive narrative in games.  Either that or you are horribly lost and should stop reading this right now.  
+
+Most likely you fall into one or more of three groups.  If you are a writer, than I recommend reading this document straight trough (or as much of it as you can stomache). It will give you a complete understanding of the language and it's capabilities.  If you are an actor or a level designer and you just want to know how to read these strange looking scripts, than you can skip ahead and just read the tutorial for now.  You won't learn about some of the more sophisticated features, but you many not need to.
+
+Many of the features I included in \SSquared\ will go largely unused by most projects.  I included them anyway.  Partly because it was important to me that it be a full featured language.  The motto has always been "Anything from a Shakespear play to a Riemann-Zeta function."\footnote{Okay, I just made that up right now.}  The main reason however is that I lack anything resembling a social life.
+
+\SSquared\ is an unusual programming language.  Unusual because it is meant to be read by human beings just as much as it is by computers.  Okay, thats not fair.  All programming languages are meant to be readable by humans. If they weren't, I wouldn't have writting the interpreter for \SSquared\ in C++, I would have just punched ones and zeros on keyboard and hope for the best.\footnote{01001110011011110111010000100000011001100111010101101110!!} The difference is that the primary goal in most languages is that it be read by machines.  They are only human readable as much as necessary for humans to work on it.  \SSquared\ has a very different purpose.  It is meant to serve as the blueprint for a interactive story, in the same way that a screenplay is the blueprint for a non-interactive story.  An \SSquared\ was designed to be read by level designers trying to figure how to layout a scene; by actors in order to play their parts; and by other artist to get an idea of how a scene should look or sound.
+
+\section{Intended Audience}
+While designing \SSquared\ my central objective was always to create a language that can be picked up in a few hours by someone who has never touched a programming language before.  At the same time I wanted a language that those that programmers would immediatley recognize.  I borrowed syntax\footnote{"Syntax" just refers to the basic rules and grammar of a language.} heavily from mainstream languages like C/C++, Java, and Perl, but I also went to great lengths to maintain a consistant syntax style.
+
+If you've never heard of the languages I just mentioned, don't stop reading.  The basics of \SSquared\ can be picked up in mere minutes by pretty much anyone.  
+
+\section{A Quick Primer for the Lazy and Unmotivated}
+
+\subsection{Prerequisites}
+
+This is a good time to start paying attention.  You are going to write your first ever \SSquared\ script.\footnote{Well, presuming you haven't already read this document.  And presuming you didn't already just figure it out on your own.  But that isn't likely.  Though I guess I could have personally tutored you.  But that isn't likely either.  You know what I mean though.}Before you start writing, you going to need a couple things.  First you need some sort of text editor.  You know you have one, every operating system that is worth a damn has one included.  
+
+A note on text editors: A \emph{text editor} is not the same thing as a \emph{word processor}.  A text editor is used to write and edit text.  A word processor is used to write and edit text, and to add fancy colors and important looking graphs to try to make up for the appalling lack of content of whatever you're trying to write.
+
+
+I would highly recommend you download the customized version of SciTE (Scintilla Text Editor). I have written a syntax highlighter for it which makes \SSquared\ code even easier to read.  Actually SciTE is very good for all sorts of stuff.  In fact I'm writing this document right now in SciTE using a fancy type-setting language called \LaTeX.\footnote{Yes, "\LaTeX" is supposed to look like that.}, which automatically compensates for the appalling lack of content in this document.  You should be able to obtain the custom version of SciTE from wherever you managed to get this document.  If for some reason you can't find it, feel free to contact me, my email adress is on the front page.  But actually Notepad, edit, vim, emacs, nano, or anything will work.
+
+You are going to need one other piece of software.  That is the actual \SSquared\ Interpreter.  An interpreter in the context of programming languages is a special program that reads a file written in a certain language, and then figures out what to do with it.  I like to refer to the \SSquared\ interpreter as \SSquaredInterpreter, but I enjoy being needlessly confusing.  You can just write \emph{SSI}.  The \SSquared\ is meant to be able to work along side games, but it can also work with text-based mode.  This is a very practical way to test your script to ensure everything is working how you want.  It is also very useful if you want to write a text-based adventure game.  The interpreter can be objtained, like SciTE, at the same place that you got this document.
+
+\subsection{Your First Script}
+
+Now that all that is out of the way, let's start writing.  Step one is to open up your text editor, whatever it may be.  Now type this into a blank document.  
+
+\begin{SSCodeBox}
+\sciteg{// A very, very simple scene.} \SSCodeNumber{1} \\
+\scited{character}
+\scitea{ Miranda;} \SSCodeNumber{2} \\
+\scitea{} \\
+\scitel{Miranda: BraveAndNew}
+\scitea{\{} \SSCodeNumber{3} \\
+\scitea{\hspace*{4em}}
+\sciteb{\`{}O brave new world That has such people in't!\`{}}
+\scitea{;} \SSCodeNumber{4} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+You don't need to make those numbers at the end of the lines, those are just for demonstrative purposes.  I apologize to those of you who are frantically trying to figure out how to make that character on your keyboard.  Now save that document as \textbf{test.ssconv} (or whatever).  Thats the hard part.  \SSquaredInterpreter\ will handle the rest. But before we run this, let's talk about the structure of the language.  
+
+\SSCodeNumber{1}\ The line here is a comment. Comments are used to write notes that only need to be read by humans and not by the interpreter.  The two slash marks ("//") are a note to the interpreter to ignore everything after that on that line.  One of the ways that \SSquared\ is different from most other programming languages is that it has several types of coments.  Six to be exact.  We will cover those briefly, but now you should just know that the interpreter just ignores that line.
+
+\SSCodeNumber{2} \SSquared\ centers around characters, and those characters saying things.  So first we need a character.  That is what we do here.  This same basic syntax is used for declaring other things besides characters as we will soon see.  Note the semicolon (";") at the end of a line.  This tells the interpreter to stop reading and do what it just said.  It is comparable to a period in English or other "human" languages.
+
+\SSCodeNumber{3} Now we get to the juicy part.  We declaring a new block.  A block is the basic building block of \SSquared\ script.  It is similar to functions, methods, or subroutines in other languages, but is not quite to same thing.  More importantly it is similar to a line of dialogue in script or screenplay. 
+
+We declare a new block with the name \SSCode{Miranda: BraveAndNew}and it encompases everything within the \{ \} marks.  Notice the name is the You don't have to give blocks names, but it is necessary if you want to refer to it in any way.  To create an unnammed block, just write \SSCode{Miranda: \{ ... \}}.  Just don't do that here because we need to refer to that block.
+
+Be sure to pay attention to the format of the name.  It is just the character's name, and then a specific name for that block seperated by a color (":") character.  The colon is tells the interpreter what something belongs to.  So \SSCode{Me: Toothbrush} refers to a toothbrush that belongs to me.  The technical term for this is a \emph{scope resolution operator}, but I won't quiz you on that.\footnote{Personally, I prefer the term \emph{pwnage operator.}}
+
+\SSCodeNumber{4} Last but not least we have what is obviously Miranda's line.  It is inside funny looking quotation marks called backticks. On most keyboard it is the same button as tilde\footnote{AKA The Little Squiggly Line.} ("~"). If you are wondering why your program doesn't work, it is probably because you used a single quote, it's okay, we forgive you.  I will explain why you use backticks for this later on.
+
+One other thing that I should point out is that \SSquared\ isn't very picky about whitespace.\footnote{\emph{Whitespace} refers to spaces, tabs, newlines, etc.}  I wan't to let the author decide what looks best.  All the examples in this document are formated in what is simply my prefered style.  If you want you can rewrite the example like this:
+
+
+\begin{SSCodeBox}
+\sciteg{// A very, very simple scene.} \\
+\scited{character} \\
+\scitea{ Miranda;} \\
+\scitea{} \\
+\scitel{Miranda} \\
+\scitel{:} \\
+\scitel{BraveAndNew} \\
+\scitea{\{} \\
+\sciteb{\`{}O brave new world That has such people in't!\`{}}
+\scitea{;}
+\scitea{\}} \\
+\end{SSCodeBox}
+
+And it will stil work exactly the same.  The best advice I can give you is to pick something that works well for you and stick with it.  The worst kind of style is an inconsistant style.
+
+That you understand how your script works, lets run and see if it really does work.  If you are using SciTE and you have \SSquaredInterpreter\ properly installed  you can just smack F5.  If you aren't using SciTE, you can run the interpreter from the command line.  If you are using *nix, you probably already know how to use a terminal.  If you are using Windows, click \emph{Start} and then \emph{Run}.  Type \emph{cmd} and press enter.  Now you have magical box called the \emph{Command Prompt} that you can tell your computer to do things in.
+
+Just for fun, try typing \SSCode{SSI -h} and pressing enter.  If the interpreter is properly installed, that should give you a message explaining the different options you can give to the interpreter.  To run the script we made, type \SSCode{SSI NameAndPathOfYourScript} (Where \SSCode{NameAndPathOfYourScript} is the name and path of your script, such as \SSCode{SSI /home/daniel/test.ssconv}) and press enter.
+
+Now, hopefully whether you ran the script from a console, or from SciTE, you should see something like this:
+
+\begin{SSCodeBox}
+\scitel{Miranda} \\
+\sciteb{O brave new world That has such people in't!}
+\end{SSCodeBox}
+
+If not, you probably did something wrong, and \SSquaredInterpreter, like your judgemental mother in law, will probably tell you what it was. 
+
+\subsection{Something Interactive}
+
+Okay, I can tell you aren't impressed. Don't quit yet, we are getting to the fun part.  If you remember from several paragraphs ago, you recall that I mentioned that \SSquared\ was designed for writing interactive storys.  Now that you know how to write and run \SSquared\ scripts, I will show you how to make something interactive.
+
+Let's write a familiar scene between a husband and wife.  First we set up the characters, and a linear conversation.
+
+\begin{SSCodeBox}
+\scited{character}
+\scitea{ Husband;} \\
+\scited{character}
+\scitea{ Wife;} \\
+\scitea{} \\
+\scitel{Wife: TheQuestion}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\`{}Does this blouse make me look a little bit fat?\`{}}
+\scitea{;} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: }
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\`{}It's not the blouse, it's your hips.\`{}}
+\scitea{;} \\
+\scitea{\}}
+\end{SSCodeBox}
+Try running this.  You should get something like this:
+
+\begin{SSCodeBox}
+\scitel{Wife} \\
+\sciteb{Does this blouse make me look a little fat?} \\
+\scitea{} \\
+\scitel{Husband} \\
+\sciteb{It's not the blouse, it's your hips.}
+\end{SSCodeBox}
+
+This demonstrates an important behavior of \SSquared\ blocks. Unless you tell it otherwise, it will just say the next block that it finds.  This poor guy needs some options, lets give him some.
+
+
+\begin{SSCodeBox}
+\scited{character}
+\scitea{ Husband;} \\
+\scited{character}
+\scitea{ Wife;} \\
+\scitea{} \\
+\scitel{Wife: TheQuestion}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}Does this blouse make me look a little bit fat?\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=} \\
+\scitea{\hspace*{4em}Husband: TheGood,} \\
+\scitea{\hspace*{4em}Husband: TheBad,} \\
+\scitea{\hspace*{4em}Husband: TheUgly;} \SSCodeNumber{1} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: TheGood}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}No way honey! You look fantastic!\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \SSCodeNumber{2} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: TheBad}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}A little bit fat?{\hspace*{1em}} I think that's a little} \\
+\sciteb{\hspace*{4em}bit of an understatement.\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: TheUgly}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}Yeah, definitely.{\hspace*{1em}} Whatever you say.\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+That wasn't so hard, was it?  We have created a (very basic) interactive script.  To do so, we make use of a built in variable called \SSCode{next}.  This variable is a list of blocks that is used to override the interpreter's default behvior of just going on the the next block in the file.  Every block has its own \SSCode{next} variable.   In fact, you can even refer to a specific block's \SSCode{next} by using the colon operator:  \SSCode{Wife:TheQuestion:next}.
+
+\SSCodeNumber{1} Here we assign a list of blocks to the \SSCode{next} variable.  Lists of things are seperated by commas, just as they are in english.  You can learn more about this is the section about operators.  When you assign a list of blocks as opposed to just one block, the interpreter will present the player with a choice.  
+
+\SSCodeNumber{2} There is one special block that you can assign to \SSCode{next}called \SSCode{end}.  As you can probably guess, this is a signal for the interpreter to end the conversation after that block. Without \SSCode{end}, after the line \SSCode{Husband:TheGood} gets said, it would say \SSCode{Husband:TheBad} and then \SSCode{Husband:TheUgly} without stopping.
+
+Go ahead and run this now.
+
+\begin{SSCodeBox}
+\scitel{Wife} \\
+\sciteb{Does this blouse make me look a little bit fat?} \\ \\
+\scited{(0) :Test\_ssconv:Husband:TheGood} \\
+\scited{(1) :Test\_ssconv:Husband:TheBad} \\
+\scited{(2) :Test\_ssconv:Husband:TheUgly} \\ \\
+\scited{>}
+\end{SSCodeBox}
+
+This is a prompt asking you to choose what line should be said next.  Go ahead and but in a number (0, 1, or 2).  The corresponding line will be said, and then the script, having nothing left to do, will exit.
+
+From here, it is a simple matter to add a seperate response for each of the Husband's answers.  I will leave that up to you.  Remember, the best way to learn a language is to experement with it.
+
+\subsection{Closing Remarks}
+
+You now know the basics of the structure and flow of \SSquared, yet there is so much more that it is capable of.  If you are still interested please read on.  In the next chapters we will take a more methodical approach and (eventually) cover every aspect of the language.  The chapters are arranged as to cover the most important and commonly used areas of the language.  So if there is something you don't understand, read on and with luch it will be explained. I hope you enjoy learning and using \SSquared\ as much as I enjoyed inventing it.\footnote{With the exception of when I had to debug nasty bugs, because that wasn't very enjoyable at all.}
+
+%
+% CHAPTER II
+%
+
+\chapter{The Second Chapter: The Basics of \SSquared}
+
+\section{Some Comments on Comments}
+In the primer, you were briefly introduce to the concept of comments.  A comment is a section of the script that you can tell the interpreter to ignore.  This way you can write yourself, or others that are reading the script, useful notes. I wanted to cover comments first because they are both very simple and very useful.
+
+Unlike nearly every other language, there are six types of comments in \SSquared.  Actually there are three types with two variations each.  All types are treated exactly the same by the interpreter, that is, they are completely ignored.  So why make a bunch of a different comment types?  Because \SSquared\ is meant to be read by humans, not just the person writing the script, but other humans too.  In fact, as far as \SSquaredInterpreter\ is concerned, all the comment types are the same.  However each comment does have an implicit purpose and is useful for writing a more readable script.
+
+First I will list the syntax of each comment, then I will explain what they are used for.
+
+\begin{SSCodeBox}
+\SSCodeNumber{1} \\
+\sciteg{// This is utility line comment}
+\scitea{} \\
+\scitea{} \\
+\scitek{/* } \\
+\scitek{This is a utility} \\
+\scitek{block comment} \\
+\scitek{*/}
+\scitea{} \\
+\scitea{} \\
+\SSCodeNumber{2} \\
+\sciteh{/$>$ This is a scene line comment}
+\scitea{} \\
+\scitea{} \\
+\scitej{/. } \\
+\scitej{This is a scene} \\
+\scitej{block comment} \\
+\scitej{./}
+\scitea{} \\
+\scitea{} \\
+\SSCodeNumber{3} \\
+\scitef{/" This is a character line comment}
+\scitea{} \\
+\scitea{} \\
+\scitei{/' } \\
+\scitei{This is a character} \\
+\scitei{block comment} \\
+\scitei{'/}
+\end{SSCodeBox}
+
+\SSCodeNumber{1} These are utility comments.  They are used in much the same way as comments in other programming languages.  That is, they are used to make notes about something related to the actual script.  For example, to remind yourself of something that needs to be done.
+
+\begin{SSCodeBox}
+\scitel{Husband: TheGood}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}No way honey! You look fantastic!\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scitea{\hspace*{4em}}
+\sciteg{//TODO: Add a proper response for Wife.} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \\
+\scitea{\}} \\
+\end{SSCodeBox}
+
+
+The line comment form instructs the interpreter to ignore everything after \SSCode{//} up till a new line.  The block form of this comment causes \SSquaredInterpreter\ to ignore
+everything between \SSCode{/*} and \SSCode{*/}.  This is useful for larger comments.  They are also quite handy for ``commenting out'' large sections of code that you want to temporarily disable.
+
+\begin{SSCodeBox}
+\sciteg{// On second thought, I don't think we should have this option}
+\scitea{} \\
+\scitea{} \\
+\scitek{/*} \\
+\scitek{Husband: TheBad\{} \\
+\scitek{\hspace*{4em}\'{}A little bit fat?{\hspace*{1em}} I think that's a little} \\
+\scitek{\hspace*{4em}bit of an understatement\'{};} \\
+\scitek{\}} \\
+\scitek{*/}
+\end{SSCodeBox}
+
+If you a Java or C/C++ programmer you will quickly notice that utility comments are exactly the same as comments in these languages as well as several others.  All things being equal, I tried to choose syntax that would be familiar to those with previous programming experience.
+
+\SSCodeNumber{2} The second type of comment we will discuss is the scene comment. The scene comment is used to descript what is happening in the scene.  I mentioned earlier that \SSquared\ scripts are meant as a blueprint for a team to work off of the create a game.  Scene comments give level designers the information they need to create the scene.   
+
+\begin{SSCodeBox}
+\scitea{} \\
+\scitej{/.} \\
+\scitej{Husband is a sitting alone reading a newspaper and enjoying a sandwitch.} \\
+\scitej{Wife enters wearing an unflattering blouse with the tag still attached.} \\
+\scitej{./}
+\scitea{} \\
+\scitea{} \\
+\scitel{Wife: TheQuestion}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}Does this blouse make me look a litte bit fat?\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scitea{\hspace*{4em}}
+\scited{next}
+\scitea{=} \\
+\scitea{\hspace*{4em}Husband: TheGood,} \\
+\scitea{\hspace*{4em}Husband: TheBad,} \\
+\scitea{\hspace*{4em}Husband: TheUgly;} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+The syntax is similar to utility comments.  Everything after \SSCode{/>} is ignored up till the next line, and in the block form, everything between \SSCode{/.} and \SSCode{./} is ignored.
+
+\SSCodeNumber{3} Last but not least is the character comment.  This type of comment is used to give the actor playing a part ques as to what the character is doing or how the character says a certain line.
+
+\begin{SSCodeBox}
+\scitel{Husband: TheUgly}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\scitef{/" He responds, not bothering to look up}
+\scitea{} \\
+\scitea{\hspace*{4em}}
+\sciteb{"Yeah, definitely.{\hspace*{1em}} Whatever you say."}
+\scitea{;} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+As you can see the line form of characte comments cover everything following \SSCode{/"} up till the next line.  The block form covers everything between \SSCode{/'} and \SSCode{'/}.
+
+\section{Declaring Variables}
+
+Remember a few paragraphs ago when I told you to pay special attention to how we declare character's?  That was because variables, lists, players, and characters are all declared using the same syntax.  Lists will be covered in a later chapter, right now I am going to introduce to you variables.  Variables are values that are assigned to a name.  Declaring a variable is a simple as:
+
+\begin{SSCodeBox}
+\scited{var} 
+\scitea{Foo};
+\end{SSCodeBox}
+
+This creates a new variable named ``Foo'' inside the current scope (scopes will be discussed in the next chapter).  After you declare a variable you can assign values to it, or use it in other ways in an expression.
+
+There are limits to what you can named objects. Valid identifier names can be any length\footnote{Within reason.  You can't, for example, have a name so long that it uses up all the memory on your computer.} and can contain any combination of letters, numbers, or underscores ("\_").  
+
+There two exceptions to those rules. First, you cannot use a name that is already in use.  There are some special variables that are already in existance before you do anything.  We will talk about those later on.  The second exception is that a names can't start with a digit.  The rationale being that identifiers starting with a digit can create ambigious situations in which \SSquared\ can't tell if it is really dealing with an identifier or with a number.  Besides that, how you name variables is mostly up to you.  Try to pick names that acurately describe what that variables is for.
+
+\begin{SSCodeBox}
+\scited{var}
+\scitea{ Very\_long\_and\_impracticle\_name\_number\_45;} \\
+\scited{var}
+\scitea{ a1;} \\
+\scited{var}
+\scitea{ IPreferThisStyle;}
+\end{SSCodeBox}
+
+Any of these are valid, just pick a naming convention that works for you and stick with it.  
+
+\section{Simple Operations}
+
+Performing most operations is pretty intuitive.  We will cover expressions in depth in a little bit.  Before we get to the boring stuff, I want to get you started experimenting.  Performing operations in \SSquared\ uses algebraic syntax (like many languages).  You can assign values to variables like this:
+
+\begin{SSCodeBox}
+\scited{var}
+\scitea{ Foo = }
+\scitec{2.71828183}
+\scitea{;} \\
+\scitea{Foo = }
+\sciteb{"Break, Break, Break, On thy cold gray stones, O Sea!"}
+\scitea{;} \\
+\scitea{Foo = }
+\scited{false}
+\scitea{;}
+\end{SSCodeBox}
+
+In the coming sections we will dive in to the details of expressions, but I want you to feel free to try things and see what does and doesn't work.  One of the best ways to learn a language is to use it as much as possible.  Even if it is for something trivial.  You can use the print command so you don't have to execute any blocks.
+
+\begin{SSCodeBox}
+\sciteg{//Experimenting and seeing what works.}
+\scitea{} \\
+\scited{var}
+\scitea{ Foo = }
+\scitec{100}
+\scitea{;} \\
+\scited{print}
+\scitea{ Foo * -}
+\scitec{0.00001}
+\scitea{;} \\
+\scitea{Foo = }
+\sciteb{"Toast"}
+\scitea{;} \\
+\scited{print}
+\scitea{(}
+\sciteb{"Fantastic "}
+\scitea{ + Foo);}
+\end{SSCodeBox}
+
+\section{Variables}
+
+Variables hold values, but ther term ``values'' is a little ambigious.  In \SSquared\ there are three types of values: strings, numbers, and booleans.  Most of the time you don't need to worry about this though.  \SSquared\ is what is refered to in programmer jargon as \emph{weakly typed} (as opposed to \emph{strongly typed}.  Weak typings mean that \SSquared\ will convert betweed the types automatically and fluidly.  You should rarely have to worry about what type something is.
+
+Closely related to variables are \emph{literals}.  Literals are values that are written out rather than stored and retrieved using a variable name.  Literals are what you are often assigning to variables.  If you write a number, that is literal.  
+
+To the interpreter, the distinction between variables and literals is almost non-existant.  In fact, literals are stored simply as unnammed variables that you are not allowed to modify.  You can use literals any where you can use variables and vice-verse.  The one exception being that you can't use literals in a way that they would be modified (e.g. you can not do \SSCode{true=false}).  If you write one of the types discussed below, that is a literal.  It's as simple as that.
+
+\subsection{Strings}
+
+The first type, strings, are text.  Just put (almost) whatever you want between two quotation marks and you have yourself a string.   In normal use of \SSquared\ (i.e. writing scripts for games) you will make much for use of string than anything else.
+
+\begin{SSCodeBox}
+\sciteb{"This is a string."}
+\end{SSCodeBox}
+
+There a circumstances when you will need to actually use quotation marks in your string.  For this you can use backslash character codes.  If you put a character after a backslash within a string, it will put that character in the string.  This seems pointless at first, considering thats what happens by default anyway.  In fact it is quite useful in cases where you need to include quotation marks within strings.  If you do so without a backslash before, the interpreter will think that you are ending the string.
+
+For example, writing something like this:
+
+\begin{SSCodeBox}
+\sciteb{"\textbackslash"No, I didn't,\textbackslash" said Alice: \textbackslash"I don't think it's at all a pity. I said 'What for?'\textbackslash""}
+\end{SSCodeBox}
+
+Will result in the string:
+
+\begin{SSCodeBox}
+\sciteb{"No, I didn't," said Alice: "I don't think it's at all a pity. I said 'What for?'"}
+\end{SSCodeBox}
+
+What if you want actually want a backslash?  Just put a double backslash (\SSCode{\textbackslash\textbackslash}).
+
+Strings will of course automatically convert to numbers.  So if you put 42 in quotes, its still 42.  Besides miniscule amount of time spent in conversion, it does not really matter if you put numbers in quotation marks or not.
+
+String in \SSquared\ have one other slightly unusualy behavior.  They ignore newlines within the string as well as extra whitespace (spaces and tabs) after newlines.  This is to allow you to easily format strings.  Try the following and see what you get.
+
+
+\begin{SSCodeBox}
+\scited{print}
+\scitea{ }
+\sciteb{"The year was 2081, and everybody was} \\
+\sciteb{{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}} finally equal.{\hspace*{1em}} They weren't only} \\
+\sciteb{{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}} equal before God and the law.{\hspace*{1em}} They} \\
+\sciteb{{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}}{\hspace*{1em}} were equal in every which way."}
+\scitea{;}
+\end{SSCodeBox}
+
+Despite being formated ``artificially,'' using line-breaks and spaces, it prints as one solid paragraph and will word-wrap correcly no matter what size it is being fit to.
+
+Sometimes you will want to force your formatting onto something, this is what the backslash codes were made for.  Remember that whatever character follows a backslash is treated literally.  This includes line-breaks, spaces, and tabs.
+
+\begin{SSCodeBox}
+\scited{print}
+\scitea{ } \\
+\sciteb{"Break, break, break,{\textbackslash}} \\
+\sciteb{On thy cold gray stones, O Sea!{\textbackslash}} \\
+\sciteb{And I would that my tongue could utter{\textbackslash}} \\
+\sciteb{The thoughts that arise in me."}
+\scitea{;}
+\end{SSCodeBox}
+
+The last unusualy feature of strings is a behavior called\footnote{Well, what I call it anyway.} ``string stacking''.  Which also comes in incredibly useful when writing scripts.  When two or more string literals are put along side eachother, the interpreter will see them simply as one string.  The main advantage of this is that it allows you to put comments in the middle of a string.
+
+\begin{SSCodeBox}
+\scitea{} \\
+\scited{out}
+\scitea{ =} \\
+\sciteb{"Honostly daddy!{\hspace*{1em}} Johnny's a nice boy."}
+\scitea{} \\
+\scitef{/"In her most convincing "church-girl" voice}
+\scitea{} \\
+\sciteb{"He was just holding on to the gun and suitcase of cocaine for a friend.{\hspace*{1em}} And the wad of cash was for the offering plate!"}
+\scitea{;}
+\end{SSCodeBox}
+
+There is nothing between the two strings so they are treated one. (Remember that comments do not exist as far as the interpreter is concerned.)  Also keep in mind that this also much for effecient than concatenating two strings with with the \SSCode{+} operator.
+
+The very last thing that needs to covered is what I call ``out strings.''  These were a more recent addition to the interpreter that came as a result of actually using that language.  Inside every block is a predefined variables called \SSCode{out} which defines what the character will say, or what the block will output.  Out strings are a shortcut to assigning strings to out.
+
+Out strings look in every way like regular string with the exception that they use backticks (\SSCode{\`{}}) instead of quotation marks to set the begining and end of a string.  The magic of out strings is that whatever you put in one automatically gets assigned to the out variable.  You will learn more about the out variable in the next chapter, but for now just be aware of their behavior.  If you are ever unsure of how an out-string will behave, just remember that they the reader will substitue out strings from something like this:
+
+\begin{SSCodeBox}
+\sciteb{\`{}Are you talkin' to me?\`{}}
+\end{SSCodeBox}
+
+to a version that is more meaningful to the interpreter:
+
+\begin{SSCodeBox}
+\scitea{(}
+\scited{out }
+\scitea{+= }
+\sciteb{"Are you talkin' to me?"}
+\scitea{)}
+\end{SSCodeBox}
+
+Out strings will stack with other out-strings, but they \emph{will not} stack with regular string in the current version.  This may or may not change in upcoming versions.  If you need to use the backtick character in an outstring, simply use \SSCode{\textbackslash\`{}}.
+
+
+
+\subsection{Numbers}
+\SSquared\ uses a system of infinate-precision floating-point numbers, which were developed by people much smarter than myself.\footnote{Funny story: I actually developed my own system of infinate precision numbers.  I spent hours and hours researching algorithims and finding minute optimizations.  Then I ran benchmarks against the third party library.  Needless to say, my library got creamed, and reluctantly I replaced it.}  This means you can do math with very large, or very small numbers.  There is a default precision, but you can change it. We will cover that later on. Unless you are doing some complex math you won't have to worry about precision.  By default the precision is set quite a bit higher than most programming languages natively support.
+
+A number literal must start with a number, end with a number, and have one or no decimal points.  You can also but a \SSCode{-} in front of a number to make it negative\footnote{The interpreter does not treat it as part of the number, but it has the same effect as if it did.}.  These are all examples of valid number.
+
+\begin{SSCodeBox}
+\scitec{42} \\
+\scitec{3.1415926535897932384626433832795028841971} \\
+\scitec{-1000} \\
+\scitec{0}
+\end{SSCodeBox}
+
+In future version you will be able to declare variables in exponential notation and possibly starting with a decimal point.  But this has not yet been implmented.
+
+The precision of numbers in many cases automatically adjusts to fit whatever number it needs.  However this is not the cast with some operators (like division).  There is a way to set the precision manually that will be covered later on.
+
+\subsection{Booleans}
+
+Last but not least are boolean\footnote{A historical note: \emph{Boolean} is named after an 19th century English mathematician named George Boole, who invented Boolean algebra using such sophisticated operations as \emph{AND}, \emph{NOT}, and \emph{OR}.} values.  Boolean values are simply \emph{true} or \emph{false}.  Why does \SSquared\ need true/false values when it already supports infinate-precision numbers and strings of infinate length?  Because we often have to test if a certain statement is true or false.  Like does one number equal another.  Boolean values, of course, on of the following:
+
+\begin{SSCodeBox}
+\scited{true} \\
+\scited{false}
+\end{SSCodeBox}
+
+One important thing I must point out with booleans is that: \SSCode{false = 0 = ""}.  That is, a false boolean value, the number zero, and an empty string are all considered the same thing.
+
+
+\section{Lists}
+\subsection{Introduction to Lists}
+Another major type of object you will be working with are lists, which are exactly what they sound like: an ordered list of variables.  I've tried to make lists as simple to work with as possible, the borrow most of their syntax from perl arrays and Java or C++ vectors.
+
+
+Declaring lists used much the same syntax as declaring variable or characters.
+
+\begin{SSCodeBox}
+\scited{list}
+\scitea{ Foo;}
+\end{SSCodeBox}
+
+
+
+\subsection{List Literals}
+List literals are a group of variables, literals, or expressions seperated by commas.  They are treated just like lists, except that they are constant, meaning they cannot be modified.
+
+\begin{SSCodeBox}
+\sciteg{//List Literals}
+\scitea{} \\
+\scited{list}
+\scitea{ foo;} \\
+\scitea{foo = }
+\scitec{1}
+\scitea{, }
+\scitec{2}
+\scitea{, }
+\scitec{3}
+\scitea{;} \\
+\scitea{foo = }
+\sciteb{"a"}
+\scitea{, }
+\sciteb{"b"}
+\scitea{, }
+\sciteb{"c"}
+\scitea{;} \\
+\scitea{} \\
+\scited{use}
+\scitea{ }
+\scited{SSMath}
+\scitea{;} \\
+\scitea{foo = }
+\scited{sin}
+\scitea{ pi/}
+\scitec{4}
+\scitea{, }
+\scited{sin}
+\scitea{ pi/}
+\scitec{3}
+\scitea{, }
+\scited{sin}
+\scitea{ pi/}
+\scitec{2}
+\scitea{, }
+\scited{sin}
+\scitea{ pi;} \\
+\scitea{} \\
+\scitea{foo = ();}
+\end{SSCodeBox}
+
+Take notice of the last example.  This is a special case in \SSquared list literals.  Empty parenthesis are treated as an empty list literal.  This is fairly useful for when you want to clear a list, but it also become very useful later when we disuss blocks as operatetors.
+
+\subsection{Accessing, Adding, Inserting, Removing}
+
+Before we cover using lists, the reader must remember one important fact: \emph{Lists start counting at zero.}  That is, the first element in the list is element 0, and the last is element \SSCode{size - 1}.  This is the way it is in nearly every programming language in existance.  The reason for this is bit too technical for the scope of this document.  Suffice to say, this is the way it is, and it ain't changing.
+
+Lists are ordered and are accessed by a number index using various (square) bracket syntax.  There are three list operators, the access operator (\SSCode{Foo[i]}), the insertion operator (\SSCode{Foo+[i]}), and the removal operator (\SSCode{Foo-[i]}); where ``Foo'' is some list, and ``i'' is the index.  
+
+When you access a list using the brackets, if the element does not exist, it will spring into existance.  So it is impossible to crash the program except by putting in a number that is higher than your computer has memory for.
+
+\begin{SSCodeBox}
+\scited{list}
+\scitea{ Foo = }
+\sciteb{"a"}
+\scitea{, }
+\sciteb{"b"}
+\scitea{, }
+\sciteb{"c"}
+\scitea{;} \\
+\scited{print}
+\scitea{ Foo[}
+\scitec{0}
+\scitea{]; }
+\sciteg{//Prints "a"}
+\scitea{} \\
+\scited{print}
+\scitea{ Foo[}
+\scitec{2}
+\scitea{]; }
+\sciteg{//Prints "c"}
+\scitea{} \\
+\scitea{} \\
+\scitea{Foo[}
+\scitec{3}
+\scitea{] = }
+\sciteb{"d"}
+\scitea{; }
+\sciteg{//Foo is now ("a", "b", "c", "d")}
+\end{SSCodeBox}
+
+The other two list operators, the insert and remove operators (respectively), are pretty straightforward.  The insert operator will insert a new element at the given index and evaluate to that new element (which sounds more confusing than it is).  It pushes everything after the new element back.
+
+\begin{SSCodeBox}
+\scited{list}
+\scitea{ Foo = (}
+\scitec{1}
+\scitea{, }
+\scitec{2}
+\scitea{, }
+\scitec{4}
+\scitea{);} \\
+\scitea{Foo+[}
+\scitec{2}
+\scitea{] = }
+\scitec{3}
+\scitea{; }
+\sciteg{//Foo is now (1, 2, 3, 4)}
+\end{SSCodeBox}
+
+The removal operator does just the opposite.  It removes the element at the given index and evaluates to that element.  Everything after the element you removed just slides forward to take its place.
+
+\begin{SSCodeBox}
+\scited{list}
+\scitea{ Foo = (}
+\scitec{1}
+\scitea{, }
+\scitec{2}
+\scitea{, }
+\sciteb{"pie"}
+\scitea{, }
+\scitec{3}
+\scitea{, }
+\scitec{4}
+\scitea{);} \\
+\scited{print}
+\scitea{ Foo-[}
+\scitec{2}
+\scitea{]; } \\
+\sciteg{//Foo is now (1, 2, 3, 4), and "pie" is printed.}
+\end{SSCodeBox}
+
+\subsection{The ``size'' Magic Variable}
+
+It can be a pain to shrink or grow a list one element at a time, which is why \SSquared provides a magic variable called \SSCode{size} that every list comes equiped with.  Remember that magic variables behave just like variables but have side effects.  The \SSCode{size} variable will report its value as the current size of the list.  If you assign to \SSCode{size} it will change the size of the list.
+
+\begin{SSCodeBox}
+\scited{list}
+\scitea{ Foo = (}
+\scitec{1}
+\scitea{, }
+\scitec{2}
+\scitea{, }
+\scitec{3}
+\scitea{, }
+\scitec{4}
+\scitea{, }
+\scitec{5}
+\scitea{, }
+\scitec{6}
+\scitea{);} \\
+\scitea{Foo:size = }
+\scitec{3}
+\scitea{; }
+\sciteg{//Foo is now (1, 2, 3)}
+\end{SSCodeBox}
+
+
+\section{Expressions}
+
+\subsection{Overview}
+
+Expressions are the backbone of pretty much any language.  And expression is anything that gets evaluated to a value.  Read that sentance again.  \emph{Anything} that produces a value is an expression.  For instance, \SSCode{2 + 2} is an expression, because it evaluates to be 4.  So is a just a plain variable name, because a variable name evealuates to the the value that it is currently holding.  
+
+Usually expressions perform some kind of operation.  Expressions usually consist of operators performing operations on variables and literals.  Operators take many forms, including common math operators like \SSCode{+, -, *, /}.  There are also boolean operators such as \SSCode{and, or, not}.
+
+Expresions are most 
+
+\subsection{Binary Operators}
+
+``Binary Operators'' may sound intimidating, but it just means something that performs an operation on two values.  All the basic arithmatic operators (+, -, *, /, =) are binary operators.  Tables 2.1 is a complete list of the binary operators currently implemented in \SSquared.  Don't worry if you don't know some of them, they will soon be covered.
+
+\BeginSSTable{|c|c|}
++ & Addition \\
+- & Subtraction \\
+/ & Division \\
+$*$ & Multiplication \\
+\verb=^= & Exponentiation \\
+. & Concatenate \\
+= & Assignment \\
++= & Add and Assign \\
+-= & Subtract and Assign \\
+/= & Divide and Assign \\
+$*${}= & Multiply and Assign \\
+\verb=^== & Exponentize and Assign \\
+.= & Concatenate and Assign \\
+== & Equal To \\
+> & Greater Than \\
+< & Less Than \\
+>= & Greator Than or Equal To \\
+<= & Less Than or Equal To \\
+and & Logical And \\
+or & Logical Or \\
+\EndSSTable{Binary Operators}
+
+To those of you have worked with other programming languages, there should not be anything new here.  I will now try to give a brief overview of how these operators work.  The readers who have programming experience can feel free to skip the explainations that follow.
+
+The addtion, subtraction, division, and multiplication (\SSCode{+, -, /, $*$} operators all operate just like in elementry school math.  They do not howerver change any of the original values though.
+
+\begin{SSCodeBox}
+\scited{var}
+\scitea{ foo = }
+\scitec{2}
+\scitea{;} \\
+\scitea{foo + }
+\scitec{2}
+\scitea{; }
+\sciteg{//This adds 2 to foo and does nothing with the result.}
+\scitea{} \\
+\scited{print}
+\scitea{ foo; }
+\sciteg{//prints 2.}
+\end{SSCodeBox}
+
+%TODO: Explain these operators.
+
+
+\subsection{Unary Operators}
+
+
+\section{Control Constructs}
+
+\subsection{if}
+
+\subsection{while}
+
+\subsection{else}
+
+
+
+
+
+
+\chapter{The Almighty Block}
+\section{Introduction to Blocks}
+Blocks are what \SSquared\ somewhat unique among programming languages.  On the surface they are much like subroutines or functions that pretty much every language has, but they are designed in a specialy to facilitate writing dialouge for characters in games.
+
+A block is simply a collection of a code that is grouped together and assigned to an identifier (a name).  When it is executed it can be given an input list, and when after it executes it can output.  But most blocks in a script will simply give an output value that is what the character says.
+
+Blocks are not declared like variables or lists, instead you simply stick an opening an closing curly brace after a valid identifier and anything in between belongs to that block.
+
+\begin{SSCodeBox}
+\scitel{SomeBlock}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteg{//We are inside a block!}
+\scitea{} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+Its as simple as that.  In fact it was one of the central design goals of the language to make blocks look as much like lines in a script as possible without sacrificing any of the power of the language.
+
+\section{Scopes}
+
+We have come to the point now where it is impossible to go further without discussing scopes.  Scoping is a system used by most modern programming languages in which objects belong to othre objects.  In \SSquared\ there is a global scope in which everything resides, and then there are subdivisions.
+
+A useful analouge is to think of subdivisions in the real world.  For example my computer resides in a darj and cold room, the dark and cold room resides in my parents basement, my parents basement resides in their house, which resides on a plot of land\footnote{Which is in Washington state, which is in the USA, which is on Earth, which is in the Solar System, which is in the Milky Way, which is in the Universe, which is one of several universes that a transdeminsional being named Glortron keeps on his desk, which resides in Glortron's parents' basement, and so on.  Or something like that.}.  In \SSquared\ every objects (variables, lists, characters, players, blocks) all have their own scope.  In other words, variables can reside in other variables or in lists.
+
+The significance of scopes are that they define visibility.  Another way to visualize the behavior of scopes is to imagine that each object, each scope, is a box made out of a two-way mirror, in which anything inside the box can see out, but anything outside can not see in.  So looking at the box it just looks like a mirrored box, but the little men inside the box looking at you can see just fine.  Now imagine those boxes stacked inside of eachother.  Think about what the little men inside each box will be able to see\footnote{This tends to work best after dropping acid.}.  They will be able to see the interiors of every box that they are inside, but not any others.
+
+Scopes in \SSquared\ work the same way.  The code inside a block can only see into scopes in which it resides.  So a block that belongs to Al can can see everything in Al, and everything in the scope that Al belongs to, and so on.  This will become clear as you learn a bit more.
+
+You can, howerver, tell \SSquared\ what scope to look in by using the scope resolution operator (\SSCode{:}).  For example, \SSCode{Al: Hello} refers to an object named ``Hello'' that resides in the scope of an object named ``Al.''  You need to refer to say \SSCode{Al: Hello} instead of just \SSCode{Hello} when you are trying to reference it from outside Al's scope.  The scope that contains Al can see Al, but not what is inside Al.
+
+This is where characters come in.  Character objects really do nothing except provide a scope for blocks to belong to.  This represents that the relationship between lines and characters in a traditional screenplay.  In a screenplay list in linear order: Al says hello then Barb says goodbye.  In an \SSquared\ script, the order in which the characters say lines (blocks) is variable.  Therfore in \SSquared\ you are really saying: Al can say hello, Barb can say goodbye.  The order in which they say their lines is variable.
+
+Generally blocks will belong to characters who say the blocks.  Here is a quick refresher.
+
+\begin{SSCodeBox}
+\scitek{/*} \\
+\scitek{\hspace*{4em}"Hello-Goodbye"} \\
+\scitek{\hspace*{2em}A play in two lines, by} \\
+\scitek{\hspace*{4em}Daniel C. Jones} \\
+\scitek{*/}
+\scitea{} \\
+\scitea{} \\
+\sciteg{//Dramatis Personae}
+\scitea{} \\
+\scited{character}
+\scitea{ Al;} \SSCodeNumber{1} \\
+\scited{character}
+\scitea{ Barb;} \\
+\scitea{} \\
+\sciteg{//ACT I - SCENE I}
+\scitea{} \\
+\scitea{} \\
+\scitel{Al: Hello}
+\scitea{\{} \SSCodeNumber{2}\\
+\scitea{\hspace*{4em}}
+\scitem{\`{}Hello.\`{}}
+\scitea{;} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Barb: Goodbye}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\scitem{\`{}Goodbye\`{}}
+\scitea{;} \\
+\scitea{\}} \\
+\scitea{} \\
+\sciteg{//The End.}
+\end{SSCodeBox}
+
+\SSCodeNumber{1}This is how characters are declared, for those who forgot.  Characters serve as a scope for blocks and so the game can keep track of who is saying what.
+
+\SSCodeNumber{2}Here we are declaring a new block.  Notice the scope resolution.  This block is named ``Hello'' and belongs to the character named ``Al.''  Anything between the curly brackets is part of the block.  We use an out-string to set the Al's line to ``Hello.''
+
+If you execute this in the console interpreter (please do), you will see Al say hello, and then Barb say goodbye.  Remember that unless otherwise specified, the next block in a file will get executed.  In the next few sections we will talk about how to specify otherwise.
+
+\section{Next}
+
+\SSquared\ is for writing \emph{interactive} scripts if you recall.  This is where the \SSCode{next} list comes in.  Without using next, when you execute a script, it will just say all the blocks in a linear fashion just like a traditional screenplay.  
+
+
+\section{In and Out}
+
+
+
+
+\section{Blocks as Operators}
+
+
+
+\chapter{S-Lib: Why Write Code, When I'll do it for You?}
+\section{Introduction to the Standard Library}
+Larry Wall, who invented another language called Perl, wrote that the ``the three chief virtues of a programmer are Laziness, Impatience and Hubris.''  I consider laziness one of the most important.  Why bother implementing something when its already when there is already a good implementation available.
+
+Heres a joke I heard:  An engineer, a physicist, and a mathematician were staying at the same hotel.  The engineer left her curling iron on which ignited a towel.  She quickly threw the towel in the sink and turned the water on.  Merely a few hours later, the physicist who was staying down the hall had his toaster burst into flames.  He pondered this for a moment and threw a blanket over the toaster cutting off the oxygen supply to the fire and quickly putting it out.  The mathemitican who smelled the smoke and came to help saw that the fire was already out so he returned to his room.  As luck would have it, in his panic he had thrown his lit cigar into the trash, which he discovered had ignited.  When he saw this he was initially startled, but then he thought about it, and exclaimed, ``Ah!  A solution exists.''  And then he went to bed.
+
+S-Lib is a collection of solutions for everyday chores.  While \SSquared is certainly powerful for you to write your own code to do these chores, S-Lib has two advantages.  The first advantage is speed.  The S-Lib functions are all written in C++ (as is the rest of the interpreter), which is a compiled language which inheritantly will have less overhead than interpreteted languages (like \SSquared).  The second advantage is rather simple: its already there.  You don't have to write anything, just look up the function and use it.
+
+All the S-Lib code is in modules which are in their own scopes.  You can import these scopes just like you can any scope using the ``use'' operator (eg. \SSCode{use SSMath}).  Or you can just access them through their scopes.  Some of the more common S-Lib scopes are already imported by default.
+
+In the following sections, all the S-Lib operators are listed out with their inputs and outputs and any side-effects.
+
+\section{SSCommon}
+The SSCommon scope is imported by default and contains many\footnote{Very few right now. :(} operators that are used, well, commonly.
+
+\SSFunctionDesc{print}
+{One argument, any lists gets sqaushed into one variable.}
+{Prints the argument to the screen in one way or another, depending on the implementation.}
+{The printed argument.}
+
+\section{SSList}
+The SSList scope contains many useful operators for use with lists.  It is also imported by default.
+
+\SSFunctionDesc{pop}
+{Any non-constant list.}
+{Removes the last element on the list, and returns it.}
+{}
+
+\SSFunctionDesc{push}
+{Any non-constant list.}
+{Adds an element to the end of the list, and returns it.}
+{}
+
+\SSFunctionDesc{pickone}
+{Any list.}
+{Randomly selects an element from the list and returns it.}
+{Uses a Mersenne Twister pseudo-rng.}
+
+\SSFunctionDesc{remove}
+{First input is any non-const list, second input is any variable.}
+{Finds the first the first instance of the variable in the list and removes it from the list.  Then returns the list.}
+{Modifies the original list.}
+
+\SSFunctionDesc{removeall}
+{First inputs is any non-const list, second input is any variable.}
+{Removes and and all instances of the given variable from the list, and then returns it.}
+{Modifies the original list.}
+
+\SSFunctionDesc{reverse}
+{Any list.}
+{Creates a new list with all the elements of the the given list in reverse order and returns it.}
+{}
+
+\SSFunctionDesc{sort}
+{Any list.}
+{Returns a sorted version of the original list. }
+{It sorts alphabetically using quicksort.  Numbers and symbols come before letters.  Numbers are sorted alphabetically meaning that they are not necissarily in order of size.}
+
+\section{SSMath}
+The SSMath scope is not imported by default.  It contains many useful mathematical operations, since many of these would be difficult and slow to implement in \SSquared{}
+
+
+\SSFunctionDesc{sqrt}
+{Any variable.}
+{Returns the \emph{square root} of the given variable.}{}
+
+\SSFunctionDesc{abs}{Any variable.}
+{Returns the \emph{absolute value} of the given variable.}{}
+
+\SSFunctionDesc{mean}
+{Any List.}
+{Returns the mean (average) value of the list.}{}
+
+\SSFunctionDesc{sin}{Any variable.}{Returns the sine of the variable.}{Input is in radians.}
+
+\SSFunctionDesc{cos}{Any variable.}{Returns the \emph{cosine} of the variable.}{Input is in Radians.}
+
+\SSFunctionDesc{tan}{Any variable.}{Returns the \emph{tangent} of the variable.}{Input is in radians.}
+
+\SSFunctionDesc{asin}{Any variable.}{Returns the \emph{arc-sine} (inverse sine) of the variable.}{Output is in radians.}
+
+\SSFunctionDesc{acos}{Any variable.}{Returns the \emph{arc-cosine} (inverse cosine) of the variable.}{Output is in radians.}
+
+\SSFunctionDesc{atan}{Any variable.}{Returns the \emph{arc-tangent} (inverse tangent) of the variable.}{Output is in radians.}
+
+\SSFunctionDesc{max}{Any list.}{Returns the largest number in the list.}{Strings are treated as zero.}
+
+\SSFunctionDesc{min}{Any list.}{Returns the smallest number in the list.}{Strings are treated as zero.}
+
+\SSFunctionDesc{int}{Any variable.}{Returns the variable rounded to the nearest integer.}{Half-way cases (eg. 0.5) are rounded up.}
+
+\SSFunctionDesc{floor}{Any variable.}{Returns the variable rounded to the next lowest integer.}{}
+
+\SSVariableDesc{pi}{Evaluates to the $\pi$ (pi) constant.}{The precision variable functions just like any other variable.}
+
+\SSVariableDesc{e}{Evaluate to the e (Euler) constant.}{The precision variable functions just like any other variable.}
+
+\section{SSTime}
+The SSTime scope contains functions and magic variables for workiing with dates and times.  The outputs of these can be somewhat dependant on the operating system.
+
+\SSVariableDesc{date}{Evaluates to the current date of the system running the interpreter.}{The output will be in DD/MM/YYYY (or DDMMYYYY in a number context) format, but it may vary slightly from system to system.}
+
+\SSVariableDesc{time}{Evaluates the current time on the system running the interpreter.}{Time is given in (H)H:MM:SS AM/PM format in string context, and in a number context HHMMSS.}
+
+\SSVariableDesc{timezone}{Gives the current time-zone of the system running the interpreter.}{Output format will vary from system to system.  Some abbreviate, some do not.}
+
+\SSVariableDesc{elapsed\textunderscore{}seconds}{Returns the number of seconds passed since the interpreter began running.}{This is useful for checking how much time has passed between two events.  Just save the time at the first event to a variable.  Later, subtract that variable from the ElapsedSecond at the second event.  Note that the precision and maximum value of this varies among operating systems and computers.  Useually it can go up to at least several hundred hours and have a precision in the miliseconds.}
+
+
+%
+% Appendecies Begin Here
+%
+
+
+\appendix
+
+\chapter{FAQ}
+
+\section{What is \SSquared?}
+\SSquared\ is a very specialized computer programming language.  If you want, you can use it to do many things, but it is mainly designed to write interactive dialouge in video games.  It is a system to write scripts for non-linear stories that branch and go off in different directions depending on the player's choices.
+
+\section{Why do we need \emph{another} language?}
+Because currently there is no standard format for writing interactive scripts, like there is for non-interactive scripts (i.e. courier, one-inch margins, etc).  A lot of games do it, but they all use proprietery systems.  \SSquared\ on the other hand is free (as in speach and as in beer).  It can easily be adapted to work with any type of game.  It's open-source, meaning that anyone can use it, hack it, modify it, complain about it,  or just download it and let it sit on their hard-drive.  You don't need to pay me, or even ask permission.\footnote{Although I am fond of chocolate chip cookies.  Email me for my address.}
+
+\section{What does the name mean?}
+The name is short for ``ScriptScript.''  It is a sort of scripting language for writing scripts.  I quickly realized that this name was not only not very clever, but it was downright lame.  So I shortened it to \SSquared, which is not only very sexy, but very difficult to write on a plaintext editor.  If you don't mind confusing it with the elite Nazi \emph{Schutzstaffel} paramilitary unit, then you can just refer to it as \emph{SS}.
+
+\section{How do I use \SSquared\ with my game?}
+For the time being, you must have some familiarity with C++ (the language in which \SSquared\ is written).  In the near future I plan on writing extensions for various popular scripting languages that will allow you to use it with pretty much anything.  
+
+\emph{Warning, the remainder of the answer is technical:} If you are versed in C++ and are feeling industrious, pop open Interface.hpp and you can see the base class from which you must derive the interface for your game.   From there you just have to writing a few functions to determine how choices will presented to the player and how dialouge will be displayed.  You can peek through the console interface and see how that was written, or even the Half-Life 2 interface.
+
+For the less industrious, I will write a more detailed tutorial in the future.
+
+\section{Can I use \SSquared\ for something besides scripts?}
+Certainly.  It can be handy for many things like doing quick calculations, parsing settings for another program, or even doing other types of scripting for third party programs.  \emph{Technical:} you don't even have to write an interface since I already provide one that does nothing called NullInterface.  Just set that as the interface on you interpreter and do whatever you want.
+
+You may even want to rip out the expression parsing engine for use with something else.  Maybe a calculator or something.
+
+\section{Can you change \SSquared\ by \emph{adding some feature}, \emph{removing some feature}, \emph{changing some syntax}?}
+Maybe.  Tell me why I should, and make a good argument and there is a good chance I will get around to changing it.  Another option, is to download the source, write your own patch, and submit it for official along with you proposition.  The language is still relatively young and I am very open to suggestions.  However if I simply refuse to add your feature (I probably have a good reason) feel free to make your own derivative version of \SSquared.
+
+\section{Who made this crap?  How can I get a hold of him?}
+The language, interpreter, and this documentation was all created by Daniel Jones.  A lonely college student, with no friends, but plenty of a free time and books on programming.  If you want to give me money, buy me things, have my children, or you just have a suggestion email me at \href{mailto:DanielCJones@gmail.com}{DanielCJones@gmail.com}.
+
+\section{Writing a script is \emph{hard}!  Will you help me write it?}
+I will certainly be willing to read it and give you advice if you email me your script.  Be aware thogh, even though I made this language that attempts to make writing interactive script managable, it can still be hard work.  
+
+In my experience it is still in many ways much more difficult that writing a linear screenplay.  Not only do you have to worry about created a compelling story, but trying to guide the player through it without forcing him/her anywhere can be very tricky.  The advice I would give you is to draw diagrams of how you want your game to play out, and then base your script on that.  
+
+
+\section{Will you make a game out of my script?}
+I'm usually very busy with my own projects, but feel free to email me your script.  If I do get around to reading it and it totaly rocks my world, there is a possibility I will help you make it.  
+
+%
+% PRECEDENCE TABLE
+%
+
+\chapter{Precedence Table}
+\emph{Precedence} refers in what order operations are performed by the interpreter.  This is exactly the same concept as operation precedence in mathematics.  May of you have probably been taught the acronym \emph{PEMDAS} (Parenthesis Exponentation Multiplication Division Addition Subtraction) to help remember order of operations.  
+
+\SSquared\ follows this same precedence but has many other operations, so I'm provided this table as a definitives list.  This list is also useful if you want to impress your friends with technical name of a certain operater.  You are not required to memorize this.  If you are at all unsure of the precedence of something, just wrap parenthesis around the part you want to execute first (e.g. \SSCode{4 * 3 / 6} becomes \SSCode{(4 * 3) / 6}).
+
+Operations with higher precedence levels are performed first.  Operations that have the same precedence level are performed from left to right.
+
+\BeginSSTable{|c|c|}
+\textbf{Operator} & \textbf{Precedence} \\
+\hline
+\SSCode{( )} (Parenthesis) & $ \infty $ \\
+\SSCode{:} (Scope Resolution) & 22 \\
+\SSCode{use} (Scope/File Importation) & 21 \\
+\SSCode{var list character player ...} (All object declaration operators) & 20 \\
+\SSCode{[] -[] +[]} (List Access, Remove, and Append, respectively) & 19 \\
+\SSCode{not -} (Logical Not and Unary Negate\footnote{\emph{Not Minus!}}, respectively) & 18 \\
+\SSCode{\^{}} (Exponentation) & 17 \\
+\SSCode{*} (Multiplication) & 16 \\
+\SSCode{/} (Division) & 15 \\
+\SSCode{+} (Addition) & 14 \\
+\SSCode{-} (Subtraction) & 13 \\
+\SSCode{,} (Listing Operator) & 12 \\
+\SSCode{> <} (Greater-Than and Less-Than, respecively) & 11 \\
+\SSCode{>= <=} (Greate-Than-or-Equal and Less-Than-or-Equal, repspectively) & 10 \\
+\SSCode{== !=} (Equal-To Not-Equal-To) & 9 \\
+\SSCode{or} (Logical Or) & 8 \\
+\SSCode{and} (Logical And) & 7 \\
+\SSCode{\^{}=} (Exponent and Assign) & 6 \\
+\SSCode{*=} (Multiply and Assign) & 5 \\
+\SSCode{/=} (Divide and Assign) & 4 \\
+\SSCode{+=} (Add and Assign) & 3 \\
+\SSCode{-=} (Subtract and Assign) & 2\\
+\SSCode{=} (Assign) & 1 \\
+\SSCode{...} (All Other Unary and User-Defined Operators) & 0\\
+\EndSSTable{Operation Precedence in \SSquared{}}
+
+This table was copied down from the source code of an early version of the language and it is very possibly that there may be some slight changes in future versions.
+
+\chapter{The \SSquared{} C++ API: Incorperating \SSquared{} into Your Project}
+
+
+% Nothing below this!!!!
+\end{document}

@@ -1,0 +1,221 @@
+%
+% Copyright (c) 2004-2005 Daniel Jones % (DanielCJones@gmail.com)
+% 
+% This is part of the  StoryScript (AKA: SS, S^2, % SSqared, etc) software.  Full license information % is included in the file in the top directory % named "license".
+% 
+% NOTES: Contains declarations for the Anomaly class,
+% 	which serves as the base exception type.
+% 
+
+
+
+% I really really don't know what I'm doing here
+
+
+\newcommand{\SSquared}{S$^2$}
+
+\newcommand{\SSquaredInterpreter}{S$^2_i$}
+
+
+% SYNTAX HIGHLIGHTING STUFF
+
+%\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+%\usepackage{alltt}
+%\usepackage{times}
+%\usepackage{palatino}
+\usepackage{newcent}
+%\usepackage{pslatex}
+%\usepackage{mathptmx}
+%\usepackage{mathpazo}
+\usepackage{anysize}
+\usepackage{appendix}
+
+%PDF STUFF
+\usepackage[pdftex,colorlinks=true]{hyperref}
+
+%\pdfinfo{
+%	\Title (The SS Programming Language)
+%	\Author (Daniel C. Jones)
+%}
+
+%\hypersetup{%
+%	pdftitle={The SS Programming Language}
+%	pdfauthor={Daniel C. Jones},
+%	bookmarksnumbered,
+%	pdfstartview={FitH},
+%	urlcolor=cyan,
+%}%
+
+%\usepackage{listings}
+
+% For emphasizing SS Code inside english.
+\newcommand\SSCode[1]{\begin{samepage}\texttt{#1}\end{samepage}}
+
+%TABLES
+\newcommand\BeginSSTable[1]{
+	\begin{table}
+	\begin{center}
+	\begin{tabular}{#1}
+	\hline
+}
+
+\newcommand\EndSSTable[1]{
+	\hline
+	\end{tabular}
+	\caption{#1}
+	\end{center}
+	\end{table}
+}
+
+
+%Name, Inputs, Outputs, Comments
+\newcommand\SSFunctionDesc[4]{
+\subsection{#1}
+\textbf{Inputs:} #2\\
+\textbf{Effects:} #3\\
+\textbf{Comments:} #4
+}
+
+%Name, Evaluation, Comments
+\newcommand\SSVariableDesc[3]{
+\subsection{#1 (\emph{Magic Variable)}}
+\textbf{Evaluation:} #2\\
+\textbf{Comments:} #3
+}
+
+
+
+%\newenvironment{SSTable}[2]{
+%\begin{table}
+%\caption{#1}
+%begin{center}
+%\begin{tabular}{#1}
+%\hline
+%}
+%{
+%\hline
+%\end{tabular}
+%\end{center}
+%\end{table}
+%}
+	
+
+\marginsize{1.25in}{1.75in}{1.25in}{1.25in}
+
+% For numbering code segments and explaining them
+\newcommand\SSCodeNumber[1]{\ensuremath{\mathbin{\settowidth{\dimen7}{\mbox{$\bigcirc$}}%
+              \makebox[0pt][l]{$\bigcirc$}\makebox[\dimen7]{#1}}}}
+
+
+\definecolor{SSCodeBoxColor}{rgb}{0.95,0.95,0.95}
+
+% Ripped from some latex tutorial.
+\newlength\Linewidth
+\def\findlength{\setlength\Linewidth\linewidth
+\addtolength\Linewidth{-4\fboxrule}
+\addtolength\Linewidth{-3\fboxsep}
+}
+
+
+\newcommand\SSCodeSeperator{
+	\begin{center}
+	\noindent\rule{250pt}{.5pt}% \\
+	%\rule[-.5pt]{.5pt}{10pt}\rule{249pt}{0pt}\rule{.5pt}{10pt}
+	\end{center}
+}
+
+\newenvironment{SSCodeBox}
+	{
+%	\vspace{10pt}
+%	\scriptsize{Code:}
+%	\SSCodeSeperator
+	\begin{quotation}
+	\nopagebreak
+	\noindent
+	}
+	{
+	\nopagebreak
+	\end{quotation}
+%	\SSCodeSeperator
+	\normalcolor\par\addvspace{6pt minus 3pt}
+	}
+
+
+% \newenvironment{SSCodeBox}{
+%  \vspace{10pt}
+%   \raggedbottom
+%   \scriptsize{Code:}
+%  \nopagebreak
+%   \par\begingroup%
+%   \setlength{\fboxsep}{5pt}\findlength%
+%  \setbox0=\vbox\bgroup\noindent%
+%   \hsize=\Linewidth%
+%   \begin{minipage}{\Linewidth}\small}%
+%    {\end{minipage}%
+%	\egroup%
+%    \vspace{1pt}%
+%    \noindent\textcolor{black}{\fboxsep1pt\fbox%
+%     {\fboxsep5pt\colorbox{SSCodeBoxColor}{\normalcolor\box0}}}%
+%    \endgroup\par\addvspace{6pt minus 3pt}\noindent%
+%    \normalcolor\ignorespacesafterend
+%	}
+
+%\let\Examplebox\examplebox
+%\let\endExamplebox\endexamplebox
+
+
+% I have to manually define the colors
+
+\definecolor{SSCodeBack}{rgb}{0.0,0.0,0.0}
+\definecolor{SSCommentColor}{rgb}{0.9,0.9,0.9}
+
+% Default
+\definecolor{scitea}{rgb}{0.0,0.0,0.0}
+\newcommand{\scitea}[1]{\noindent{\ttfamily{\textcolor{scitea}{#1}}}}
+
+% String
+\definecolor{sciteb}{rgb}{0.5,0.0,0.0}
+\newcommand{\sciteb}[1]{{\ttfamily{\textbf{\textcolor{sciteb}{#1}}}}}
+
+% Number
+\definecolor{scitec}{rgb}{0.5,0.0,0.0}
+\newcommand{\scitec}[1]{{\ttfamily{\textcolor{scitec}{#1}}}}
+
+% Keyword
+\definecolor{scited}{rgb}{0.0,0.0,0.5}
+\newcommand{\scited}[1]{{\ttfamily{\textcolor{scited}{#1}}}}
+
+% Character Comment (line)
+\definecolor{scitef}{rgb}{0.5,0.2,0.0}
+\newcommand{\scitef}[1]{{\ttfamily{\textit{\textcolor{scitef}{#1}}}}}
+
+% Utility Comment (line)
+\definecolor{sciteg}{rgb}{0.5,0.5,0.5}
+\newcommand{\sciteg}[1]{{\ttfamily{\textit{\textcolor{sciteg}{#1}}}}}
+
+% Scene Comment (line)
+\definecolor{sciteh}{rgb}{0.2,0.5,0.0}
+\newcommand{\sciteh}[1]{{\ttfamily{\textit{\textcolor{sciteh}{#1}}}}}
+
+% Character Comment (block)
+\definecolor{scitei}{rgb}{0.5,0.2,0.0}
+\newcommand{\scitei}[1]{{\ttfamily{\textit{\textcolor{scitei}{#1}}}}}
+
+% Scene Comment (block)
+\definecolor{scitej}{rgb}{0.2,0.5,0.0}
+\newcommand{\scitej}[1]{{\ttfamily{\textit{\textcolor{scitej}{#1}}}}}
+
+% Utility Comment (block)
+\definecolor{scitek}{rgb}{0.5,0.5,0.5}
+\newcommand{\scitek}[1]{{\ttfamily{\textit{\textcolor{scitek}{#1}}}}}
+
+% Header
+\definecolor{scitel}{rgb}{0.0,0.0,0.0}
+\newcommand{\scitel}[1]{{\ttfamily{\textbf{\textcolor{scitel}{#1}}}}}
+
+% Out-String
+\definecolor{scitem}{rgb}{0.5,0.0,0.0}
+\newcommand{\scitem}[1]{{\ttfamily{\textbf{\textcolor{scitem}{#1}}}}}
+
