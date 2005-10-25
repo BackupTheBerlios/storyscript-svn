@@ -10,12 +10,13 @@
     <projectdirectory>..</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
+    <versioncontrol>kdevsubversion</versioncontrol>
   </general>
   <kdevcustomproject>
     <run>
       <mainprogram>/usr/bin/SSI</mainprogram>
       <directoryradio>custom</directoryradio>
-      <customdirectory>~/</customdirectory>
+      <customdirectory>/</customdirectory>
       <programargs>-p try.ssconv</programargs>
       <terminal>true</terminal>
       <autocompile>true</autocompile>
@@ -112,12 +113,14 @@
     </useglobaltypes>
   </kdevfilecreate>
   <kdevcppsupport>
-    <references/>
+    <references>
+      <pcs>ssi</pcs>
+    </references>
     <codecompletion>
       <includeGlobalFunctions>true</includeGlobalFunctions>
       <includeTypes>true</includeTypes>
       <includeEnums>true</includeEnums>
-      <includeTypedefs>false</includeTypedefs>
+      <includeTypedefs>true</includeTypedefs>
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>true</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
@@ -133,6 +136,11 @@
       <inlineGet>true</inlineGet>
       <inlineSet>true</inlineSet>
     </creategettersetter>
+    <qt>
+      <used>false</used>
+      <version>3</version>
+      <root>/usr/qt/3</root>
+    </qt>
   </kdevcppsupport>
   <kdevfileview>
     <groups>
@@ -144,6 +152,7 @@
     <tree>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
       <hidenonprojectfiles>false</hidenonprojectfiles>
+      <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>
   <cppsupportpart>
@@ -156,4 +165,11 @@
     <customArguments/>
     <customTagfilePath/>
   </ctagspart>
+  <kdevdocumentation>
+    <projectdoc>
+      <docsystem/>
+      <docurl/>
+      <usermanualurl/>
+    </projectdoc>
+  </kdevdocumentation>
 </kdevelop>

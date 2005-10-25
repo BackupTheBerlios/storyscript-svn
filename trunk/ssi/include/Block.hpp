@@ -34,6 +34,7 @@ public:
 	//Block( unsigned int FilePosition, const SS::STRING& Line );
 	void AcceptVisitor( ScopeObjectVisitor& );
 	
+	
 	VariableBasePointer Operate( VariableBasePointer );
 
 	//The following four functions are to get rid of the compiler warnings

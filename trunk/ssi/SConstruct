@@ -30,6 +30,7 @@ src = Split("""
 	src/ParserAnomaly.cpp
 	src/ReaderSource.cpp
 	src/ReaderSourceFile.cpp
+	src/ReaderSourceString.cpp
 	src/Scope.cpp
 	src/ScopeObject.cpp
 	src/ScopeObjectVisitor.cpp

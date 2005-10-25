@@ -3,8 +3,10 @@
  #Generates the filelists for use with kdevelop.
  #Kdevelop should be able to do this itself, but its retarded.
  
-$ProjName = "ssi";
-$FilelistName = "$ProjName.kdevelop.filelist";
+#$ProjName = "ssi";
+#$FilelistName = "$ProjName.kdevelop.filelist";
+
+$FilelistNmae = "../ssi.kdevelop.filelist";
 
 open FILELIST, "> $FilelistName" or die "Failed to open filelist for writing.";
 
@@ -16,8 +18,8 @@ opendir( DIR, "../src" ) or die "Failed to open ../src directory.";
 @Files = grep(/\.cpp$/, readdir(DIR) );
 
 foreach $i (@Files){
-	print "../src/$i\n";
-	print FILELIST "../src/$i\n";
+	print "src/$i\n";
+	print FILELIST "src/$i\n";
 }
 
 closedir(DIR);
@@ -28,8 +30,8 @@ opendir( DIR, "../include" ) or die "Failed to open ../include directory.";
 @Files = grep(/\.hpp$/, readdir(DIR) );
 
 foreach $i (@Files){
-	print "../include/$i\n";
-	print FILELIST "../include/$i\n";
+	print "include/$i\n";
+	print FILELIST "include/$i\n";
 }
 
 closedir(DIR);

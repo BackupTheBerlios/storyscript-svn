@@ -80,7 +80,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = /workspace2/ss/interpreter/ssi
+INPUT                  = /workspace2/ss/ssi
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
