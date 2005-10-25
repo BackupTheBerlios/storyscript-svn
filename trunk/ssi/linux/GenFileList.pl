@@ -1,12 +1,15 @@
 #!/usr/bin/perl
  
  #Generates the filelists for use with kdevelop.
+ #Whenever you add or remove files to the project, run this and then
+ #restart kdevelop.
+ #
  #Kdevelop should be able to do this itself, but its retarded.
  
 #$ProjName = "ssi";
 #$FilelistName = "$ProjName.kdevelop.filelist";
 
-$FilelistNmae = "../ssi.kdevelop.filelist";
+$FilelistName = "../ssi.kdevelop.filelist";
 
 open FILELIST, "> $FilelistName" or die "Failed to open filelist for writing.";
 

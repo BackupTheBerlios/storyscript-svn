@@ -1,32 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="8" >
-  <Doc0 NumberOfViews="1" URL="file:///workspace2/ss/ssi/include/ReaderSource.hpp" >
-   <View0 Type="Source" />
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///workspace2/ss/ssi/src/ReaderSourceString.cpp" >
-   <View0 Type="Source" />
-  </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///workspace2/ss/ssi/include/ReaderSourceString.hpp" >
-   <View0 Type="Source" />
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///workspace2/ss/ssi/src/ReaderSourceFile.cpp" >
-   <View0 Type="Source" />
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///workspace2/ss/ssi/include/HelperFuncs.hpp" >
-   <View0 Type="Source" />
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///workspace2/ss/ssi/src/ReaderSource.cpp" >
-   <View0 Type="Source" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///workspace2/ss/ssi/include/Block.hpp" >
-   <View0 line="27" Type="Source" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///workspace2/ss/ssi/include/VersionInfo.hpp" >
-   <View0 line="25" Type="Source" />
-  </Doc7>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevdebugger>
    <breakpointList>
