@@ -49,7 +49,7 @@ StringType NumType2StringType( const NumType& );
 class SS_API VariableBase : public Scope
 {
 protected:
-	friend Creator;
+	SS_FRIENDIFY_GENERIC_CREATOR(VariableBase);
 	VariableBase();
 	VariableBase( const SS::STRING&, bool Static = false, bool Const = false );
 
@@ -117,7 +117,7 @@ private:
 class SS_API Variable : public VariableBase
 {
 protected:	
-	friend Creator;
+	SS_FRIENDIFY_VARIABLE_CREATOR(Variable);
 
 	Variable();
 	

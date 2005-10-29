@@ -130,7 +130,8 @@ private:
 
 	ReaderSourceFilePtr mpCurrentFile;
 
-	Scope mGlobalScope;
+	ScopePtr mpGlobalScope;
+	
 	ScopePtr mpCurrentScope;
 	ScopePtr mpCurrentStaticScope;
 	

@@ -220,7 +220,7 @@ void ScopeObject::UnRegister()
  NOTES: Throws an error if the object is const.  Call this before functions that
 		would modify the object.
 */
-void ScopeObject::AssertNonConst()
+void ScopeObject::AssertNonConst() const
 {
 	if( mConst )
 	{
@@ -229,6 +229,19 @@ void ScopeObject::AssertNonConst()
 	}
 }
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Throws an anomaly if casting is now allowed.
+*/
+void ScopeObject::AssertCastingAllowed() const
+{
+	if( mpThis.expired() )
+	{
+		STRING tmp = TXT("Cannot cast \'");
+		tmp += GetFullName();
+		tmp += TXT("\'.  Probably a bug in the interpreter.");
+		ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
+	}
+}
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -239,10 +252,12 @@ void ScopeObject::AssertNonConst()
 
 //ScopeObject
 ScopeObjectPtr ScopeObject::CastToScopeObject(){
+	AssertCastingAllowed();
 	return ScopeObjectPtr(mpThis);
 }
 
 const ScopeObjectPtr ScopeObject::CastToScopeObject() const{
+	AssertCastingAllowed();
 	return ScopeObjectPtr(mpThis);
 }
 
@@ -266,11 +281,11 @@ const VariableBasePtr ScopeObject::CastToVariableBase() const{
 
 //Variable (Current default behavior is to return a variable of its full name.)
 VariablePtr ScopeObject::CastToVariable(){
-	return Creator::CreateVariable( GetFullName(), false, true, GetFullName() );
+	return CreateVariable<Variable>( GetFullName(), false, true, GetFullName() );
 }
 
 const VariablePtr ScopeObject::CastToVariable() const{
-	return Creator::CreateVariable( GetFullName(), false, true, GetFullName() );
+	return CreateVariable<Variable>( GetFullName(), false, true, GetFullName() );
 }
 
 

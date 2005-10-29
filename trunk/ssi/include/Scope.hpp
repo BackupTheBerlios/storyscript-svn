@@ -26,7 +26,7 @@ namespace SS{
 class SS_API Scope : public ScopeObject
 {
 public:
-	friend class Creator;
+	SS_FRIENDIFY_GENERIC_CREATOR(Scope);
 	virtual ~Scope() {};
 
 	virtual void AcceptVisitor( ScopeObjectVisitor& );

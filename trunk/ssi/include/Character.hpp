@@ -25,6 +25,7 @@ public:
 	void AcceptVisitor( ScopeObjectVisitor& );
 
 protected:
+	SS_FRIENDIFY_GENERIC_CREATOR(Character);
 	Character();
 	Character( const SS::STRING& Name, bool Static = false, bool Const = false );
 	//void RegisterPredefinedVars();

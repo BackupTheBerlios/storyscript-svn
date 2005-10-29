@@ -15,10 +15,9 @@ NOTES: Contains declarations for the Block class.
 #include "Bookmark.hpp"
 #include "Unicode.hpp"
 
+#include "CreationFuncs.hpp"
+
 namespace SS{
-
-
-typedef unsigned int BlockIndex;
 
 
 //~~~~~~~CLASS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,7 +27,7 @@ typedef unsigned int BlockIndex;
 class SS_API Block : public Operator
 {
 protected:
-	friend class Creator;
+	SS_FRIENDIFY_BLOCK_CREATOR(Block);
 	Block();
 	Block( const SS::STRING& Name, bool Static, bool Const,
 		const Bookmark& Position, BlockIndex ListIndex );
@@ -73,7 +72,7 @@ private:
 	SS::STRING mLine;
 
 	Bookmark mFilePosition;
-	unsigned int mListIndex;
+	BlockIndex mListIndex;
 
 	//I would prefer if this is obtained automatically
 	//from the name of the block.

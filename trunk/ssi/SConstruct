@@ -19,6 +19,7 @@ src = Split("""
 	src/Block.cpp
 	src/Bookmark.cpp
 	src/Character.cpp
+	src/CreationFuncs.cpp
 	src/CreationFuncs-impl.cpp
 	src/Expression.cpp
 	src/HelperFuncs.cpp

@@ -74,7 +74,7 @@ VariableBasePtr SS::SLib::sqrt::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_sqrt( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 	
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );	
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );	
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -86,7 +86,7 @@ VariableBasePtr SS::SLib::abs::Operate( VariableBasePtr X )
     NumType Tmp;
 	mpfr_abs( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -95,7 +95,7 @@ VariableBasePtr SS::SLib::abs::Operate( VariableBasePtr X )
 */
 VariableBasePtr SS::SLib::mean::Operate( VariableBasePtr X )
 {
-    ListPtr pLst = X->GetListPtr();
+    ListPtr pLst = X->CastToList();
 
 	NumType Tmp = 0;
 	unsigned int i;
@@ -105,7 +105,7 @@ VariableBasePtr SS::SLib::mean::Operate( VariableBasePtr X )
 
 	Tmp /= NumType( i );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -118,7 +118,7 @@ VariableBasePtr SS::SLib::sin::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_sin( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -131,7 +131,7 @@ VariableBasePtr SS::SLib::cos::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_cos( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -144,7 +144,7 @@ VariableBasePtr SS::SLib::tan::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_tan( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -158,7 +158,7 @@ VariableBasePtr SS::SLib::asin::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_asin( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -171,7 +171,7 @@ VariableBasePtr SS::SLib::acos::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_acos( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -184,7 +184,7 @@ VariableBasePtr SS::SLib::atan::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_atan( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -195,7 +195,7 @@ VariableBasePtr SS::SLib::atan::Operate( VariableBasePtr X )
 */
 VariableBasePtr SS::SLib::max::Operate( VariableBasePtr X )
 {
-	const ListType& TheList = X->GetListPtr()->MakeFlatList()->GetInternalList();
+	const ListType& TheList = X->CastToList()->MakeFlatList()->GetInternalList();
 
 	VariableBasePtr Result = TheList[0];
 
@@ -214,7 +214,7 @@ NOTES: The maximum function.
 */
 VariableBasePtr SS::SLib::min::Operate( VariableBasePtr X )
 {
-	const ListType& TheList = X->GetListPtr()->MakeFlatList()->GetInternalList();
+	const ListType& TheList = X->CastToList()->MakeFlatList()->GetInternalList();
 
 	VariableBasePtr Result = TheList[0];
 
@@ -235,7 +235,7 @@ VariableBasePtr Int::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_round( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
 	
-	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
+	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -246,7 +246,7 @@ VariableBasePtr Floor::Operate( VariableBasePtr X )
 	NumType Tmp;
 	mpfr_floor( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
 	
-	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
+	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
 
 
@@ -296,7 +296,7 @@ VariableBasePtr MathConstPrec::operator=( const VariableBase& X )
 	//regenerate the constant
 	mParent.Generate();
 
-	return GetVariableBasePtr();
+	return CastToVariableBase();
 }
 
 

@@ -50,15 +50,15 @@ void List::AcceptVisitor( ScopeObjectVisitor& V ){
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- List::GetListPtr
+ List::CastToList
  NOTES: Returns itself in list form.
 */
-ListPtr List::GetListPtr(){
+ListPtr List::CastToList(){
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<List>( ScopeObjectPtr( mpThis ) );
 }
 
-const ListPtr List::GetListPtr() const{
+const ListPtr List::CastToList() const{
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<List>( ScopeObjectPtr( mpThis ) );
 }
@@ -94,7 +94,7 @@ void List::Resize( const NumType& NewSize )
 */
 VariableBasePtr List::Push( VariableBasePtr pNewElement )
 {
-	VariableBasePtr pNewVar = Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 );
+	VariableBasePtr pNewVar = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, 0 );
 	*pNewVar = *pNewElement;
 	
 	mList.push_back( pNewVar );
@@ -129,7 +129,7 @@ void List::Append( const ListPtr OtherList ){
 	const ListType& OtherVector = OtherList->GetInternalList();
 	
 	for( i = 0; i < OtherVector.size(); i++ ){
-		mList.push_back( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, *(OtherVector[i]->GetVariablePtr()) ) );
+		mList.push_back( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, *(OtherVector[i]->CastToVariable()) ) );
 	}
 }
 
@@ -173,15 +173,15 @@ ListPtr List::MakeFlatList() const
 	{
 		if( GetScopeObjectType( mList[i] ) == SCOPEOBJ_LIST ) break;
 	}
-	if( i == mList.size() ) return GetListPtr();
+	if( i == mList.size() ) return CastToList();
 	
-	ListPtr pNewList = Creator::CreateObject<List>();
+	ListPtr pNewList = CreateGeneric<List>();
 	
 	for( i = 0; i < mList.size(); i++ )
 	{
 		if( GetScopeObjectType( mList[i] ) == SCOPEOBJ_LIST )
 		{
-			pNewList->AppendListWithoutCopy( mList[i]->GetListPtr()->MakeFlatList() );
+			pNewList->AppendListWithoutCopy( mList[i]->CastToList()->MakeFlatList() );
 		}
 		else
 		{
@@ -202,7 +202,7 @@ ListPtr List::MakeFlatList() const
 */
 unsigned int List::DetermineRealIndex( const VariableBase& Index )
 {
-	long TrueIndex = (Index.GetVariablePtr()->GetNumData().get_si());
+	long TrueIndex = (Index.CastToVariable()->GetNumData().get_si());
 	
 	//Special Case for Empty Lists
 	//if( mList.size() == 0 && (TrueIndex == 0 || TrueIndex == -1) ) return 0;
@@ -228,7 +228,7 @@ unsigned int List::DetermineRealIndex( const VariableBase& Index )
 				ThrowParserAnomaly( tmp, ANOMALY_NOLISTELEMENT );
 			}
 			else{
-				this->Push( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
+				this->Push( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, 0 ) );
 			}
 		}
 
@@ -297,7 +297,7 @@ void List::operator=( const List& OtherList )
 		for( i = 0; i < pFlatList->mList.size(); i++ )
 		{
 			if( i >= this->mList.size() ){
-				Append( pFlatList->mList[i]->GetListPtr() );
+				Append( pFlatList->mList[i]->CastToList() );
 			}
 			else{
 				*(this->mList[i]) = *(pFlatList->mList[i]);
@@ -314,8 +314,8 @@ void List::operator=( const List& OtherList )
 
 VariableBasePtr List::operator=( const VariableBase& X )
 {
-	*this = *(X.GetListPtr()); //This should with lists or scalars
-	return GetVariableBasePtr();
+	*this = *(X.CastToList()); //This should with lists or scalars
+	return CastToVariableBase();
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -346,7 +346,7 @@ VariableBasePtr List::Insert( const VariableBasePtr Index )
 	}
 
 	unsigned int RealIndex = DetermineRealIndex(*Index);
-	mList.insert( mList.begin() + RealIndex, Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
+	mList.insert( mList.begin() + RealIndex, CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, 0 ) );
 	return mList[RealIndex];
 }
 
@@ -356,7 +356,7 @@ VariableBasePtr List::Insert( const VariableBasePtr Index )
  NOTES: Returns the length of the list.
 */
 VariableBasePtr List::Length() const{
-	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, (NumType)(unsigned long)mList.size() );
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, (NumType)(unsigned long)mList.size() );
 }
 
 
@@ -398,10 +398,10 @@ VariablePtr List::MakeVariable() const
 	unsigned int i;
 	for( i = 0; i < mList.size(); i++ )
 	{
-		TheBigString += mList[i]->GetVariableBasePtr()->GetStringData();		
+		TheBigString += mList[i]->CastToVariableBase()->GetStringData();		
 	}
 	
-	return Creator::CreateVariable( mName, false, true, TheBigString );
+	return CreateVariable<Variable>( mName, false, true, TheBigString );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -422,10 +422,10 @@ BoolType List::GetBoolData() const{
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Returns itself in scalar form
 */
-VariablePtr List::GetVariablePtr(){
+VariablePtr List::CastToVariable(){
 	return MakeVariable();
 }
 
-const VariablePtr List::GetVariablePtr() const{
+const VariablePtr List::CastToVariable() const{
 	return MakeVariable();
 }

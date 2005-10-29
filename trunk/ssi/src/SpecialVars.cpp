@@ -57,13 +57,13 @@ VariablePtr SpecialVarBase::MakeVariable() const
 
 	switch( this->GetVariableType() ){
 		case VARTYPE_NUM:
-			return Creator::CreateVariable( UNNAMMED, false, true, GetNumData() );
+			return CreateVariable<Variable>( UNNAMMED, false, true, GetNumData() );
 
 		case VARTYPE_STRING:
-			return Creator::CreateVariable( UNNAMMED, false, true, GetStringData() );
+			return CreateVariable<Variable>( UNNAMMED, false, true, GetStringData() );
 
 		case VARTYPE_BOOL:
-			return Creator::CreateVariable( UNNAMMED, false, true, GetBoolData() );
+			return CreateVariable<Variable>( UNNAMMED, false, true, GetBoolData() );
 
 		default:
 			ThrowParserAnomaly( TXT("Unknown variable type."), ANOMALY_PANIC );
@@ -77,27 +77,27 @@ VariablePtr SpecialVarBase::MakeVariable() const
  NOTES: These are to aid the children.
 */
 NumType SpecialVarBase::GetNumDataFromBool() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, GetBoolData() ).GetNumData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, GetBoolData() )->GetNumData();
 }
 
 NumType SpecialVarBase::GetNumDataFromString() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, GetStringData() ).GetNumData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, GetStringData() )->GetNumData();
 }
 
 BoolType SpecialVarBase::GetBoolDataFromNum() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, GetNumData() ).GetBoolData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, GetNumData() )->GetBoolData();
 }
 
 BoolType SpecialVarBase::GetBoolDataFromString() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, GetStringData() ).GetBoolData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, GetStringData() )->GetBoolData();
 }
 
 StringType SpecialVarBase::GetStringDataFromNum() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, GetNumData() ).GetStringData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, GetNumData() )->GetStringData();
 }
 
 StringType SpecialVarBase::GetStringDataFromBool() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, GetBoolData() ).GetStringData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, GetBoolData() )->GetStringData();
 }
 
 
@@ -220,11 +220,11 @@ BoundFlagVar::Get____Data
 NOTES: 
 */
 StringType BoundFlagVar::GetStringData() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, mFlag ).GetStringData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mFlag )->GetStringData();
 }
 
 NumType BoundFlagVar::GetNumData() const{
-	return Variable( SS_BASE_ARGS_DEFAULTS, mFlag ).GetNumData();
+	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mFlag )->GetNumData();
 }
 
 
@@ -252,7 +252,7 @@ BoundStringVar::BoundStringVar( const STRING& Name, STRING& String,
 VariableBasePtr BoundStringVar::operator=( const VariableBase& X )
 {
 	mString = X.GetStringData();
-	return GetVariableBasePtr();
+	return CastToVariableBase();
 }
 
 
@@ -301,7 +301,7 @@ NOTES: Actually changes the name of a variable.  Scary.
 VariableBasePtr BoundNumVar::operator=( const VariableBase& X )
 {
 	mNum = X.GetNumData();
-	return GetVariableBasePtr();
+	return CastToVariableBase();
 }
 
 
@@ -391,7 +391,7 @@ NOTES: Used to resize the list.  Must an integer >= 0.
 VariableBasePtr ListLengthVar::operator=( const VariableBase& X )
 {
 	mParent.Resize( X.GetNumData() );
-	return  GetVariableBasePtr();
+	return  CastToVariableBase();
 }
 
 
@@ -473,7 +473,7 @@ VariableBasePtr PrecisionVar::operator=(const VariableBase& X )
 
 	mParent.GetActualNumData().set_prec( NewPrec );
 
-	return GetVariableBasePtr();
+	return CastToVariableBase();
 }
 
 

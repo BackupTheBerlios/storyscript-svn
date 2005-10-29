@@ -54,8 +54,8 @@ public:
 	
 	void AcceptVisitor( ScopeObjectVisitor& );
 
-	virtual OperatorPtr GetOperatorPtr();
-	virtual const OperatorPtr GetOperatorPtr() const;
+	virtual OperatorPtr CastToOperator();
+	virtual const OperatorPtr CastToOperator() const;
 	
 	virtual VariableBasePtr Operate( VariableBasePtr ) = 0;
 	

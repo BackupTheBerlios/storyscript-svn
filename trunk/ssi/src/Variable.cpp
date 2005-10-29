@@ -130,10 +130,12 @@ VariableBase::GetVariableBasePtr
 NOTES: Overloaded to return itself rather than its name as other ScopeObjects do.
 */
 VariableBasePtr VariableBase::CastToVariableBase(){
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPtr( mpThis ) );
 }
 
 const VariableBasePtr VariableBase::CastToVariableBase() const{
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPtr( mpThis ) );
 }
 
@@ -165,7 +167,8 @@ NOTES: Converts the variable to a list holding itself.
 */
 ListPtr VariableBase::CastToList()
 {
-	ListPtr pNewList = Creator::CreateList( GetName(), false, false );
+	AssertCastingAllowed();
+	ListPtr pNewList = CreateGeneric<List>( GetName(), false, false );
 	pNewList->AppendWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
@@ -173,7 +176,8 @@ ListPtr VariableBase::CastToList()
 
 const ListPtr VariableBase::CastToList() const
 {
-	ListPtr pNewList = Creator::CreateList( GetName(), false, false );
+	AssertCastingAllowed();
+	ListPtr pNewList = CreateGeneric<List>( GetName(), false, false );
 	pNewList->AppendWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
@@ -432,10 +436,12 @@ void Variable::AcceptVisitor( ScopeObjectVisitor& V )
  NOTES: Overloaded to return itself rather than create a new variable.
 */
 VariablePtr Variable::CastToVariable(){
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Variable>( ScopeObjectPtr(mpThis) );
 }
 
 const VariablePtr Variable::CastToVariable() const{
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Variable>( ScopeObjectPtr(mpThis) );
 }
 
@@ -463,21 +469,21 @@ VariableBasePtr Variable::operator+(const VariableBase& X) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() + X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() + X.GetNumData() ) );
 		case VARTYPE_BOOL:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 		case VARTYPE_STRING:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
 		}
 	}
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION )		{
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
 		}
 		else throw;
 	}
@@ -497,12 +503,12 @@ VariableBasePtr Variable::operator-(const VariableBase& X) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() - X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() - X.GetNumData() ) );
 			break;
 		case VARTYPE_BOOL:
 			//TODO: Maybe think of something better than using && for boolean subtraction
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 			break;
 		default:
 			ThrowParserAnomaly( TXT("Can't subtract two strings."), ANOMALY_BADSTRINGOP ); 
@@ -536,7 +542,7 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 			TempString += X.GetStringData();            
 		}
 
-		return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, TempString ) );
+		return VariableBasePtr(	CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, TempString ) );
 	}
 	else
 	if( this->mCurrentType == VARTYPE_STRING && X.CastToVariable()->mCurrentType == VARTYPE_NUM ) 
@@ -547,7 +553,7 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 			TempString += this->GetStringData();
 		}   
 
-		return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, TempString ) );
+		return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, TempString ) );
 	}
 
 
@@ -556,11 +562,11 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * X.GetNumData() ) );
 			break;
 		case VARTYPE_BOOL:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 			break;
 		default:
 			ThrowParserAnomaly( TXT("Can't multiply two strings."), ANOMALY_BADSTRINGOP ); 
@@ -590,7 +596,7 @@ VariableBasePtr Variable::operator_pow( const VariableBase& X ) const
 	mpfr_pow( NewN.get_mpfr_t(), this->GetNumData().get_mpfr_t(),
 			  X.GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, NewN ) );
+	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, NewN ) );
 }
 
 
@@ -600,7 +606,7 @@ VariableBasePtr Variable::operator_pow( const VariableBase& X ) const
 */
 VariableBasePtr Variable::operator_concat( const VariableBase& X ) const
 {
-	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 
+	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, 
 								this->GetStringData() + X.GetStringData() ) );
 	
 }
@@ -620,12 +626,12 @@ VariableBasePtr Variable::operator/(const VariableBase& X) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() / X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() / X.GetNumData() ) );
 			break;
 		case VARTYPE_BOOL:
 			//TODO: This is illogical (says Spock).
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 			break;
 		default:
 			ThrowParserAnomaly( TXT("Can't divide two strings."), ANOMALY_BADSTRINGOP ); 
@@ -708,15 +714,15 @@ VariableBasePtr Variable::operator==( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() == X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() == X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() == X.GetStringData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() == X.GetStringData() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() == X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() == X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -724,7 +730,7 @@ VariableBasePtr Variable::operator==( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr(	CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -745,15 +751,15 @@ VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() != X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() != X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() != X.GetStringData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() != X.GetStringData() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() != X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() != X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -761,7 +767,7 @@ VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr(	CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -782,16 +788,16 @@ VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() >= X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() >= X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >=
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >=
 										X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() >= X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() >= X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -799,7 +805,7 @@ VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -820,16 +826,16 @@ VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() <= X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() <= X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <=
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <=
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() <= X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() <= X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -837,7 +843,7 @@ VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -857,16 +863,16 @@ VariableBasePtr Variable::operator>( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() > X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() > X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() > X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() > X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -874,7 +880,7 @@ VariableBasePtr Variable::operator>( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -893,16 +899,16 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() < X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() < X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() < X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() < X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -910,7 +916,7 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr(	CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}	
@@ -923,7 +929,7 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 VariableBasePtr Variable::operator&&( const VariableBase& X ) const
 {
 	return VariableBasePtr( 
-		Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
+		CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -933,7 +939,7 @@ VariableBasePtr Variable::operator&&( const VariableBase& X ) const
 VariableBasePtr Variable::operator||( const VariableBase& X ) const
 {
 	return VariableBasePtr( 
-		Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
+		CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 }
 	
 
@@ -944,7 +950,7 @@ VariableBasePtr Variable::operator||( const VariableBase& X ) const
 */
 VariableBasePtr Variable::op_not() const
 {
-	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, !(this->GetBoolData()) ) );
+	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, !(this->GetBoolData()) ) );
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -957,7 +963,7 @@ VariableBasePtr Variable::op_neg() const
 	{
 	case VARTYPE_NUM:
 		return VariableBasePtr(
-						Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * (NumType)-1 ) );
+						CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * (NumType)-1 ) );
 	
 	
 	
@@ -967,7 +973,7 @@ VariableBasePtr Variable::op_neg() const
 	case VARTYPE_STRING:
 	default:
 		return VariableBasePtr(
-						Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, -(this->GetNumData()) ) );
+						CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, -(this->GetNumData()) ) );
 	}
 }
 

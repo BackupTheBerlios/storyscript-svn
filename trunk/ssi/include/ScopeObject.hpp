@@ -14,6 +14,9 @@ NOTES: Anything that can reside in a scope derives from this (Scope).
 #include "Types.hpp"
 #include "DLLExport.hpp"
 
+#include "Macros.hpp"
+#include "CreationFuncs.hpp"
+
 #include "ScopeObjectVisitor.hpp"
 #include <vector>
 #include <map>
@@ -49,17 +52,16 @@ struct null_deleter
 
 class Interpreter;
 
-//A little shortcut, considering this may soon change.
-//This allows me the treat the base arguments for ScopeObject constructors as one thing.
-#define SS_DECLARE_BASE_ARGS const SS::STRING& BaseName, bool IsStatic, bool IsConst
-#define SS_BASE_ARGS BaseName, IsStatic, IsConst
-#define SS_BASE_ARGS_DEFAULTS UNNAMMED, false, true
+
+
 extern SS_API const STRING UNNAMMED;
 
 //
 //There are certain classes that should not cast.  Because it is unsafe to do
 //so.  (ie. classes that are not created by Creator).  This should be put in
 //those classes declarations.
+
+/*
 #define SS_CLASS_DOES_NOT_CAST \
 	ScopeObjectPtr CastToScopeObject() { return ScopeObject::CastToScope(); }\
 	const ScopeObjectPtr CastToScopeObject() const { return ScopeObject::CastToScope(); }\
@@ -81,6 +83,8 @@ extern SS_API const STRING UNNAMMED;
 
 	virtual OperatorPtr CastToOperator();
 	virtual const OperatorPtr CastToOperator() const;
+	
+*/
 
 
 
@@ -92,7 +96,7 @@ extern SS_API const STRING UNNAMMED;
 class SS_API ScopeObject
 {
 protected:
-	friend class Creator;
+	SS_FRIENDIFY_GENERIC_CREATOR(ScopeObject);
 	ScopeObject();
 	ScopeObject( const SS::STRING& Name, bool Static = false, bool Const = false );
 
@@ -125,10 +129,6 @@ public:
 
 	void UnRegister();
 
-
-	//Conversion functions.
-	void AssertCastingAllowed() const;
-	
 	ScopeObjectPtr CastToScopeObject();
 	const ScopeObjectPtr CastToScopeObject() const;
 	
@@ -154,7 +154,8 @@ public:
 	friend class Scope;
 
 protected:
-	void AssertNonConst();
+	void AssertNonConst() const;
+	void AssertCastingAllowed() const;
 
 	SS::STRING mName;
 	ScopeObjectPtrWeak mpThis;

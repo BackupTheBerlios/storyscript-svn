@@ -301,7 +301,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 				by special cases such as object declarations.
 				*/
 				try{
-					return Interpreter::Instance().GetScopeObject( (*this)[0].String )->GetVariableBasePtr();
+					return Interpreter::Instance().GetScopeObject( (*this)[0].String )->CastToVariableBase();
 				}
 				catch( ParserAnomaly E )
 				{
@@ -318,13 +318,13 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		}
 		else if( (*this)[0].Extra == EXTRA_BOOLLITERAL_True )
 		{
-			VariablePtr pTempVar( Creator::CreateVariable( UNNAMMED, false, true, true ) );
+			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, true ) );
 			mUnnamedVariables.push_back( pTempVar );
 			return pTempVar;
 		}
 		else if( (*this)[0].Extra == EXTRA_BOOLLITERAL_False )
 		{
-			VariablePtr pTempVar( Creator::CreateVariable( UNNAMMED, false, true, false ) );
+			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, false ) );
 			mUnnamedVariables.push_back( pTempVar );
 			return pTempVar;
 		}
@@ -332,7 +332,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 				 (*this)[0].Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
-			VariablePtr pTempVar( Creator::CreateVariable( UNNAMMED, false, true, (*this)[0].String ) );
+			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, (*this)[0].String ) );
 			mUnnamedVariables.push_back( pTempVar );
 
 			if( (*this)[0].Type == WORDTYPE_FLOATLITERAL ) {
@@ -343,7 +343,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		}
 		else if( (*this)[0].Type == WORDTYPE_EMPTYLISTLITERAL )
 		{
-			return gpEmptyList->GetVariableBasePtr();
+			return gpEmptyList->CastToVariableBase();
 		}
 		else
 		{
@@ -507,10 +507,10 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		
 		
 		if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr && pLeftVar->GetBoolData() == true ){
-			return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, true );
+			return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, true );
 		}
 		else if( LowPrecedenceOp == EXTRA_BINOP_LogicalAnd && pLeftVar->GetBoolData() == false ){
-			return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false );
+			return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
 		}
 		else{
 			ThrowParserAnomaly( TXT("No possible way the program can reach this point."), ANOMALY_PANIC );
@@ -537,7 +537,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	//even though they should be interpreted as Variables.
 	else if( (*this)[LowPrecedenceOpIndex].Type == WORDTYPE_IDENTIFIER )
 	{
-		pResultant = Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->GetVariableBasePtr();
+		pResultant = Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->CastToVariableBase();
 
 		//Now we handle the left part.
 		if( !Left.empty() )
@@ -603,13 +603,13 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 				{
 					pResultant = 
 						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_VARIABLE, pLooseID->GetLooseIDName(), IsStatic() )->GetVariableBasePtr();
+						SCOPEOBJ_VARIABLE, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 				}
 				else if( LowPrecedenceOp == EXTRA_UNOP_List )
 				{
 					pResultant = 
 						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_LIST, pLooseID->GetLooseIDName(), IsStatic() )->GetVariableBasePtr();
+						SCOPEOBJ_LIST, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 				}
 				else if( LowPrecedenceOp == EXTRA_UNOP_Player )
 				{
@@ -617,13 +617,13 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 					//		At this point there is no spereation between players and characters.
 					pResultant = 
 						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->GetVariableBasePtr();
+						SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 				}
 				else if( LowPrecedenceOp == EXTRA_UNOP_Character )
 				{
 					pResultant = 
 						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->GetVariableBasePtr();
+						SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 				}
 				else
 				{
@@ -644,7 +644,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		else
 		{
 			OperatorPtr pOp = 
-				Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->GetOperatorPtr();
+				Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->CastToOperator();
 			pResultant = pOp->Operate( pRightVar );
 		}
 
@@ -765,17 +765,17 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	// []
 	else if( LowPrecedenceOp == EXTRA_BINOP_ListAccess )
 	{		
-		pResultant = (*(pLeftVar->GetListPtr()))[ pRightVar ];
+		pResultant = (*(pLeftVar->CastToList()))[ pRightVar ];
 	}
 	// +[]
 	else if( LowPrecedenceOp == EXTRA_BINOP_ListAppend )
 	{
-		pResultant = pLeftVar->GetListPtr()->Insert( pRightVar );
+		pResultant = pLeftVar->CastToList()->Insert( pRightVar );
 	}
 	// -[]
 	else if( LowPrecedenceOp == EXTRA_BINOP_ListRemove )
 	{
-		pResultant = pLeftVar->GetListPtr()->Remove( pRightVar );
+		pResultant = pLeftVar->CastToList()->Remove( pRightVar );
 	}
 	// ,
 	else if( LowPrecedenceOp == EXTRA_BINOP_ListSeperator )
@@ -785,23 +785,23 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		ListPtr pNewList( Creator::CreateObject<List>( SS_BASE_ARGS_DEFAULTS ) );
 		mUnnamedVariables.push_back( pNewList );
 
-		*pNewList = *(pLeftVar->GetListPtr());
-		pNewList->Append( pRightVar->GetListPtr() );
+		*pNewList = *(pLeftVar->CastToList());
+		pNewList->Append( pRightVar->CastToList() );
 		pNewList->SetConst();
 
 		pResultant = pNewList;
 		*/
 		
 		if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_LIST &&
-		    pLeftVar->GetListPtr()->IsConst() &&
+		    pLeftVar->CastToList()->IsConst() &&
 			pLeftVar->GetName() == UNNAMMED )
 		{
-			pLeftVar->GetListPtr()->Push( pRightVar );
+			pLeftVar->CastToList()->Push( pRightVar );
 			pResultant = pLeftVar;			
 		}
 		else
 		{
-			ListPtr pNewList( Creator::CreateObject<List>() );
+			ListPtr pNewList( CreateGeneric<List>( SS_BASE_ARGS_DEFAULTS ) );
 			
 			pNewList->AppendWithoutCopy( pLeftVar );
 			pNewList->AppendWithoutCopy( pRightVar );
@@ -814,7 +814,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	// :
 	else if( LowPrecedenceOp == EXTRA_BINOP_ScopeResolution )
 	{
-		pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->GetVariableBasePtr();
+		pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
 
 	}
 	//No operator found!

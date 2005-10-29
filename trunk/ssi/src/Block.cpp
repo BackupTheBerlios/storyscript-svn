@@ -40,13 +40,13 @@ void Block::RegisterPredefinedVars()
 	SetConst( false );
 
 	Register( ScopeObjectPtr( new BoundFlagVar( LC_BeenSaid, mBeenSaid, true ) ) );
-	Register( Creator::CreateVariable( LC_Output, true, false, STRING() ) );
+	Register( CreateVariable<Variable>( LC_Output, true, false, STRING() ) );
 
 	//The STRING(TXT("")) is probably not necessary.  I just want to make sure it
 	//gets created as a string.  Not that it matters.
 
 	//The nextline.
-	Register( Creator::CreateList( LC_NextBlock, true, false ) );
+	Register( CreateGeneric<List>( LC_NextBlock, true, false ) );
 
 	SetConst( WasConst );
 }
@@ -146,10 +146,12 @@ void Block::SetLine( const STRING& NewLine )
  NOTES: Overloaded to return itself.
 */
 BlockPtr Block::CastToBlock(){
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Block>( ScopeObjectPtr(mpThis) );
 }
 
 const BlockPtr Block::CastToBlock() const{
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Block>( ScopeObjectPtr(mpThis) );
 }
 

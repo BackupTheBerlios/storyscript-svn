@@ -140,7 +140,7 @@ void SS::InitConstants(){
 	
 	
 	//VERY IMPORTANT THAT THIS GETS SET
-	gpEmptyList = Creator::CreateObject<List>( STRING(), true, true );
+	gpEmptyList = CreateGeneric<List>( STRING(), true, true );
 
 
 

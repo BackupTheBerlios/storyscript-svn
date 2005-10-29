@@ -69,12 +69,12 @@ class Sort : public Operator
 public:
 	SS_OP_DEFAULT_CTOR(Sort)
 			
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 	
 private:
-	ListPointer QuickSort( ListPointer, unsigned long Begin, unsigned long End );
+	ListPtr QuickSort( ListPtr, unsigned long Begin, unsigned long End );
 	
-	virtual int Compare( VariableBasePointer x, VariableBasePointer y );
+	virtual int Compare( VariableBasePtr x, VariableBasePtr y );
 	
 };
 

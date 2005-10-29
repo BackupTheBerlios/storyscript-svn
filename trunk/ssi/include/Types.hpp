@@ -69,6 +69,8 @@ typedef mpfr_class NumType;
 typedef bool   BoolType;
 typedef SS::STRING StringType;
 
+typedef size_t BlockIndex;
+
 class ScopeObject;
 class Scope;
 class Variable;
@@ -78,6 +80,7 @@ class VariableBase;
 class List;
 class Operator;
 class Interpreter;
+
 
 //DONT TOUCH THESE
 //They are used as an index in a static array,

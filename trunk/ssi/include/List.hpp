@@ -22,15 +22,18 @@ namespace SS{
 */
 class SS_API List : public VariableBase
 {
-public:
+protected:
+	SS_FRIENDIFY_GENERIC_CREATOR(List);
 	List();
 	List( const SS::STRING&, bool Static = false, bool Const = false );
+	
+public:
 	~List();
 
 	void AcceptVisitor( ScopeObjectVisitor& );
 	
-	ListPtr GetListPtr();
-	const ListPtr GetListPtr() const;
+	ListPtr CastToList();
+	const ListPtr CastToList() const;
 
 	void Resize( const NumType& );
 
@@ -63,8 +66,8 @@ public:
 	NumType GetNumData() const;
 	BoolType GetBoolData() const;
 	
-	VariablePtr GetVariablePtr();
-	const VariablePtr GetVariablePtr() const;
+	VariablePtr CastToVariable();
+	const VariablePtr CastToVariable() const;
 
 	//virtual VariableBasePtr op_not() const;
 

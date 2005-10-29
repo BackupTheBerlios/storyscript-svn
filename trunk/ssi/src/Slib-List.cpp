@@ -39,22 +39,22 @@ SLib::List::List()
 
 void SLib::List::RegisterPredefined()
 {
-	Register( ScopeObjectPointer( new Remove( TXT("remove"), true, true ) ) );
-	Register( ScopeObjectPointer( new RemoveAll( TXT("removeall"), true, true ) ) );
-	Register( ScopeObjectPointer( new Push( TXT("push"), true, true ) ) );
-	Register( ScopeObjectPointer( new Pop( TXT("pop"), true, true ) ) );
-	Register( ScopeObjectPointer( new Sort( TXT("sort"), true, true ) ) );
-	Register( ScopeObjectPointer( new Reverse( TXT("reverse"), true, true ) ) );
-	Register( ScopeObjectPointer( new PickOne( TXT("pickone"), true, true ) ) );
+	Register( ScopeObjectPtr( new Remove( TXT("remove"), true, true ) ) );
+	Register( ScopeObjectPtr( new RemoveAll( TXT("removeall"), true, true ) ) );
+	Register( ScopeObjectPtr( new Push( TXT("push"), true, true ) ) );
+	Register( ScopeObjectPtr( new Pop( TXT("pop"), true, true ) ) );
+	Register( ScopeObjectPtr( new Sort( TXT("sort"), true, true ) ) );
+	Register( ScopeObjectPtr( new Reverse( TXT("reverse"), true, true ) ) );
+	Register( ScopeObjectPtr( new PickOne( TXT("pickone"), true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
-VariableBasePointer Remove::Operate( VariableBasePointer X )
+VariableBasePtr Remove::Operate( VariableBasePtr X )
 {
-	ListPointer Arguments = X->GetListPtr();
-	ListPointer TheList = Arguments->GetInternalList()[0]->GetListPtr()->MakeFlatList();
+	ListPtr Arguments = X->CastToList();
+	ListPtr TheList = Arguments->GetInternalList()[0]->CastToList()->MakeFlatList();
 	
 	//Remove the first element and flatten
 	Arguments->GetInternalList().erase( Arguments->GetInternalList().begin() );
@@ -83,10 +83,10 @@ VariableBasePointer Remove::Operate( VariableBasePointer X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
-VariableBasePointer RemoveAll::Operate( VariableBasePointer X )
+VariableBasePtr RemoveAll::Operate( VariableBasePtr X )
 {
-	ListPointer Arguments = X->GetListPtr();
-	ListPointer TheList = Arguments->GetInternalList()[0]->GetListPtr()->MakeFlatList();
+	ListPtr Arguments = X->CastToList();
+	ListPtr TheList = Arguments->GetInternalList()[0]->CastToList()->MakeFlatList();
 	
 	//Remove the first element and flatten
 	Arguments->GetInternalList().erase( Arguments->GetInternalList().begin() );
@@ -116,16 +116,16 @@ VariableBasePointer RemoveAll::Operate( VariableBasePointer X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
-VariableBasePointer Push::Operate( VariableBasePointer X )
+VariableBasePtr Push::Operate( VariableBasePtr X )
 {
-	ListPointer Arguments = X->GetListPtr();
-	ListPointer TheList = Arguments->GetInternalList()[0]->GetListPtr()->MakeFlatList();
+	ListPtr Arguments = X->CastToList();
+	ListPtr TheList = Arguments->GetInternalList()[0]->CastToList()->MakeFlatList();
 	
 	//Remove the first element and flatten
 	Arguments->GetInternalList().erase( Arguments->GetInternalList().begin() );
 	Arguments = Arguments->MakeFlatList();
 	
-	VariableBasePointer LastPushedVar;
+	VariableBasePtr LastPushedVar;
 	
 	unsigned int i;
 	for( i = 0; i < Arguments->GetInternalList().size(); i++ )
@@ -139,14 +139,14 @@ VariableBasePointer Push::Operate( VariableBasePointer X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
-VariableBasePointer Pop::Operate( VariableBasePointer X )
+VariableBasePtr Pop::Operate( VariableBasePtr X )
 {
-	ListPointer Arguments = X->GetListPtr();
-	VariableBasePointer LastPoped;
+	ListPtr Arguments = X->CastToList();
+	VariableBasePtr LastPoped;
 	unsigned int i;
 	for( i = 0; i < Arguments->GetInternalList().size(); i++ )
 	{
-		LastPoped = (*Arguments)[i]->GetListPtr()->Pop();		
+		LastPoped = (*Arguments)[i]->CastToList()->Pop();		
 	}	
 	
 	return LastPoped;
@@ -156,10 +156,10 @@ VariableBasePointer Pop::Operate( VariableBasePointer X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.  Thank you wikipedia for teaching me quicksort.
 */
-VariableBasePointer Sort::Operate( VariableBasePointer X )
+VariableBasePtr Sort::Operate( VariableBasePtr X )
 {
-	ListPointer ListX = X->GetListPtr()->MakeFlatList();
-	ListPointer pNewList( CreateObject<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
+	ListPtr ListX = X->CastToList()->MakeFlatList();
+	ListPtr pNewList( CreateGeneric<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
 	
 	//If I don't SetConst to false, it will do the compound assignment trick.
 	pNewList->SetConst( false );
@@ -173,13 +173,13 @@ VariableBasePointer Sort::Operate( VariableBasePointer X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This where it gets done.
 */
-ListPointer Sort::QuickSort( ListPointer TheList, unsigned long Begin, unsigned long End )
+ListPtr Sort::QuickSort( ListPtr TheList, unsigned long Begin, unsigned long End )
 {
 	if( End > Begin + 1)
 	{
 		ListType& ActualList = TheList->GetInternalList();
-		VariableBasePointer Pivot = ActualList[Begin];
-		VariableBasePointer Temp; //For swaps
+		VariableBasePtr Pivot = ActualList[Begin];
+		VariableBasePtr Temp; //For swaps
 		unsigned long Left = Begin + 1;
 		unsigned long Right = End;
 		
@@ -219,7 +219,7 @@ ListPointer Sort::QuickSort( ListPointer TheList, unsigned long Begin, unsigned 
  				 
  		Any overloaded versions should do the same.
 */
-int Sort::Compare( VariableBasePointer X, VariableBasePointer Y )
+int Sort::Compare( VariableBasePtr X, VariableBasePtr Y )
 {
 	int result = X->GetStringData().compare( Y->GetStringData() );	
 	if( result == 0 ) return 0;
@@ -230,13 +230,13 @@ int Sort::Compare( VariableBasePointer X, VariableBasePointer Y )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Reverses any list it is given.  Doesn't modify the orignal.
 */
-VariableBasePointer Reverse::Operate( VariableBasePointer X )
+VariableBasePtr Reverse::Operate( VariableBasePtr X )
 {
 	//We MUST store pTmp, or (if it is a temporary) the gc will delete it.
-	ListPointer pTmp = X->GetListPtr()->MakeFlatList();
+	ListPtr pTmp = X->CastToList()->MakeFlatList();
 	ListType& Arg = pTmp->GetInternalList();
 	
-	ListPointer pNewList( CreateObject<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
+	ListPtr pNewList( CreateGeneric<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
 	
 	ListType::reverse_iterator i;
 	for( i = Arg.rbegin(); i != Arg.rend(); i++ )
@@ -253,17 +253,17 @@ VariableBasePointer Reverse::Operate( VariableBasePointer X )
  NOTES: This little guy will randomly pick on of the elements from the list
  		and return it.
 */
-VariableBasePointer PickOne::Operate( VariableBasePointer X )
+VariableBasePtr PickOne::Operate( VariableBasePtr X )
 {
-	ListPointer pList = X->GetListPtr()->MakeFlatList();
+	ListPtr pList = X->CastToList()->MakeFlatList();
 
-	if( pList->GetInternalList().size() == 0 ) return CreateVariable( SS_BASE_ARGS_DEFAULTS, false );
+	if( pList->GetInternalList().size() == 0 ) return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
 
 	boost::uniform_int<unsigned int> DistributedRandom( 0, (unsigned int)pList->GetInternalList().size() - 1 );
 	return pList->GetInternalList()[ DistributedRandom( gRNG ) ];
 	
 	/*
-	ListPointer pList = X->GetListPtr();
+	ListPtr pList = X->CastToList();
 	double Random = RNG();
 	unsigned int ListSize = pList->GetInternalList().size();
 	

@@ -115,10 +115,10 @@ NumType TimeVar::GetNumData() const
 	time_t TmpTime = time(NULL);
 	strftime( mpBuffer, mBufferSize, "%H%M%S", localtime( &TmpTime ) );
 
-	Variable IntTime( SS_BASE_ARGS_DEFAULTS, NormalizeString( mpBuffer ) );
-	IntTime.ForceConversion( VARTYPE_NUM );
+	VariablePtr pIntTime( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, NormalizeString( mpBuffer ) ) );
+	pIntTime->ForceConversion( VARTYPE_NUM );
 
-	return IntTime.GetNumData();
+	return pIntTime->GetNumData();
 }
 
 BoolType TimeVar::GetBoolData() const{
@@ -177,10 +177,10 @@ NumType DateVar::GetNumData() const
 	time_t TmpTime = time(NULL);
 	strftime( mpBuffer, mBufferSize, "%d%m%Y", localtime( &TmpTime ) );
 
-	Variable TempVar( SS_BASE_ARGS_DEFAULTS, NormalizeString(mpBuffer) );
-	TempVar.ForceConversion( VARTYPE_NUM );
+	VariablePtr pTempVar( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, NormalizeString(mpBuffer) ) );
+	pTempVar->ForceConversion( VARTYPE_NUM );
 
-	return TempVar.GetNumData();
+	return pTempVar->GetNumData();
 }
 
 

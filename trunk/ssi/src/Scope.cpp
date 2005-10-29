@@ -388,10 +388,12 @@ void Scope::UnImport( ScopePtr pScope )
  NOTES: Overloaded to return this rather than throwing.
 */
 ScopePtr Scope::CastToScope(){
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPtr(mpThis) );
 }
 
 const ScopePtr Scope::CastToScope() const{
+	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPtr(mpThis) );
 }
 

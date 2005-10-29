@@ -64,6 +64,7 @@ Interpreter& Interpreter::Instance(){
 Interpreter::Interpreter()
 : mVerboseOutput(false)
 {
+	mpGlobalScope = CreateGeneric<Scope>();
 	InitConstants();
 	RegisterSpecials();
 }
@@ -111,24 +112,25 @@ Interface& Interpreter::GetInterface()
 void Interpreter::RegisterSpecials()
 {
 	//The last two values are just bullshit.
-	mpEndBlock = CreateBlock( LC_EndBlock, true, true, Bookmark(), 0 ); 
-	mGlobalScope.Register( ScopeObjectPtr( mpEndBlock ) );
+	mpEndBlock = CreateBlock<Block>( LC_EndBlock, true, true, Bookmark(), 0 ); 
+	mpGlobalScope->Register( ScopeObjectPtr( mpEndBlock ) );
 
 	//SLib-Common gets special treatment.  It gets auto-imported.
-	ScopePtr pCommonScope( new SS::SLib::Common );
-	mGlobalScope.Register( pCommonScope );
-	mGlobalScope.Import( pCommonScope );
+	ScopePtr pCommonScope( CreateGeneric<SS::SLib::Common>() );
+	mpGlobalScope->Register( pCommonScope );
+	mpGlobalScope->Import( pCommonScope );
 	
 	//I'm goig to import List also.  Those seem like pretty common functions
-	ScopePtr pListScope( new SS::SLib::List );
-	mGlobalScope.Register( pListScope );
-	mGlobalScope.Import( pListScope );
+	ScopePtr pListScope( CreateGeneric<SS::SLib::List>() );
+	mpGlobalScope->Register( pListScope );
+	mpGlobalScope->Import( pListScope );
 
-	mGlobalScope.Register( ScopeObjectPtr( new SS::SLib::Time ) );
-	mGlobalScope.Register( ScopeObjectPtr( new SS::SLib::Math ) );
+	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Time>() ) );
+	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Math>() ) );
 	
-	mGlobalScope.Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("verbose"), mVerboseOutput, true, true ) ) );
-	mGlobalScope.Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("strict_lists"), gUsingStrictLists, true, true ) ) );
+	//It is OK to use new, when the objects are directly being registered.
+	mpGlobalScope->Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("verbose"), mVerboseOutput, true, true ) ) );
+	mpGlobalScope->Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("strict_lists"), gUsingStrictLists, true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -211,10 +213,10 @@ void Interpreter::LoadFile( const STRING& FileName )
 	mFiles[FileName] = pNewFile;
 
 
-	ScopePtr pNewScope( Creator::CreateObject<Scope>( 
-			MakeScopeNameFromFileName( pNewFile->GetFileName() ) ) );
+	ScopePtr pNewScope( CreateGeneric<Scope>( 
+			MakeScopeNameFromFileName( pNewFile->GetFileName() ), false, false ) );
 	
-	mGlobalScope.Register( ScopeObjectPtr( pNewScope ) );
+	mpGlobalScope->Register( ScopeObjectPtr( pNewScope ) );
 	mpCurrentScope = pNewScope;
 
 	mpCurrentFile = pNewFile;
@@ -255,8 +257,8 @@ ReaderSourceFile& Interpreter::GetFile( const Bookmark& Pos )
 		mpCurrentScope = Pos.CurrentScope;
 	}
 	else{
-		mpCurrentScope = mGlobalScope.GetScopeObject( 
-				MakeScopeNameFromFileName(pFile->GetFileName()) )->GetScopePtr();
+		mpCurrentScope = mpGlobalScope->GetScopeObject( 
+				MakeScopeNameFromFileName(pFile->GetFileName()) )->CastToScope();
 	}
 
 	if( Pos.CurrentStaticScope ){
@@ -291,7 +293,7 @@ void Interpreter::Close()
 	mBlockOrder.clear();
 	mFiles.clear();
 	mpCurrentScope.reset();
-	mGlobalScope.Clear();
+	mpGlobalScope->Clear();
 }
 
 
@@ -311,7 +313,7 @@ void Interpreter::Parse( const STRING& BlockName )
 	ScopeObjectPtr pBlockHopeful = GetScopeObject( BlockName );
 
 	//This will throw if it is indeed not a Block.
-	BlockPtr pBlock = pBlockHopeful->GetBlockPtr();
+	BlockPtr pBlock = pBlockHopeful->CastToBlock();
     
 	return Parse( pBlock );
 }
@@ -349,7 +351,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/ )
 	//This is how the magical instance system works.
 	//Every time a block gets executed it creates this temporary instance
 	//scope, which all non-statics get created on
-	ScopePtr pInstance = Creator::CreateObject<Scope>( TXT("") );
+	ScopePtr pInstance = CreateGeneric<Scope>();
 	pBlock->Import( pInstance );
 
 	Pos.CurrentStaticScope = pBlock;
@@ -381,7 +383,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/ )
 
 
 	//Now figure out what block to say next
-	ListPtr pNextLine = pBlock->GetScopeObject( LC_NextBlock )->GetListPtr();
+	ListPtr pNextLine = pBlock->GetScopeObject( LC_NextBlock )->CastToList();
 
 	//Create a list of a actual choices.  Throw out bad values.
 	const ListType& OrigChoices = pNextLine->GetInternalList();
@@ -390,7 +392,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/ )
     unsigned int i;
 	for( i = 0; i < OrigChoices.size(); i ++ )
 	{
-		GoodChoices.push_back( GetScopeObject( OrigChoices[i]->GetStringData() )->GetBlockPtr() );
+		GoodChoices.push_back( GetScopeObject( OrigChoices[i]->GetStringData() )->CastToBlock() );
 	}
 
     if( GoodChoices.size() != 0 )
@@ -616,7 +618,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 				if( mVerboseOutput )
 				{
 					STRING tmp = TXT("Expression Result: ");
-					tmp += WordBuffer.Evaluate()->GetVariablePtr()->GetStringData();
+					tmp += WordBuffer.Evaluate()->CastToVariable()->GetStringData();
 					tmp += TXT("\n");
 					mpInterface->LogMessage( tmp );
 				}
@@ -773,7 +775,7 @@ bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bo
 {
 	bool WasParsed = false;
 
-	if( Condition.Evaluate()->GetVariablePtr()->GetBoolData() == true )
+	if( Condition.Evaluate()->CastToVariable()->GetBoolData() == true )
 	{
 		Parse( Body, OneStatement );
 
@@ -812,7 +814,7 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 {
 	bool WasParsed = false;
 
-	while( Condition.Evaluate()->GetVariablePtr()->GetBoolData() == true )
+	while( Condition.Evaluate()->CastToVariable()->GetBoolData() == true )
 	{
 		Parse( Body, OneStatement );
 
@@ -930,23 +932,23 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING&
 	{
 	case SCOPEOBJ_BLOCK:
 		{
-		BlockPtr pTempBlock( CreateBlock( Name, Static, Const,
+		BlockPtr pTempBlock( CreateBlock<Block>( Name, Static, Const,
 								 GetCurrentPos(), (BlockIndex)mBlockOrder.size() ) );
 		mBlockOrder.push_back( pTempBlock );
 		pNewObj = (ScopeObjectPtr)pTempBlock ;
 		}
 		break;
 	case SCOPEOBJ_VARIABLE:
-		pNewObj = Creator::CreateVariable( Name, Static, Const, 0 );
+		pNewObj = CreateVariable<Variable>( Name, Static, Const, 0 );
 		break;
 	case SCOPEOBJ_CHARACTER:
-		pNewObj = Creator::CreateObject<Character>( Name, Static, Const );
+		pNewObj = CreateGeneric<Character>( Name, Static, Const );
 		break;
 	case SCOPEOBJ_SCOPE:
-		pNewObj = Creator::CreateObject<Scope>( Name, Static, Const );
+		pNewObj = CreateGeneric<Scope>( Name, Static, Const );
 		break;
 	case SCOPEOBJ_LIST:
-		pNewObj = Creator::CreateObject<List>( Name, Static, Const );
+		pNewObj = CreateGeneric<List>( Name, Static, Const );
 		break;
 	default:
 		SS::STRING tmp = TXT("Tried to register an object with an unknown type named: \'");
@@ -970,7 +972,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING&
 		//This is the only behavior that really makes sense.
 		
 		pNewObj->SetStatic();
-		GetScopeObject( ScopeName )->GetScopePtr()->Register( pNewObj );
+		GetScopeObject( ScopeName )->CastToScope()->Register( pNewObj );
 	}
 
 	return pNewObj;
@@ -1030,7 +1032,7 @@ ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
 	//but not if it mpCurrentScope belongs to another scope that was imported.
 	STRING ScopeName( MakeScopeNameFromFileName( mpCurrentFile->GetFileName() ) );
 	
-	pObject = mGlobalScope.GetScopeObject( ScopeName )->GetScopePtr()->GetScopeObject_NoThrow( Name );
+	pObject = mpGlobalScope->GetScopeObject( ScopeName )->CastToScope()->GetScopeObject_NoThrow( Name );
 	if( pObject ) return pObject;
 
 
@@ -1047,15 +1049,15 @@ ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
  		external software.
 */
 ScopePtr Interpreter::GetScope( const STRING& Name ){
-	return GetScopeObject( Name )->GetScopePtr();
+	return GetScopeObject( Name )->CastToScope();
 }
 
 VariablePtr Interpreter::GetVariable( const STRING& Name ){
-	return GetScopeObject( Name )->GetVariablePtr();
+	return GetScopeObject( Name )->CastToVariable();
 }
 
 BlockPtr Interpreter::GetBlock( const STRING& Name ){
-	return GetScopeObject( Name )->GetBlockPtr();
+	return GetScopeObject( Name )->CastToBlock();
 }
 
 

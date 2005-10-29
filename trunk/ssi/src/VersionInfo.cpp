@@ -13,7 +13,7 @@ using namespace SS;
 
 
 const SS::STRING SS::SSI_VERSION( TXT("0 (Chernobyl)") );
-const SS::STRING SS::SSI_BUILDNUM( TXT("16 (STABLE)") );
+const SS::STRING SS::SSI_BUILDNUM( TXT("20 (UNSTABLE!!)") );
 const SS::STRING SS::SSI_PLATFORM = 
 	#if defined(PLAT_WIN32)
 		TXT("Win32");
