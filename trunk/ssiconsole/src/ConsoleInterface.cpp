@@ -75,7 +75,7 @@ void ConsoleInterface::SetGCCStyleErrors( bool Flag /*=true*/ ){
 		It presents the player with a choice in dialogue.  When the player picks,
 		the functions returns the index for that choice.
 */
-unsigned int ConsoleInterface::PresentChoice( const std::vector<SS::BlockPointer>& Choices )
+unsigned int ConsoleInterface::PresentChoice( const std::vector<SS::BlockPtr>& Choices )
 {
 	//Print all the choices
 	SetChooseColor();
@@ -174,9 +174,9 @@ void ConsoleInterface::LogMessage( const SS::STRING& Msg, bool UserOutput /*=fal
  ConsoleInterface::SayBlock
  NOTES: Prints the line to the screen.
 */
-void ConsoleInterface::SayBlock( const SS::BlockPointer pBlock )
+void ConsoleInterface::SayBlock( const SS::BlockPtr pBlock )
 {
-	const SS::STRING& Line = pBlock->GetScopeObject( SS::LC_Output )->GetVariablePtr()->GetStringData();
+	const SS::STRING& Line = pBlock->GetScopeObject( SS::LC_Output )->CastToVariable()->GetStringData();
 	const SS::STRING& ParentName = pBlock->GetParent()->GetName();
 	
 	//Get and print name.

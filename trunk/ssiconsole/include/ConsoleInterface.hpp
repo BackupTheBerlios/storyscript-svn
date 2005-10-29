@@ -21,14 +21,14 @@ public:
 	void SetGCCStyleErrors( bool Flag = true );
 	
 	//All inherited
-	unsigned int PresentChoice( const std::vector<SS::BlockPointer>& Choices );
+	unsigned int PresentChoice( const std::vector<SS::BlockPtr>& Choices );
 
 	void HandleParserAnomaly( SS::ParserAnomaly );
 	void LogMessage( const SS::STRING&, bool UserOutput = false );
 
 private:
 	Console& CON;
-	void SayBlock( const SS::BlockPointer );
+	void SayBlock( const SS::BlockPtr );
 
 	void PrintPosition();
 
