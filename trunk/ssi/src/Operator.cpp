@@ -38,13 +38,13 @@ Operator::Operator( const SS::STRING& Name, bool Static/* = false*/, bool Const/
 // Operator::GetOperatorPtr
 // NOTES: Constructors
 //
-OperatorPointer Operator::GetOperatorPtr(){
-	return boost::dynamic_pointer_cast<Operator>( ScopeObjectPointer( mpThis ) );
+OperatorPtr Operator::GetOperatorPtr(){
+	return boost::dynamic_pointer_cast<Operator>( ScopeObjectPtr( mpThis ) );
 }
 
 
-const OperatorPointer Operator::GetOperatorPtr() const{
-    return boost::dynamic_pointer_cast<Operator>( ScopeObjectPointer( mpThis ) );
+const OperatorPtr Operator::GetOperatorPtr() const{
+    return boost::dynamic_pointer_cast<Operator>( ScopeObjectPtr( mpThis ) );
 }
 
 
@@ -66,7 +66,7 @@ void Operator::RegisterPredefinedVars()
 	bool WasConst = IsConst();
 	mConst = false;
 
-	Register( ScopeObjectPointer( new List( LC_Input, true ) ) );
+	Register( ScopeObjectPtr( new List( LC_Input, true ) ) );
 
 	SetConst( WasConst );
 }

@@ -51,19 +51,19 @@ SpecialVarBase::~SpecialVarBase()
  NOTES: This is a useful little function that converts the current value
 		of the SpecialVar into a real live Variable.
 */
-VariablePointer SpecialVarBase::MakeVariable() const
+VariablePtr SpecialVarBase::MakeVariable() const
 {
-	VariablePointer pNewVar;
+	VariablePtr pNewVar;
 
 	switch( this->GetVariableType() ){
 		case VARTYPE_NUM:
-			return CreateVariable( UNNAMMED, false, true, GetNumData() );
+			return Creator::CreateVariable( UNNAMMED, false, true, GetNumData() );
 
 		case VARTYPE_STRING:
-			return CreateVariable( UNNAMMED, false, true, GetStringData() );
+			return Creator::CreateVariable( UNNAMMED, false, true, GetStringData() );
 
 		case VARTYPE_BOOL:
-			return CreateVariable( UNNAMMED, false, true, GetBoolData() );
+			return Creator::CreateVariable( UNNAMMED, false, true, GetBoolData() );
 
 		default:
 			ThrowParserAnomaly( TXT("Unknown variable type."), ANOMALY_PANIC );
@@ -106,11 +106,11 @@ StringType SpecialVarBase::GetStringDataFromBool() const{
  SpecialVarBase::GetVariablePtr
  NOTES: Creates a variable and returns it.
 */
-VariablePointer SpecialVarBase::GetVariablePtr(){
+VariablePtr SpecialVarBase::GetVariablePtr(){
 	return MakeVariable();
 }
 
-const VariablePointer SpecialVarBase::GetVariablePtr() const{
+const VariablePtr SpecialVarBase::GetVariablePtr() const{
 	return MakeVariable();
 }
 
@@ -121,24 +121,24 @@ const VariablePointer SpecialVarBase::GetVariablePtr() const{
  NOTES: The method I'm going to use, so that SpecialVars act just like Variables
 		is to spring a new Variable into being whenever an operator is called.
 */
-VariableBasePointer SpecialVarBase::operator+(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator+(const VariableBase& X) const{
 	return (*MakeVariable()) + X;
 }
 
-VariableBasePointer SpecialVarBase::operator-(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator-(const VariableBase& X) const{
 return (*MakeVariable()) - X;
 }
 
 
-VariableBasePointer SpecialVarBase::operator*(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator*(const VariableBase& X) const{
 	return (*MakeVariable()) * X;
 }
 
-VariableBasePointer SpecialVarBase::operator/(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator/(const VariableBase& X) const{
 	return (*MakeVariable()) / X;
 }
 
-VariableBasePointer SpecialVarBase::operator=(const VariableBase& X){
+VariableBasePtr SpecialVarBase::operator=(const VariableBase& X){
 	STRING tmp = TXT("Cannot assign to special variable: \'");
 	tmp += this->GetFullName();
 	tmp += TXT("\'.");
@@ -146,45 +146,45 @@ VariableBasePointer SpecialVarBase::operator=(const VariableBase& X){
 }
 
 
-VariableBasePointer SpecialVarBase::operator==(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator==(const VariableBase& X) const{
 	return (*MakeVariable()) == X;
 }
 
-VariableBasePointer SpecialVarBase::operator!=(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator!=(const VariableBase& X) const{
 	return (*MakeVariable()) != X;
 }
 
-VariableBasePointer SpecialVarBase::operator>=(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator>=(const VariableBase& X) const{
 	return (*MakeVariable()) >= X;
 }
 
-VariableBasePointer SpecialVarBase::operator<=(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator<=(const VariableBase& X) const{
 	return (*MakeVariable()) <= X;
 }
 
-VariableBasePointer SpecialVarBase::operator> (const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator> (const VariableBase& X) const{
 	return (*MakeVariable()) > X;
 }
 
-VariableBasePointer SpecialVarBase::operator< (const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator< (const VariableBase& X) const{
 	return (*MakeVariable()) < X;
 }
 
-VariableBasePointer SpecialVarBase::operator&&(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator&&(const VariableBase& X) const{
 	return (*MakeVariable()) && X;
 }
 
-VariableBasePointer SpecialVarBase::operator||(const VariableBase& X) const{
+VariableBasePtr SpecialVarBase::operator||(const VariableBase& X) const{
 	return (*MakeVariable()) || X;
 }
 
 
-VariableBasePointer SpecialVarBase::op_not() const{
+VariableBasePtr SpecialVarBase::op_not() const{
 	return (*MakeVariable()).op_not();
 }
 
 
-VariableBasePointer SpecialVarBase::op_neg() const{
+VariableBasePtr SpecialVarBase::op_neg() const{
 	return (*MakeVariable()).op_not();
 }
 
@@ -202,9 +202,9 @@ BoundFlagVar::BoundFlagVar( const STRING& Name, bool& Flag,
 BoundFlagVar::operator=
 NOTES: Assignment
 */
-VariableBasePointer BoundFlagVar::operator=( const VariableBase& X ){
+VariableBasePtr BoundFlagVar::operator=( const VariableBase& X ){
 	mFlag = X.GetBoolData();
-	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPointer(mpThis) );
+	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPtr(mpThis) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -249,7 +249,7 @@ BoundStringVar::BoundStringVar( const STRING& Name, STRING& String,
  BoundStringVar::operator=
  NOTES: Actually changes the name of a variable.  Scary.
 */
-VariableBasePointer BoundStringVar::operator=( const VariableBase& X )
+VariableBasePtr BoundStringVar::operator=( const VariableBase& X )
 {
 	mString = X.GetStringData();
 	return GetVariableBasePtr();
@@ -298,7 +298,7 @@ BoundNumVar::BoundNumVar( const STRING& Name, NumType& Num,
 BoundNumVar::operator=
 NOTES: Actually changes the name of a variable.  Scary.
 */
-VariableBasePointer BoundNumVar::operator=( const VariableBase& X )
+VariableBasePtr BoundNumVar::operator=( const VariableBase& X )
 {
 	mNum = X.GetNumData();
 	return GetVariableBasePtr();
@@ -388,7 +388,7 @@ ListLengthVar::ListLengthVar( const STRING& Name, List& Parent,
 ListLengthVar
 NOTES: Used to resize the list.  Must an integer >= 0.
 */
-VariableBasePointer ListLengthVar::operator=( const VariableBase& X )
+VariableBasePtr ListLengthVar::operator=( const VariableBase& X )
 {
 	mParent.Resize( X.GetNumData() );
 	return  GetVariableBasePtr();
@@ -442,7 +442,7 @@ PrecisionVar::PrecisionVar( const SS::STRING& Name, Variable& Parent,
  PrecisionVar::operator=
  NOTES: Magical assignment changes the NumType precision.
 */
-VariableBasePointer PrecisionVar::operator=(const VariableBase& X )
+VariableBasePtr PrecisionVar::operator=(const VariableBase& X )
 {
 	static const NumType MinPrecision( MPFR_PREC_MIN );
 	static const NumType MaxPrecision( MPFR_PREC_MAX );

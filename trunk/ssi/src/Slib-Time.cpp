@@ -45,10 +45,10 @@ Time::Time()
 */
 void Time::RegisterPredefined()
 {
-	Register( ScopeObjectPointer( new TimeVar       ( TXT("time"), true, true ) ) );
-	Register( ScopeObjectPointer( new ElapsedSeconds( TXT("elapsed_seconds"), true, true ) ) );
-	Register( ScopeObjectPointer( new DateVar       ( TXT("date"), true, true ) ) );
-	Register( ScopeObjectPointer( new TimeZoneVar   ( TXT("timezone"), true, true ) ) );
+	Register( ScopeObjectPtr( new TimeVar       ( TXT("time"), true, true ) ) );
+	Register( ScopeObjectPtr( new ElapsedSeconds( TXT("elapsed_seconds"), true, true ) ) );
+	Register( ScopeObjectPtr( new DateVar       ( TXT("date"), true, true ) ) );
+	Register( ScopeObjectPtr( new TimeZoneVar   ( TXT("timezone"), true, true ) ) );
 }
 
 

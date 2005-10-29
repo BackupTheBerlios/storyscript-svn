@@ -23,7 +23,7 @@ using namespace SS;
  GetScopeObjectType
  NOTES: A wrapper for the TypeCheckVisitor
 */
-ScopeObjectType SS::GetScopeObjectType( ScopeObjectPointer pSO )
+ScopeObjectType SS::GetScopeObjectType( ScopeObjectPtr pSO )
 {
 	TypeCheckVisitor TypeChecker;
 	pSO->AcceptVisitor( TypeChecker );

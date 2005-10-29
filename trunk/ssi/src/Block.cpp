@@ -39,14 +39,14 @@ void Block::RegisterPredefinedVars()
 	bool WasConst = IsConst();
 	SetConst( false );
 
-	Register( ScopeObjectPointer( new BoundFlagVar( LC_BeenSaid, mBeenSaid, true ) ) );
-	Register( CreateVariable( LC_Output, true, false, STRING() ) );
+	Register( ScopeObjectPtr( new BoundFlagVar( LC_BeenSaid, mBeenSaid, true ) ) );
+	Register( Creator::CreateVariable( LC_Output, true, false, STRING() ) );
 
 	//The STRING(TXT("")) is probably not necessary.  I just want to make sure it
 	//gets created as a string.  Not that it matters.
 
 	//The nextline.
-	Register( CreateObject<List>( LC_NextBlock, true, false ) );
+	Register( Creator::CreateList( LC_NextBlock, true, false ) );
 
 	SetConst( WasConst );
 }
@@ -58,13 +58,13 @@ void Block::RegisterPredefinedVars()
 //		  Operator).  When Operate is called, it sets the input variable to 
 //		  whatever the input is, and then it then Parses itself and returns line.
 //
-VariableBasePointer Block::Operate( VariableBasePointer In )
+VariableBasePtr Block::Operate( VariableBasePtr In )
 {
-	GetScopeObject( LC_Input )->GetListPtr()->CopyExactly( In->GetListPtr()->MakeFlatList() );
+	GetScopeObject( LC_Input )->CastToList()->CopyExactly( In->CastToList()->MakeFlatList() );
 	
-	Interpreter::Instance().Parse( this->GetBlockPtr(), false );
+	Interpreter::Instance().Parse( this->CastToBlock(), false );
 	
-	return GetScopeObject( LC_Output )->GetVariableBasePtr();	
+	return GetScopeObject( LC_Output )->CastToVariableBase();	
 }
 
 
@@ -145,14 +145,12 @@ void Block::SetLine( const STRING& NewLine )
  Block::GetBlockPtr
  NOTES: Overloaded to return itself.
 */
-BlockPointer Block::GetBlockPtr()
-{
-	return boost::dynamic_pointer_cast<Block>( ScopeObjectPointer(mpThis) );
+BlockPtr Block::CastToBlock(){
+	return boost::dynamic_pointer_cast<Block>( ScopeObjectPtr(mpThis) );
 }
 
-const BlockPointer Block::GetBlockPtr() const
-{
-	return boost::dynamic_pointer_cast<Block>( ScopeObjectPointer(mpThis) );
+const BlockPtr Block::CastToBlock() const{
+	return boost::dynamic_pointer_cast<Block>( ScopeObjectPtr(mpThis) );
 }
 
 

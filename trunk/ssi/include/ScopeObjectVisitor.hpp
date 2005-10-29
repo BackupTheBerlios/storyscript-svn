@@ -67,7 +67,7 @@ private:
 };
 
 
-ScopeObjectType GetScopeObjectType( ScopeObjectPointer );
+ScopeObjectType GetScopeObjectType( ScopeObjectPtr );
 
 
 }

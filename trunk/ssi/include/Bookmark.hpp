@@ -24,16 +24,16 @@ struct SS_API Bookmark
 {
 	Bookmark();
 	Bookmark( const SS::STRING& FileName, ReaderPos Position,
-			  unsigned long Line, ScopePointer CurrentScope = ScopePointer(),
-			  ScopePointer CurrentStaticScope = ScopePointer() );
+			  unsigned long Line, ScopePtr CurrentScope = ScopePtr(),
+			  ScopePtr CurrentStaticScope = ScopePtr() );
 
 	bool IsVoid() const;
 
 	SS::STRING FileName;
 	ReaderPos Position;
 	unsigned long Line;
-	ScopePointer CurrentScope;
-	ScopePointer CurrentStaticScope;
+	ScopePtr CurrentScope;
+	ScopePtr CurrentStaticScope;
 };
 
 }//namespace SS

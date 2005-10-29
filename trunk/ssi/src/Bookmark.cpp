@@ -21,8 +21,8 @@ Bookmark::Bookmark()
 Bookmark::Bookmark( const SS::STRING& FileName,
 					ReaderPos Position,
 				    unsigned long Line,
-					ScopePointer CurrentScope /*= ScopePointer()*/,
-					ScopePointer CurrentStaticScope /*= ScopePointer()*/ )
+					ScopePtr CurrentScope /*= ScopePtr()*/,
+					ScopePtr CurrentStaticScope /*= ScopePtr()*/ )
 	: FileName(FileName),
       Position(Position),
 	  Line(Line),

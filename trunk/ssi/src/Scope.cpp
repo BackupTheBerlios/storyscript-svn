@@ -77,9 +77,9 @@ void Scope::RegisterPredefinedVars()
 	bool WasConst = mConst;
 	mConst = false;
 
-	Register( ScopeObjectPointer( new BoundStringVar( LC_Name, mName, true, true ) ) );
-	Register( ScopeObjectPointer( new FullNameVar( LC_FullName, *this, true, true ) ) );
-	Register( ScopeObjectPointer( new BoundNumVar( LC_UniqueID, mUniqueID, true, false ) ) );
+	Register( ScopeObjectPtr( new BoundStringVar( LC_Name, mName, true, true ) ) );
+	Register( ScopeObjectPtr( new FullNameVar( LC_FullName, *this, true, true ) ) );
+	Register( ScopeObjectPtr( new BoundNumVar( LC_UniqueID, mUniqueID, true, false ) ) );
 	
 	mConst = WasConst;
 }
@@ -92,7 +92,7 @@ void Scope::RegisterPredefinedVars()
 // Scope::operator[]
 // NOTES: A shared_ptr to the 
 //
-ScopeObjectPointer Scope::operator[]( const STRING& i )
+ScopeObjectPtr Scope::operator[]( const STRING& i )
 {
 	return GetScopeObject( i );
 }
@@ -102,7 +102,7 @@ ScopeObjectPointer Scope::operator[]( const STRING& i )
 // Scope::Register
 // NOTES: Adds a ScopeObject into the Scope.
 //
-void Scope::Register( ScopeObjectPointer pNewScopeObject )
+void Scope::Register( ScopeObjectPtr pNewScopeObject )
 {
 	AssertNonConst();
 	
@@ -215,7 +215,7 @@ bool Scope::Exists( const STRING& ID )
  NOTES: Returns the next block object in its scope after index.
 		If there is none, it will return an empty pointer.
 */
-BlockPointer Scope::GetNextBlock( BlockPointer pBlock )
+BlockPtr Scope::GetNextBlock( BlockPtr pBlock )
 {
 	if( pBlock->mpParent != this )
 	{
@@ -225,7 +225,7 @@ BlockPointer Scope::GetNextBlock( BlockPointer pBlock )
 		
 	//We will now iterate through every object looking for the next highest
 	//block.  That is, the lowest ID block that is > pBlock->mpUniqueID.
-	BlockPointer PotentialNextBlock;
+	BlockPtr PotentialNextBlock;
 	ScopeListType::iterator i;
 	TypeCheckVisitor TypeChecker;
 	
@@ -234,7 +234,7 @@ BlockPointer Scope::GetNextBlock( BlockPointer pBlock )
 		(*i).second->AcceptVisitor( TypeChecker );
 		if( TypeChecker.ReturnType() == SCOPEOBJ_BLOCK )
 		{
-			BlockPointer tmp( (*i).second->GetBlockPtr() );
+			BlockPtr tmp( (*i).second->CastToBlock() );
 			
 				// tmp's id is higher than pBlock'ss
 			if( tmp->mUniqueID > pBlock->mUniqueID &&
@@ -250,7 +250,7 @@ BlockPointer Scope::GetNextBlock( BlockPointer pBlock )
 	}
 
 	//Found nothing
-	return BlockPointer();
+	return BlockPtr();
 }
 
 
@@ -263,7 +263,7 @@ BlockPointer Scope::GetNextBlock( BlockPointer pBlock )
 		The nothrow version will return an empty pointer if it can't find the object.
 */
 
-ScopeObjectPointer Scope::GetScopeObject_NoThrow( const STRING& Identifier )
+ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 {
 	//Extract the first part of the identifier (maybe there just is one part).
 	STRING FirstPart;
@@ -284,15 +284,15 @@ ScopeObjectPointer Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 	if( (i = mList.find(FirstPart)) != mList.end() )
 	{
 		if( !RemainingPart.empty() ){
-			return (*i).second->GetScopePtr()->GetScopeObject_NoThrow( RemainingPart );
+			return (*i).second->CastToScope()->GetScopeObject_NoThrow( RemainingPart );
 		}
 		else return (*i).second;
 	}
 	
 	
 	//Check the imported scopes
-	const ScopeObjectPointer NULL_SO_PTR;
-	ScopeObjectPointer pPotentialObj;
+	const ScopeObjectPtr NULL_SO_PTR;
+	ScopeObjectPtr pPotentialObj;
 		
 	unsigned int j;
 	for( j = 0; j < mImportedScopes.size(); j++ )
@@ -302,7 +302,7 @@ ScopeObjectPointer Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 		{
 			if( !RemainingPart.empty() )
 			{
-                return pPotentialObj->GetScopePtr()->GetScopeObject_NoThrow( RemainingPart );
+                return pPotentialObj->CastToScope()->GetScopeObject_NoThrow( RemainingPart );
 			}
 			else return pPotentialObj;
 		}
@@ -313,9 +313,9 @@ ScopeObjectPointer Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 }
 
 
-ScopeObjectPointer Scope::GetScopeObject( const STRING& Identifer )
+ScopeObjectPtr Scope::GetScopeObject( const STRING& Identifer )
 {
-	ScopeObjectPointer pReturnValue;
+	ScopeObjectPtr pReturnValue;
 	if( (pReturnValue = GetScopeObject_NoThrow( Identifer )) )
 	{
 		return pReturnValue;
@@ -336,7 +336,7 @@ ScopeObjectPointer Scope::GetScopeObject( const STRING& Identifer )
  NOTES: Moves everything from one scope into another.  Or simulates that
 		anyway.
 */
-void Scope::Import( ScopePointer pScope )
+void Scope::Import( ScopePtr pScope )
 {
 	AssertNonConst();
 
@@ -362,7 +362,7 @@ void Scope::Import( ScopePointer pScope )
  NOTES: UnImports a scope that has been previously imported.  This will throw
 		an exception if the scope hasn't been imported.
 */
-void Scope::UnImport( ScopePointer pScope )
+void Scope::UnImport( ScopePtr pScope )
 {
     AssertNonConst();
 
@@ -387,14 +387,12 @@ void Scope::UnImport( ScopePointer pScope )
  GetScopePtr
  NOTES: Overloaded to return this rather than throwing.
 */
-ScopePointer Scope::GetScopePtr()
-{
-	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPointer(mpThis) );
+ScopePtr Scope::CastToScope(){
+	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPtr(mpThis) );
 }
 
-const ScopePointer Scope::GetScopePtr() const
-{
-	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPointer(mpThis) );
+const ScopePtr Scope::CastToScope() const{
+	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPtr(mpThis) );
 }
 
 

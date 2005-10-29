@@ -34,7 +34,7 @@ class x : public Operator{\
 public:\
 	x( const SS::STRING& Name, bool Static = false, bool Const = false )\
 		 : Operator( Name, Static, Const ){}\
-	VariableBasePointer Operate( VariableBasePointer );\
+	VariableBasePtr Operate( VariableBasePtr );\
  }
 	
 	
@@ -54,10 +54,10 @@ public:
 	
 	void AcceptVisitor( ScopeObjectVisitor& );
 
-	virtual OperatorPointer GetOperatorPtr();
-	virtual const OperatorPointer GetOperatorPtr() const;
+	virtual OperatorPtr GetOperatorPtr();
+	virtual const OperatorPtr GetOperatorPtr() const;
 	
-	virtual VariableBasePointer Operate( VariableBasePointer ) = 0;
+	virtual VariableBasePtr Operate( VariableBasePtr ) = 0;
 	
 
 private:

@@ -46,15 +46,15 @@ public:
 	void erase( unsigned long );
 
 	//Here's the important stuff
-	VariableBasePointer Evaluate() const;
+	VariableBasePtr Evaluate() const;
 
 private:
 	//Expression( std::vector<Word>::iterator First, std::vector<Word>::iterator Last );
 
-	VariableBasePointer RealInterpret( 
+	VariableBasePtr RealInterpret( 
 						bool TopLevel = true,
 						Word Before = NULL_WORD, Word After = NULL_WORD,
-						VariableBasePointer PostValue = VariableBasePointer()  ) const;
+						VariableBasePtr PostValue = VariableBasePtr()  ) const;
 
 	void CheckSyntax( bool IgnoreTrailingOps = false ) const;
 	void StripOutlyingParenthesis() const;
@@ -77,7 +77,7 @@ private:
 	boost::shared_ptr< WordList > mpWordList;
 	//WordList& mWordList;	
 	
-	static std::vector<VariableBasePointer> mUnnamedVariables;
+	static std::vector<VariableBasePtr> mUnnamedVariables;
 	
 	mutable bool mStatic;
 };

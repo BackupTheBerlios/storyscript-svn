@@ -112,30 +112,30 @@ void Interpreter::RegisterSpecials()
 {
 	//The last two values are just bullshit.
 	mpEndBlock = CreateBlock( LC_EndBlock, true, true, Bookmark(), 0 ); 
-	mGlobalScope.Register( ScopeObjectPointer( mpEndBlock ) );
+	mGlobalScope.Register( ScopeObjectPtr( mpEndBlock ) );
 
 	//SLib-Common gets special treatment.  It gets auto-imported.
-	ScopePointer pCommonScope( new SS::SLib::Common );
+	ScopePtr pCommonScope( new SS::SLib::Common );
 	mGlobalScope.Register( pCommonScope );
 	mGlobalScope.Import( pCommonScope );
 	
 	//I'm goig to import List also.  Those seem like pretty common functions
-	ScopePointer pListScope( new SS::SLib::List );
+	ScopePtr pListScope( new SS::SLib::List );
 	mGlobalScope.Register( pListScope );
 	mGlobalScope.Import( pListScope );
 
-	mGlobalScope.Register( ScopeObjectPointer( new SS::SLib::Time ) );
-	mGlobalScope.Register( ScopeObjectPointer( new SS::SLib::Math ) );
+	mGlobalScope.Register( ScopeObjectPtr( new SS::SLib::Time ) );
+	mGlobalScope.Register( ScopeObjectPtr( new SS::SLib::Math ) );
 	
-	mGlobalScope.Register( ScopeObjectPointer( new BoundFlagVar  ( TXT("verbose"), mVerboseOutput, true, true ) ) );
-	mGlobalScope.Register( ScopeObjectPointer( new BoundFlagVar  ( TXT("strict_lists"), gUsingStrictLists, true, true ) ) );
+	mGlobalScope.Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("verbose"), mVerboseOutput, true, true ) ) );
+	mGlobalScope.Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("strict_lists"), gUsingStrictLists, true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  Interpreter::GetCurrentScope
  NOTES: Returns a pointer the current scope.
 */
-ScopePointer Interpreter::GetCurrentScope()
+ScopePtr Interpreter::GetCurrentScope()
 {
 	return mpCurrentScope;
 }
@@ -167,7 +167,7 @@ void Interpreter::SetPos( Bookmark& NewPos )
  NOTES: Returns the first block.  Often used by the Interface if no starting
 		block is set.
 */
-BlockPointer Interpreter::GetFirstBlock()
+BlockPtr Interpreter::GetFirstBlock()
 {
 	AssertFileOpen();
 
@@ -211,10 +211,10 @@ void Interpreter::LoadFile( const STRING& FileName )
 	mFiles[FileName] = pNewFile;
 
 
-	ScopePointer pNewScope( CreateObject<Scope>( 
+	ScopePtr pNewScope( Creator::CreateObject<Scope>( 
 			MakeScopeNameFromFileName( pNewFile->GetFileName() ) ) );
 	
-	mGlobalScope.Register( ScopeObjectPointer( pNewScope ) );
+	mGlobalScope.Register( ScopeObjectPtr( pNewScope ) );
 	mpCurrentScope = pNewScope;
 
 	mpCurrentFile = pNewFile;
@@ -308,10 +308,10 @@ void Interpreter::Close()
 void Interpreter::Parse( const STRING& BlockName )
 {
 	//Attempt to find the block
-	ScopeObjectPointer pBlockHopeful = GetScopeObject( BlockName );
+	ScopeObjectPtr pBlockHopeful = GetScopeObject( BlockName );
 
 	//This will throw if it is indeed not a Block.
-	BlockPointer pBlock = pBlockHopeful->GetBlockPtr();
+	BlockPtr pBlock = pBlockHopeful->GetBlockPtr();
     
 	return Parse( pBlock );
 }
@@ -319,7 +319,7 @@ void Interpreter::Parse( const STRING& BlockName )
 
 
 
-void Interpreter::Parse( BlockPointer pBlock, bool SayBlock /*=true*/ )
+void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/ )
 {
 	try{
 	if( mVerboseOutput )
@@ -349,7 +349,7 @@ void Interpreter::Parse( BlockPointer pBlock, bool SayBlock /*=true*/ )
 	//This is how the magical instance system works.
 	//Every time a block gets executed it creates this temporary instance
 	//scope, which all non-statics get created on
-	ScopePointer pInstance = CreateObject<Scope>( TXT("") );
+	ScopePtr pInstance = Creator::CreateObject<Scope>( TXT("") );
 	pBlock->Import( pInstance );
 
 	Pos.CurrentStaticScope = pBlock;
@@ -381,11 +381,11 @@ void Interpreter::Parse( BlockPointer pBlock, bool SayBlock /*=true*/ )
 
 
 	//Now figure out what block to say next
-	ListPointer pNextLine = pBlock->GetScopeObject( LC_NextBlock )->GetListPtr();
+	ListPtr pNextLine = pBlock->GetScopeObject( LC_NextBlock )->GetListPtr();
 
 	//Create a list of a actual choices.  Throw out bad values.
 	const ListType& OrigChoices = pNextLine->GetInternalList();
-	std::vector<BlockPointer> GoodChoices;
+	std::vector<BlockPtr> GoodChoices;
 	
     unsigned int i;
 	for( i = 0; i < OrigChoices.size(); i ++ )
@@ -398,7 +398,7 @@ void Interpreter::Parse( BlockPointer pBlock, bool SayBlock /*=true*/ )
 		//TODO: Discard non-player choices (maybe?)
 		if( GoodChoices.size() > 1 )
 		{
-			BlockPointer pChoice = GoodChoices[ mpInterface->PresentChoice( GoodChoices ) ];
+			BlockPtr pChoice = GoodChoices[ mpInterface->PresentChoice( GoodChoices ) ];
 			if( pChoice->GetFullName() == mpEndBlock->GetFullName() ) return;
 			else Parse( pChoice );
 		}
@@ -917,10 +917,10 @@ Word Interpreter::BreakOffLastID( Word& W )
         intelligent solution than just calling mpCurrentScope.Register.  This will
 		figure out where the object really belongs.
 */
-ScopeObjectPointer Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING& S,
+ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING& S,
 								   bool Static /*= false*/, bool Const /*= false*/ )
  {
-	ScopeObjectPointer pNewObj;
+	ScopeObjectPtr pNewObj;
 
 	Word TempWord( S, WORDTYPE_IDENTIFIER );
 	STRING Name = BreakOffLastID( TempWord ).String;
@@ -930,23 +930,23 @@ ScopeObjectPointer Interpreter::MakeScopeObject( ScopeObjectType Type, const STR
 	{
 	case SCOPEOBJ_BLOCK:
 		{
-		BlockPointer pTempBlock( CreateBlock( Name, Static, Const,
+		BlockPtr pTempBlock( CreateBlock( Name, Static, Const,
 								 GetCurrentPos(), (BlockIndex)mBlockOrder.size() ) );
 		mBlockOrder.push_back( pTempBlock );
-		pNewObj = (ScopeObjectPointer)pTempBlock ;
+		pNewObj = (ScopeObjectPtr)pTempBlock ;
 		}
 		break;
 	case SCOPEOBJ_VARIABLE:
-		pNewObj = CreateVariable( Name, Static, Const, 0 );
+		pNewObj = Creator::CreateVariable( Name, Static, Const, 0 );
 		break;
 	case SCOPEOBJ_CHARACTER:
-		pNewObj = CreateObject<Character>( Name, Static, Const );
+		pNewObj = Creator::CreateObject<Character>( Name, Static, Const );
 		break;
 	case SCOPEOBJ_SCOPE:
-		pNewObj = CreateObject<Scope>( Name, Static, Const );
+		pNewObj = Creator::CreateObject<Scope>( Name, Static, Const );
 		break;
 	case SCOPEOBJ_LIST:
-		pNewObj = CreateObject<List>( Name, Static, Const );
+		pNewObj = Creator::CreateObject<List>( Name, Static, Const );
 		break;
 	default:
 		SS::STRING tmp = TXT("Tried to register an object with an unknown type named: \'");
@@ -988,12 +988,12 @@ ScopeObjectPointer Interpreter::MakeScopeObject( ScopeObjectType Type, const STR
         This one searches in all the correct places taking into account the current
         scope.
 */
-ScopeObjectPointer Interpreter::GetScopeObject( const STRING& Name )
+ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
 {
 	//Try the local scope first
 
-	ScopePointer pPotentialScope = mpCurrentScope;
-	ScopeObjectPointer pObject;
+	ScopePtr pPotentialScope = mpCurrentScope;
+	ScopeObjectPtr pObject;
 
 	while( true )
 	{
@@ -1046,15 +1046,15 @@ ScopeObjectPointer Interpreter::GetScopeObject( const STRING& Name )
  NOTES: These are all shortcuts for the above.  Mainly just for used by
  		external software.
 */
-ScopePointer Interpreter::GetScope( const STRING& Name ){
+ScopePtr Interpreter::GetScope( const STRING& Name ){
 	return GetScopeObject( Name )->GetScopePtr();
 }
 
-VariablePointer Interpreter::GetVariable( const STRING& Name ){
+VariablePtr Interpreter::GetVariable( const STRING& Name ){
 	return GetScopeObject( Name )->GetVariablePtr();
 }
 
-BlockPointer Interpreter::GetBlock( const STRING& Name ){
+BlockPtr Interpreter::GetBlock( const STRING& Name ){
 	return GetScopeObject( Name )->GetBlockPtr();
 }
 
@@ -1163,7 +1163,7 @@ void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
 	Bookmark ImportedFile( FileName, 0, 0 );
 	ReaderSourceFile& TheFile = Interpreter::Instance().GetFile( ImportedFile ); 
 	
-	ScopePointer pTmpObj = GetScope( MakeScopeNameFromFileName( TheFile.GetFileName() ) );
+	ScopePtr pTmpObj = GetScope( MakeScopeNameFromFileName( TheFile.GetFileName() ) );
 
 	//Return the file and position to its previous settings
 	GetFile( OldPos );

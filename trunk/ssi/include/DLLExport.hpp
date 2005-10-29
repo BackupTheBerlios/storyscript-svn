@@ -58,7 +58,7 @@ class SS_API boost::detail::weak_count;
 
 
 EXPIMP_TEMPLATE template class SS_API boost::shared_ptr<ScopeObject>;
-EXPIMP_TEMPLATE template class SS_API boost::shared_ptr<ScriptFile>;
+//EXPIMP_TEMPLATE template class SS_API boost::shared_ptr<ScriptFile>;
 EXPIMP_TEMPLATE template class boost::shared_ptr<Scope>;
 EXPIMP_TEMPLATE template class boost::shared_ptr<Variable>;
 EXPIMP_TEMPLATE template class SS_API boost::shared_ptr<Block>;
@@ -72,33 +72,21 @@ EXPIMP_TEMPLATE template class boost::weak_ptr<Block>;
 
 
 //For Scope
-EXPIMP_TEMPLATE template class SS_API std::allocator<ScopeObjectPointer>;
-EXPIMP_TEMPLATE template class SS_API std::vector<ScopeObjectPointer>;
-EXPIMP_TEMPLATE template class SS_API std::allocator<ScopePointer>;
-EXPIMP_TEMPLATE template class SS_API std::vector<ScopePointer>;
+EXPIMP_TEMPLATE template class SS_API std::allocator<ScopeObjectPtr>;
+EXPIMP_TEMPLATE template class SS_API std::vector<ScopeObjectPtr>;
+EXPIMP_TEMPLATE template class SS_API std::allocator<ScopePtr>;
+EXPIMP_TEMPLATE template class SS_API std::vector<ScopePtr>;
 
 
 //For Interpreter
-EXPIMP_TEMPLATE template class SS_API std::allocator<BlockPointer>;
-EXPIMP_TEMPLATE template class SS_API std::vector<BlockPointer>;
-
-
-//All this...
-
-EXPIMP_TEMPLATE template struct SS_API std::less< SS::STRING >;
-EXPIMP_TEMPLATE template class SS_API std::allocator< std::_Tree_nod<std::_Tmap_traits<SS::STRING,SS::ScriptFilePointer,std::less<SS::STRING>,std::allocator<std::pair<const SS::STRING,SS::ScriptFilePointer> >,false> >::_Node >;
-EXPIMP_TEMPLATE template class SS_API std::allocator< std::_Tree_ptr<std::_Tmap_traits<SS::STRING,SS::ScriptFilePointer,std::less<SS::STRING>,std::allocator<std::pair<const SS::STRING,SS::ScriptFilePointer> >,false> >::_Nodeptr >;
-EXPIMP_TEMPLATE template class SS_API std::allocator< std::pair<const SS::STRING,SS::ScriptFilePointer> >;
-//...is just so this will work.
-EXPIMP_TEMPLATE template class SS_API std::map< SS::STRING, ScriptFilePointer >;
-
-
+EXPIMP_TEMPLATE template class SS_API std::allocator<BlockPtr>;
+EXPIMP_TEMPLATE template class SS_API std::vector<BlockPtr>;
 
 
 
 //For List
-//EXPIMP_TEMPLATE template class std::allocator<VariableBasePointer>;
-//EXPIMP_TEMPLATE template class std::vector<VariableBasePointer>;
+//EXPIMP_TEMPLATE template class std::allocator<VariableBasePtr>;
+//EXPIMP_TEMPLATE template class std::vector<VariableBasePtr>;
 
 
 

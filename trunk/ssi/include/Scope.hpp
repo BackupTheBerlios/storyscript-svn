@@ -26,46 +26,49 @@ namespace SS{
 class SS_API Scope : public ScopeObject
 {
 public:
-	Scope();
-	Scope( const SS::STRING& Name, bool Static = false, bool Const = false );
-
+	friend class Creator;
 	virtual ~Scope() {};
 
 	virtual void AcceptVisitor( ScopeObjectVisitor& );
 
-	ScopeObjectPointer operator[]( const SS::STRING& );
+	ScopeObjectPtr operator[]( const SS::STRING& );
 	
-	void Register  ( ScopeObjectPointer );
+	void Register  ( ScopeObjectPtr );
 	void UnRegister( const SS::STRING& );
-	//void UnRegister( ScopeObjectPointer );
+	//void UnRegister( ScopeObjectPtr );
 
 	void Clear();
 
 	bool Exists( const SS::STRING& ID );
 
-	BlockPointer GetNextBlock( BlockPointer );
+	BlockPtr GetNextBlock( BlockPtr );
 
-	ScopeObjectPointer GetScopeObject_NoThrow( const SS::STRING& );
-	ScopeObjectPointer GetScopeObject( const SS::STRING& );
+	ScopeObjectPtr GetScopeObject_NoThrow( const SS::STRING& );
+	ScopeObjectPtr GetScopeObject( const SS::STRING& );
 	
-	void Import( ScopePointer );
-	void UnImport( ScopePointer );
+	void Import( ScopePtr );
+	void UnImport( ScopePtr );
 	
-	ScopePointer GetScopePtr();
-	const ScopePointer GetScopePtr() const;
-	
-	void RegisterPredefinedVars();
+	ScopePtr CastToScope();
+	const ScopePtr CastToScope() const;
+
+protected:
+	Scope();
+	Scope( const SS::STRING& Name, bool Static = false, bool Const = false );
+
 
 private:
+	void RegisterPredefinedVars();
+
 	Scope& GetGlobalScope();
 
 	
 
-	//typedef __gnu_cxx::hash_map< SS::STRING, ScopeObjectPointer > ScopeListType;
+	//typedef __gnu_cxx::hash_map< SS::STRING, ScopeObjectPtr > ScopeListType;
 	
 	ScopeListType mList;
 	
-	std::vector< ScopePointer > mImportedScopes;
+	std::vector< ScopePtr > mImportedScopes;
 
 };
 

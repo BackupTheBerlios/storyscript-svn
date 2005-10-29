@@ -26,11 +26,8 @@ const STRING SS::UNNAMMED;
 //
 ScopeObject::ScopeObject()
 {
+	//Realistically, the default constructor is probabably never called.
 	ZeroVars();
-	mpThisFallback.reset( this, null_deleter() );
-	
-	//This lets Get____Ptr functions return something even when they aren't registered.
-	mpThis = mpThisFallback;
 }
 
 
@@ -41,9 +38,6 @@ ScopeObject::ScopeObject( const STRING& Name,
 	mName = Name;
 	mStatic = Static;
 	mConst = Const;
-	mpThisFallback.reset( this, null_deleter() );
-
-	mpThis = mpThisFallback;
 }
 
 
@@ -127,9 +121,9 @@ bool ScopeObject::IsRegistered() const
  ScopeObject::GetParent
  NOTES: Returns a pointer to the parent Scope.
 */
-ScopePointer ScopeObject::GetParent() const
+ScopePtr ScopeObject::GetParent() const
 {
-	return ScopePointer( mpParent, null_deleter() );
+	return ScopePtr( mpParent, null_deleter() );
 }
 
 //~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -146,7 +140,7 @@ void ScopeObject::SetName( const STRING& NewName )
 	{
 		//I'm not using "this" because I'm afraid this
 		//will get deleted when the pointer is reset() in UnRegister
-		ScopeObjectPointer pTemp = (*mpParent)[GetName()];
+		ScopeObjectPtr pTemp = (*mpParent)[GetName()];
 		Scope* pParentScope = this->mpParent;
 		
 		pParentScope->UnRegister( GetName() );
@@ -205,9 +199,9 @@ SS::CHAR* ScopeObject::GetFullName( SS::CHAR* Buffer, unsigned int BufferSize ) 
  NOTES: Sets internal pointer that points to itself.  This gets done automatically
 		when an object gets registered on a scope.  If you don't register it
 		somewhere and pass it around a bunch, there will be no proper
-		garbage collection.  Better yet, you should just use CreateObject.
+		garbage collection.  Better yet, you should just use Creator::CreateObject.
 */
-void ScopeObject::SetSharedPtr( const ScopeObjectPointer& pY ){
+void ScopeObject::SetSharedPtr( const ScopeObjectPtr& pY ){
 	mpThis = pY;
 }
 
@@ -243,98 +237,89 @@ void ScopeObject::AssertNonConst()
         its not, it will throw.
 */
 
-//ScopeObjectPointer
-ScopeObjectPointer ScopeObject::GetScopeObjectPtr(){
-	return ScopeObjectPointer(mpThis);
+//ScopeObject
+ScopeObjectPtr ScopeObject::CastToScopeObject(){
+	return ScopeObjectPtr(mpThis);
 }
 
-const ScopeObjectPointer ScopeObject::GetScopeObjectPtr() const{
-	return ScopeObjectPointer(mpThis);
+const ScopeObjectPtr ScopeObject::CastToScopeObject() const{
+	return ScopeObjectPtr(mpThis);
 }
 
-//ScopePointer
-ScopePointer ScopeObject::GetScopePtr(){
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to a Scope.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
+//Scope
+ScopePtr ScopeObject::CastToScope(){
+	ThrowBadConversion( TXT("Scope") );
 }
 
-const ScopePointer ScopeObject::GetScopePtr() const{
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to a Scope.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
+const ScopePtr ScopeObject::CastToScope() const{
+	ThrowBadConversion( TXT("Scope") );
 }
 
-
-VariableBasePointer ScopeObject::GetVariableBasePtr(){
-	return VariableBasePointer( GetVariablePtr() );
+//VariableBase
+VariableBasePtr ScopeObject::CastToVariableBase(){
+	return VariableBasePtr( this->CastToVariable() );
 }
 
-const VariableBasePointer ScopeObject::GetVariableBasePtr() const{
-	return VariableBasePointer( GetVariableBasePtr() );
+const VariableBasePtr ScopeObject::CastToVariableBase() const{
+	return VariableBasePtr( this->CastToVariable() );
 }
 
-
-//VariablePointer
-VariablePointer ScopeObject::GetVariablePtr(){
-	return CreateVariable( GetFullName(), false, true, GetFullName() );
+//Variable (Current default behavior is to return a variable of its full name.)
+VariablePtr ScopeObject::CastToVariable(){
+	return Creator::CreateVariable( GetFullName(), false, true, GetFullName() );
 }
 
-const VariablePointer ScopeObject::GetVariablePtr() const{
-	return CreateVariable( GetFullName(), false, true, GetFullName() );
-}
-
-//BlockPointer
-BlockPointer ScopeObject::GetBlockPtr(){
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to a Block.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
-}
-
-
-const BlockPointer ScopeObject::GetBlockPtr() const{
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to a Block.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
-}
-
-
-//VarListPointer
-ListPointer ScopeObject::GetListPtr(){
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to a List.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
-}
-
-const ListPointer ScopeObject::GetListPtr() const{
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to a List.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
+const VariablePtr ScopeObject::CastToVariable() const{
+	return Creator::CreateVariable( GetFullName(), false, true, GetFullName() );
 }
 
 
 
-//OperatorPointer
-OperatorPointer ScopeObject::GetOperatorPtr(){
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to an Operator. This probably means you left an operator out somewhere.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
+//BlockPtr
+BlockPtr ScopeObject::CastToBlock(){
+	ThrowBadConversion( TXT("Block") );
+}
+
+const BlockPtr ScopeObject::CastToBlock() const{
+	ThrowBadConversion( TXT("Block") );
 }
 
 
-const OperatorPointer ScopeObject::GetOperatorPtr() const{
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a ScopeObject to an Operator. This probably means you left an operator out somewhere.");
-	ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
+
+//VarListPtr
+ListPtr ScopeObject::CastToList(){
+	ThrowBadConversion( TXT("List") );
 }
 
+const ListPtr ScopeObject::CastToList() const{
+	ThrowBadConversion( TXT("List") );
+}
+
+
+
+//OperatorPtr
+OperatorPtr ScopeObject::CastToOperator(){
+	ThrowBadConversion( TXT("Operator"), TXT("(Probably due to a missing operator somewhere.)") );
+}
+
+const OperatorPtr ScopeObject::CastToOperator() const{
+	ThrowBadConversion( TXT("Operator"), TXT("(Probably due to a missing operator somewhere.)") );
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: To easily handle all those messy bad conversion anomalies.
+*/
+void ScopeObject::ThrowBadConversion( const STRING& Type, const STRING& Addendum /*= STRING()*/ ) const
+{
+	STRING m = TXT("Cannot cast \'");
+	m += mName;
+	m += TXT("\' to a ");
+	m += Type;
+	m += TXT(". ");
+	m += Addendum;
+
+	ThrowParserAnomaly( m, ANOMALY_NOCONVERSION );
+}
 
 

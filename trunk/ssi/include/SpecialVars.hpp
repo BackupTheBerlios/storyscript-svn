@@ -33,32 +33,32 @@ public:
 					bool Static = false, bool Const = false );
 	~SpecialVarBase();
 
-	VariableBasePointer operator+(const VariableBase&) const;
-	VariableBasePointer operator-(const VariableBase&) const;
-	VariableBasePointer operator*(const VariableBase&) const;
-	VariableBasePointer operator/(const VariableBase&) const;
-	VariableBasePointer operator=(const VariableBase&);
+	VariableBasePtr operator+(const VariableBase&) const;
+	VariableBasePtr operator-(const VariableBase&) const;
+	VariableBasePtr operator*(const VariableBase&) const;
+	VariableBasePtr operator/(const VariableBase&) const;
+	VariableBasePtr operator=(const VariableBase&);
 
 
-	VariableBasePointer operator==(const VariableBase&) const;
-	VariableBasePointer operator!=(const VariableBase&) const;
-	VariableBasePointer operator>=(const VariableBase&) const;
-	VariableBasePointer operator<=(const VariableBase&) const;
-	VariableBasePointer operator> (const VariableBase&) const;
-	VariableBasePointer operator< (const VariableBase&) const;
-	VariableBasePointer operator&&(const VariableBase&) const;
-	VariableBasePointer operator||(const VariableBase&) const;
+	VariableBasePtr operator==(const VariableBase&) const;
+	VariableBasePtr operator!=(const VariableBase&) const;
+	VariableBasePtr operator>=(const VariableBase&) const;
+	VariableBasePtr operator<=(const VariableBase&) const;
+	VariableBasePtr operator> (const VariableBase&) const;
+	VariableBasePtr operator< (const VariableBase&) const;
+	VariableBasePtr operator&&(const VariableBase&) const;
+	VariableBasePtr operator||(const VariableBase&) const;
 	
-	virtual VariableBasePointer op_not() const;
-	virtual VariableBasePointer op_neg() const;
+	virtual VariableBasePtr op_not() const;
+	virtual VariableBasePtr op_neg() const;
 
-	VariablePointer GetVariablePtr();
-	const VariablePointer GetVariablePtr() const;
+	VariablePtr GetVariablePtr();
+	const VariablePtr GetVariablePtr() const;
 
 
 
 protected:
-	VariablePointer MakeVariable() const;
+	VariablePtr MakeVariable() const;
 
 	NumType GetNumDataFromBool() const;
 	NumType GetNumDataFromString() const;
@@ -82,7 +82,7 @@ public:
 	BoundFlagVar( const SS::STRING& Name, bool& Flag, 
 				  bool Static = false, bool Const = false );
 	
-	virtual VariableBasePointer operator=(const VariableBase&);
+	virtual VariableBasePtr operator=(const VariableBase&);
 
 	VarType GetVariableType() const;
 
@@ -106,7 +106,7 @@ public:
 	BoundStringVar( const SS::STRING& Name, SS::STRING& String,
 					bool Static = false, bool Const = false );
 
-	virtual VariableBasePointer operator=( const VariableBase& );
+	virtual VariableBasePtr operator=( const VariableBase& );
 
 	VarType GetVariableType() const;
 
@@ -130,7 +130,7 @@ public:
 	BoundNumVar( const SS::STRING& Name, NumType& Num,
 		bool Static = false, bool Const = false );
 
-	virtual VariableBasePointer operator=( const VariableBase& );
+	virtual VariableBasePtr operator=( const VariableBase& );
 
 	VarType GetVariableType() const;
 
@@ -178,7 +178,7 @@ public:
 	ListLengthVar( const SS::STRING& Name, List& Parent,
 				   bool Static = false, bool Const = false );
 
-	VariableBasePointer operator=(const VariableBase&);
+	VariableBasePtr operator=(const VariableBase&);
 
 	VarType GetVariableType() const;
 
@@ -202,7 +202,7 @@ public:
 	PrecisionVar( const SS::STRING& Name, Variable& Parent,
 				  bool Static = false, bool Const = false );
 
-	VariableBasePointer operator=( const VariableBase&);
+	VariableBasePtr operator=( const VariableBase&);
 
 	VarType GetVariableType() const;
 

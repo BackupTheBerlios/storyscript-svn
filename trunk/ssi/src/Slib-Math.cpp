@@ -44,23 +44,23 @@ Math::Math()
 void Math::RegisterPredefined()
 {
 	//Functions
-	Register( ScopeObjectPointer( new sqrt( TXT("sqrt"), true, true ) ) );	
-	Register( ScopeObjectPointer( new abs( TXT("abs"), true, true ) ) );
-	Register( ScopeObjectPointer( new mean( TXT("mean"), true, true ) ) );
-	Register( ScopeObjectPointer( new sin( TXT("sin"), true, true ) ) );
-	Register( ScopeObjectPointer( new cos( TXT("cos"), true, true ) ) );
-	Register( ScopeObjectPointer( new tan( TXT("tan"), true, true ) ) );
-	Register( ScopeObjectPointer( new asin( TXT("asin"), true, true ) ) );
-	Register( ScopeObjectPointer( new acos( TXT("acos"), true, true ) ) );
-	Register( ScopeObjectPointer( new atan( TXT("atan"), true, true ) ) );
-	Register( ScopeObjectPointer( new max( TXT("max"), true, true ) ) );
-	Register( ScopeObjectPointer( new min( TXT("min"), true, true ) ) );
-	Register( ScopeObjectPointer( new Int( TXT("int"), true, true ) ) );
-	Register( ScopeObjectPointer( new Floor( TXT("floor"), true, true ) ) );
+	Register( ScopeObjectPtr( new sqrt( TXT("sqrt"), true, true ) ) );	
+	Register( ScopeObjectPtr( new abs( TXT("abs"), true, true ) ) );
+	Register( ScopeObjectPtr( new mean( TXT("mean"), true, true ) ) );
+	Register( ScopeObjectPtr( new sin( TXT("sin"), true, true ) ) );
+	Register( ScopeObjectPtr( new cos( TXT("cos"), true, true ) ) );
+	Register( ScopeObjectPtr( new tan( TXT("tan"), true, true ) ) );
+	Register( ScopeObjectPtr( new asin( TXT("asin"), true, true ) ) );
+	Register( ScopeObjectPtr( new acos( TXT("acos"), true, true ) ) );
+	Register( ScopeObjectPtr( new atan( TXT("atan"), true, true ) ) );
+	Register( ScopeObjectPtr( new max( TXT("max"), true, true ) ) );
+	Register( ScopeObjectPtr( new min( TXT("min"), true, true ) ) );
+	Register( ScopeObjectPtr( new Int( TXT("int"), true, true ) ) );
+	Register( ScopeObjectPtr( new Floor( TXT("floor"), true, true ) ) );
 	
 	//Magic Variables
-	Register( ScopeObjectPointer( new Pi( TXT("pi"), true, true ) ) );
-	Register( ScopeObjectPointer( new Euler( TXT("e"), true, true ) ) );
+	Register( ScopeObjectPtr( new Pi( TXT("pi"), true, true ) ) );
+	Register( ScopeObjectPtr( new Euler( TXT("e"), true, true ) ) );
 }
 
 
@@ -69,33 +69,33 @@ void Math::RegisterPredefined()
 // sqrt::Operate
 // NOTES: Performes the square root operation.
 //
-VariableBasePointer SS::SLib::sqrt::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::sqrt::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_sqrt( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 	
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );	
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );	
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  abs::Operate
  NOTES: The absolute value operator.
 */
-VariableBasePointer SS::SLib::abs::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::abs::Operate( VariableBasePtr X )
 {
     NumType Tmp;
 	mpfr_abs( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  mean::Operate
  NOTES: The mean functions.
 */
-VariableBasePointer SS::SLib::mean::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::mean::Operate( VariableBasePtr X )
 {
-    ListPointer pLst = X->GetListPtr();
+    ListPtr pLst = X->GetListPtr();
 
 	NumType Tmp = 0;
 	unsigned int i;
@@ -105,7 +105,7 @@ VariableBasePointer SS::SLib::mean::Operate( VariableBasePointer X )
 
 	Tmp /= NumType( i );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -113,12 +113,12 @@ VariableBasePointer SS::SLib::mean::Operate( VariableBasePointer X )
  sin::Operate
  NOTES: The sine function
 */
-VariableBasePointer SS::SLib::sin::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::sin::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_sin( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -126,12 +126,12 @@ VariableBasePointer SS::SLib::sin::Operate( VariableBasePointer X )
  cos::Operate
  NOTES: The cosine function.
 */
-VariableBasePointer SS::SLib::cos::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::cos::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_cos( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -139,12 +139,12 @@ VariableBasePointer SS::SLib::cos::Operate( VariableBasePointer X )
  tan::Operate
  NOTES: The tangent function.
 */
-VariableBasePointer SS::SLib::tan::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::tan::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_tan( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -153,12 +153,12 @@ VariableBasePointer SS::SLib::tan::Operate( VariableBasePointer X )
 asin::Operate
 NOTES: arc-sine
 */
-VariableBasePointer SS::SLib::asin::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::asin::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_asin( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -166,12 +166,12 @@ VariableBasePointer SS::SLib::asin::Operate( VariableBasePointer X )
 acos::Operate
 NOTES: arc-cosine
 */
-VariableBasePointer SS::SLib::acos::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::acos::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_acos( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -179,12 +179,12 @@ VariableBasePointer SS::SLib::acos::Operate( VariableBasePointer X )
 atan::Operate
 NOTES: arc-tangent
 */
-VariableBasePointer SS::SLib::atan::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::atan::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_atan( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
 
 
@@ -193,11 +193,11 @@ VariableBasePointer SS::SLib::atan::Operate( VariableBasePointer X )
  max::Operate
  NOTES: The maximum function.
 */
-VariableBasePointer SS::SLib::max::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::max::Operate( VariableBasePtr X )
 {
 	const ListType& TheList = X->GetListPtr()->MakeFlatList()->GetInternalList();
 
-	VariableBasePointer Result = TheList[0];
+	VariableBasePtr Result = TheList[0];
 
 	unsigned int i;
 	for( i = 0; i < TheList.size(); i++ )	{
@@ -212,11 +212,11 @@ VariableBasePointer SS::SLib::max::Operate( VariableBasePointer X )
 min::Operate
 NOTES: The maximum function.
 */
-VariableBasePointer SS::SLib::min::Operate( VariableBasePointer X )
+VariableBasePtr SS::SLib::min::Operate( VariableBasePtr X )
 {
 	const ListType& TheList = X->GetListPtr()->MakeFlatList()->GetInternalList();
 
-	VariableBasePointer Result = TheList[0];
+	VariableBasePtr Result = TheList[0];
 
 	unsigned int i;
 	for( i = 0; i < TheList.size(); i++ )	{
@@ -230,23 +230,23 @@ VariableBasePointer SS::SLib::min::Operate( VariableBasePointer X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Rounds the number to the nearest integer.
 */
-VariableBasePointer Int::Operate( VariableBasePointer X )
+VariableBasePtr Int::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_round( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
 	
-	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
+	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Rounds to the next lowest integer.
 */
-VariableBasePointer Floor::Operate( VariableBasePointer X )
+VariableBasePtr Floor::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
 	mpfr_floor( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
 	
-	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
+	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
 
 
@@ -264,7 +264,7 @@ MathConstPrec::MathConstPrec( const SS::STRING& Name, MathConst& Parent,
  NOTES: Along with assigning to the var, it tells the MathConst to update.
  		Hmm..this looks oddly familiar to PrecisionVar::operator= ...
 */
-VariableBasePointer MathConstPrec::operator=( const VariableBase& X )
+VariableBasePtr MathConstPrec::operator=( const VariableBase& X )
 {
 	static const NumType MinPrecision( MPFR_PREC_MIN );
 	static const NumType MaxPrecision( MPFR_PREC_MAX );
@@ -336,7 +336,7 @@ MathConst::MathConst( SS_DECLARE_BASE_ARGS )
 {
 	bool WasConst = mConst;
 	SetConst( false );
-	Register( ScopeObjectPointer( new MathConstPrec( LC_Precision, *this, true, true ) ) );
+	Register( ScopeObjectPtr( new MathConstPrec( LC_Precision, *this, true, true ) ) );
 	SetConst( WasConst );
 }
 

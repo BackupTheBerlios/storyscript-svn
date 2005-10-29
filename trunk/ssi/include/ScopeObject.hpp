@@ -14,7 +14,6 @@ NOTES: Anything that can reside in a scope derives from this (Scope).
 #include "Types.hpp"
 #include "DLLExport.hpp"
 
-
 #include "ScopeObjectVisitor.hpp"
 #include <vector>
 #include <map>
@@ -34,7 +33,7 @@ static const ScopeIndex INIT_SCOPEINDEX = ~0U;
 //      in the scope, so this should suffice.
 	*/
 	
-//extern VariablePointer INITIAL_UID;
+//extern VariablePtr INITIAL_UID;
 #define SS_INITIAL_UID -1
 
 
@@ -57,6 +56,33 @@ class Interpreter;
 #define SS_BASE_ARGS_DEFAULTS UNNAMMED, false, true
 extern SS_API const STRING UNNAMMED;
 
+//
+//There are certain classes that should not cast.  Because it is unsafe to do
+//so.  (ie. classes that are not created by Creator).  This should be put in
+//those classes declarations.
+#define SS_CLASS_DOES_NOT_CAST \
+	ScopeObjectPtr CastToScopeObject() { return ScopeObject::CastToScope(); }\
+	const ScopeObjectPtr CastToScopeObject() const { return ScopeObject::CastToScope(); }\
+
+	virtual ScopePtr CastToScope();
+	virtual const ScopePtr CastToScope() const;
+
+	virtual VariableBasePtr CastToVariableBase();
+	virtual const VariableBasePtr CastToVariableBase() const;
+
+	virtual VariablePtr CastToVariable();
+	virtual const VariablePtr CastToVariable() const;
+
+	virtual BlockPtr CastToBlock();
+	virtual const BlockPtr CastToBlock() const;
+
+	virtual ListPtr CastToList();
+	virtual const ListPtr CastToList() const;
+
+	virtual OperatorPtr CastToOperator();
+	virtual const OperatorPtr CastToOperator() const;
+
+
 
 
 //~~~~~~~CLASS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,15 +91,18 @@ extern SS_API const STRING UNNAMMED;
 //
 class SS_API ScopeObject
 {
-public:
+protected:
+	friend class Creator;
 	ScopeObject();
 	ScopeObject( const SS::STRING& Name, bool Static = false, bool Const = false );
+
+public:
 	virtual ~ScopeObject();
 
 	virtual void AcceptVisitor( ScopeObjectVisitor& );
 
 	bool IsRegistered() const;
-	ScopePointer GetParent() const;
+	ScopePtr GetParent() const;
 
 	bool IsStatic() const;
 	void SetStatic( bool Flag = true );
@@ -88,55 +117,59 @@ public:
 	//These two do the same as the above, only they they write to a string
 	//provided.  This is a workaround for memory corruption problems
 	//involved when using SSI in dll form and not using the multi-threaded DLL
-	//form the standard libraries.
+	//form of the standard libraries.  (in windows)
 	SS::CHAR* GetName( SS::CHAR* Buffer, unsigned int BufferSize ) const;
 	SS::CHAR* GetFullName( SS::CHAR* Buffer, unsigned int BufferSize ) const;
 
-	void SetSharedPtr( const ScopeObjectPointer& );
+	void SetSharedPtr( const ScopeObjectPtr& );
 
 	void UnRegister();
 
 
 	//Conversion functions.
-	ScopeObjectPointer GetScopeObjectPtr();
-	const ScopeObjectPointer GetScopeObjectPtr() const;
-
-	virtual ScopePointer GetScopePtr();
-	virtual const ScopePointer GetScopePtr() const;
-
-	virtual VariableBasePointer GetVariableBasePtr();
-	virtual const VariableBasePointer GetVariableBasePtr() const;
-
-	virtual VariablePointer GetVariablePtr();
-	virtual const VariablePointer GetVariablePtr() const;
-
-	virtual BlockPointer GetBlockPtr();
-	virtual const BlockPointer GetBlockPtr() const;
-
-	virtual ListPointer GetListPtr();
-	virtual const ListPointer GetListPtr() const;
+	void AssertCastingAllowed() const;
 	
-	virtual OperatorPointer GetOperatorPtr();
-	virtual const OperatorPointer GetOperatorPtr() const;
+	ScopeObjectPtr CastToScopeObject();
+	const ScopeObjectPtr CastToScopeObject() const;
 	
+	virtual ScopePtr CastToScope();
+	virtual const ScopePtr CastToScope() const;
 
+	virtual VariableBasePtr CastToVariableBase();
+	virtual const VariableBasePtr CastToVariableBase() const;
 
-	//I would rather not do this, but...
+	virtual VariablePtr CastToVariable();
+	virtual const VariablePtr CastToVariable() const;
+
+	virtual BlockPtr CastToBlock();
+	virtual const BlockPtr CastToBlock() const;
+
+	virtual ListPtr CastToList();
+	virtual const ListPtr CastToList() const;
+
+	virtual OperatorPtr CastToOperator();
+	virtual const OperatorPtr CastToOperator() const;
+
+	//To allow easy and safe scope registering.
 	friend class Scope;
 
 protected:
 	void AssertNonConst();
 
 	SS::STRING mName;
-	ScopeObjectPointerWeak mpThis;
-	ScopeObjectPointer mpThisFallback;
+	ScopeObjectPtrWeak mpThis;
 
 	bool mStatic;
 	bool mConst;
 
 private:
+
+	void ThrowBadConversion( const STRING& Type, const STRING& Addendum = STRING()  ) const;
+
+
 	void ZeroVars();
 
+	//These are simply to keep track of the order in which objects were registered on a scope.
 	NumType mUniqueID;
 	
 	Scope* mpParent;

@@ -16,9 +16,9 @@ using namespace SS;
 
 
 //The global empty list variable
-ListPointer SS::gpEmptyList;
+ListPtr SS::gpEmptyList;
 
-//const ListPointer SS::gpEmptyList( new List( SS::STRING(), true, true ) );
+//const ListPtr SS::gpEmptyList( new List( SS::STRING(), true, true ) );
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -53,12 +53,14 @@ void List::AcceptVisitor( ScopeObjectVisitor& V ){
  List::GetListPtr
  NOTES: Returns itself in list form.
 */
-ListPointer List::GetListPtr(){
-	return boost::dynamic_pointer_cast<List>( ScopeObjectPointer( mpThis ) );
+ListPtr List::GetListPtr(){
+	AssertCastingAllowed();
+	return boost::dynamic_pointer_cast<List>( ScopeObjectPtr( mpThis ) );
 }
 
-const ListPointer List::GetListPtr() const{
-	return boost::dynamic_pointer_cast<List>( ScopeObjectPointer( mpThis ) );
+const ListPtr List::GetListPtr() const{
+	AssertCastingAllowed();
+	return boost::dynamic_pointer_cast<List>( ScopeObjectPtr( mpThis ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -90,9 +92,9 @@ void List::Resize( const NumType& NewSize )
  List::Push
  NOTES: Adds an element to the end of the list.
 */
-VariableBasePointer List::Push( VariableBasePointer pNewElement )
+VariableBasePtr List::Push( VariableBasePtr pNewElement )
 {
-	VariableBasePointer pNewVar = CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 );
+	VariableBasePtr pNewVar = Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 );
 	*pNewVar = *pNewElement;
 	
 	mList.push_back( pNewVar );
@@ -105,14 +107,14 @@ VariableBasePointer List::Push( VariableBasePointer pNewElement )
  List::Pop
  NOTES: Removes an element from the end of the list.
 */
-VariableBasePointer List::Pop(){
+VariableBasePtr List::Pop(){
 	if( mList.size() == 0 )	{		
 		SS::STRING tmp = mName;
 		tmp += TXT(" has no element to remove.");
 		ThrowParserAnomaly( tmp, ANOMALY_NOLISTELEMENT );
 	}
 
-	VariableBasePointer OldEndElement = mList.back();
+	VariableBasePtr OldEndElement = mList.back();
 	mList.pop_back();
 	return OldEndElement;
 }
@@ -122,12 +124,12 @@ VariableBasePointer List::Pop(){
  List::Append
  NOTES: Adds all the elements of one list onto another.
 */
-void List::Append( const ListPointer OtherList ){
+void List::Append( const ListPtr OtherList ){
 	unsigned int i;
 	const ListType& OtherVector = OtherList->GetInternalList();
 	
 	for( i = 0; i < OtherVector.size(); i++ ){
-		mList.push_back( CreateVariable( SS_BASE_ARGS_DEFAULTS, *(OtherVector[i]->GetVariablePtr()) ) );
+		mList.push_back( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, *(OtherVector[i]->GetVariablePtr()) ) );
 	}
 }
 
@@ -136,7 +138,7 @@ void List::Append( const ListPointer OtherList ){
  		uses the pointer its given.  This is useful if you want to have
  		multiple aliases for an object.
 */
-void List::AppendWithoutCopy( VariableBasePointer X )
+void List::AppendWithoutCopy( VariableBasePtr X )
 {
 	mList.push_back( X );	
 }
@@ -145,7 +147,7 @@ void List::AppendWithoutCopy( VariableBasePointer X )
  NOTES: Similar as the above, but it adds every element in the given list,
  		rather than the list itself.
 */
-void List::AppendListWithoutCopy( ListPointer X )
+void List::AppendListWithoutCopy( ListPtr X )
 {
 	unsigned int i;
 	for( i = 0; i< X->GetInternalList().size(); i++ )
@@ -159,7 +161,7 @@ void List::AppendListWithoutCopy( ListPointer X )
  NOTES: If a the list is multideminsional, FlattenList will create a single
  		deminsional version and return it.
 */
-ListPointer List::MakeFlatList() const
+ListPtr List::MakeFlatList() const
 {
 	
 	
@@ -173,7 +175,7 @@ ListPointer List::MakeFlatList() const
 	}
 	if( i == mList.size() ) return GetListPtr();
 	
-	ListPointer pNewList = CreateObject<List>();
+	ListPtr pNewList = Creator::CreateObject<List>();
 	
 	for( i = 0; i < mList.size(); i++ )
 	{
@@ -226,7 +228,7 @@ unsigned int List::DetermineRealIndex( const VariableBase& Index )
 				ThrowParserAnomaly( tmp, ANOMALY_NOLISTELEMENT );
 			}
 			else{
-				this->Push( CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
+				this->Push( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
 			}
 		}
 
@@ -243,12 +245,12 @@ unsigned int List::DetermineRealIndex( const VariableBase& Index )
  NOTES: Used to access element of a a list.  
 		Negative values will access the list from the back
 */
-VariableBasePointer List::operator []( const VariableBasePointer Index ){
+VariableBasePtr List::operator []( const VariableBasePtr Index ){
 	return mList[ DetermineRealIndex(*Index) ];
 }
 
 //Careful with this one, it doesn't do any fancy warp around.
-VariableBasePointer List::operator[]( unsigned int Index ){
+VariableBasePtr List::operator[]( unsigned int Index ){
 	return mList[ Index ];
 }
 
@@ -256,7 +258,7 @@ VariableBasePointer List::operator[]( unsigned int Index ){
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This one copies the pointers rather than the pointer's values.
 */
-void List::CopyExactly( const ListPointer X )
+void List::CopyExactly( const ListPtr X )
 {
 	mList = X->mList;
 }
@@ -267,7 +269,7 @@ void List::CopyExactly( const ListPointer X )
 */
 void List::operator=( const List& OtherList )
 {
-	ListPointer pFlatList = OtherList.MakeFlatList();
+	ListPtr pFlatList = OtherList.MakeFlatList();
 	
 	if( IsConst() )
 	{
@@ -310,7 +312,7 @@ void List::operator=( const List& OtherList )
 	}
 }
 
-VariableBasePointer List::operator=( const VariableBase& X )
+VariableBasePtr List::operator=( const VariableBase& X )
 {
 	*this = *(X.GetListPtr()); //This should with lists or scalars
 	return GetVariableBasePtr();
@@ -320,11 +322,11 @@ VariableBasePointer List::operator=( const VariableBase& X )
  List::Remove
  NOTES: Removes an element from the list.
 */
-VariableBasePointer List::Remove( const VariableBasePointer Index )
+VariableBasePtr List::Remove( const VariableBasePtr Index )
 {
 	unsigned int RealIndex = DetermineRealIndex( *Index );
 
-	VariableBasePointer TempElement = mList[RealIndex];
+	VariableBasePtr TempElement = mList[RealIndex];
 	mList.erase( mList.begin() + RealIndex );
 
 	return TempElement;
@@ -334,7 +336,7 @@ VariableBasePointer List::Remove( const VariableBasePointer Index )
  List::Insert
  NOTES: Inserts an element from the list.
 */
-VariableBasePointer List::Insert( const VariableBasePointer Index )
+VariableBasePtr List::Insert( const VariableBasePtr Index )
 {
 	//This catches a bug where an extra element is added when
 	//+[] is called with an index >= to the size.
@@ -344,7 +346,7 @@ VariableBasePointer List::Insert( const VariableBasePointer Index )
 	}
 
 	unsigned int RealIndex = DetermineRealIndex(*Index);
-	mList.insert( mList.begin() + RealIndex, CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
+	mList.insert( mList.begin() + RealIndex, Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 0 ) );
 	return mList[RealIndex];
 }
 
@@ -353,8 +355,8 @@ VariableBasePointer List::Insert( const VariableBasePointer Index )
  List::Length
  NOTES: Returns the length of the list.
 */
-VariableBasePointer List::Length() const{
-	return CreateVariable( SS_BASE_ARGS_DEFAULTS, (NumType)(unsigned long)mList.size() );
+VariableBasePtr List::Length() const{
+	return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, (NumType)(unsigned long)mList.size() );
 }
 
 
@@ -367,7 +369,7 @@ void List::RegisterPredefinedVars()
 	bool WasConst = IsConst();
 	SetConst( false );
 
-	this->Register( ScopeObjectPointer( new ListLengthVar( LC_Length, *this, true ) ) );
+	this->Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
 
 	SetConst( WasConst );
 }
@@ -389,7 +391,7 @@ ListType& List::GetInternalList(){
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Converts a list to one string with every element right next to eachother.
 */
-VariablePointer List::MakeVariable() const
+VariablePtr List::MakeVariable() const
 {
 	STRING TheBigString;
 	
@@ -399,7 +401,7 @@ VariablePointer List::MakeVariable() const
 		TheBigString += mList[i]->GetVariableBasePtr()->GetStringData();		
 	}
 	
-	return CreateVariable( mName, false, true, TheBigString );
+	return Creator::CreateVariable( mName, false, true, TheBigString );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -420,10 +422,10 @@ BoolType List::GetBoolData() const{
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Returns itself in scalar form
 */
-VariablePointer List::GetVariablePtr(){
+VariablePtr List::GetVariablePtr(){
 	return MakeVariable();
 }
 
-const VariablePointer List::GetVariablePtr() const{
+const VariablePtr List::GetVariablePtr() const{
 	return MakeVariable();
 }

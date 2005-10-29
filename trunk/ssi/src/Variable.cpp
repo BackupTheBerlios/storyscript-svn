@@ -107,14 +107,14 @@ VariableBase::~VariableBase()
  NOTES: Throw an anomaly
 */
 /*
-BlockListPointer VariableBase::GetBlockListPtr(){
+BlockListPtr VariableBase::GetBlockListPtr(){
 	SS::STRING tmp = TXT("Cannot convert the object \"");
 	tmp += mName;
 	tmp += TXT("\" from a VariableBase to a BlockList.");
 	throw ParserAnomaly( tmp, ANOMALY_NOCONVERSION, FILENAME, LINE, FUNC );
 }
 
-const BlockListPointer VariableBase::GetBlockListPtr() const{
+const BlockListPtr VariableBase::GetBlockListPtr() const{
 	SS::STRING tmp = TXT("Cannot convert the object \"");
 	tmp += mName;
 	tmp += TXT("\" from a VariableBase to a BlockList.");
@@ -129,14 +129,12 @@ const BlockListPointer VariableBase::GetBlockListPtr() const{
 VariableBase::GetVariableBasePtr
 NOTES: Overloaded to return itself rather than its name as other ScopeObjects do.
 */
-VariableBasePointer VariableBase::GetVariableBasePtr()
-{
-	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPointer( mpThis ) );
+VariableBasePtr VariableBase::CastToVariableBase(){
+	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPtr( mpThis ) );
 }
 
-const VariableBasePointer VariableBase::GetVariableBasePtr() const
-{
-	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPointer( mpThis ) );
+const VariableBasePtr VariableBase::CastToVariableBase() const{
+	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPtr( mpThis ) );
 }
 
 
@@ -165,19 +163,18 @@ VarType VariableBase::GetVariableType() const{
 VariableBase::GetListPtr
 NOTES: Converts the variable to a list holding itself.
 */
-ListPointer VariableBase::GetListPtr()
+ListPtr VariableBase::CastToList()
 {
-	ListPointer pNewList( CreateObject<List>( GetName(), false, false ) );
-	pNewList->AppendWithoutCopy( GetVariablePtr() );
+	ListPtr pNewList = Creator::CreateList( GetName(), false, false );
+	pNewList->AppendWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
 }
 
-
-const ListPointer VariableBase::GetListPtr() const
+const ListPtr VariableBase::CastToList() const
 {
-	ListPointer pNewList( CreateObject<List>( GetName(), false, false ) );
-	pNewList->AppendWithoutCopy( GetVariablePtr() );
+	ListPtr pNewList = Creator::CreateList( GetName(), false, false );
+	pNewList->AppendWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
 }
@@ -232,7 +229,7 @@ CHAR* VariableBase::GetStringData( CHAR* Buffer, unsigned int BufferSize ) const
 
 		Just pass what operator is throwing.
 */
-VariableBasePointer VariableBase::UndefinedOp( const SS::STRING& Op) const
+VariableBasePtr VariableBase::UndefinedOp( const SS::STRING& Op) const
 {
 	TypeCheckVisitor TypeChecker;
 
@@ -250,80 +247,80 @@ VariableBasePointer VariableBase::UndefinedOp( const SS::STRING& Op) const
 	//THE BELOW WILL NEVER GET EXECUTED
 	//The problem is that the operators will not compile unless they return something
 	//So I have them returning the result of this functions.
-	return VariableBasePointer();
+	return VariableBasePtr();
 }
 
 
 
 
-VariableBasePointer VariableBase::operator+(const VariableBase&) const{
+VariableBasePtr VariableBase::operator+(const VariableBase&) const{
     return UndefinedOp( TXT("Addition") );
 }
 
-VariableBasePointer VariableBase::operator-(const VariableBase&) const{
+VariableBasePtr VariableBase::operator-(const VariableBase&) const{
 	return UndefinedOp( TXT("Subtraction") );
 }
 
-VariableBasePointer VariableBase::operator*(const VariableBase&) const{
+VariableBasePtr VariableBase::operator*(const VariableBase&) const{
 	return UndefinedOp( TXT("Multiplication") );
 }
 
-VariableBasePointer VariableBase::operator/(const VariableBase&) const{
+VariableBasePtr VariableBase::operator/(const VariableBase&) const{
 	return UndefinedOp( TXT("Division") );
 }
 
-VariableBasePointer VariableBase::operator_pow( const VariableBase& ) const{
+VariableBasePtr VariableBase::operator_pow( const VariableBase& ) const{
 	return UndefinedOp( TXT("Exponentation") );
 }
 
-VariableBasePointer VariableBase::operator_concat( const VariableBase& ) const{
+VariableBasePtr VariableBase::operator_concat( const VariableBase& ) const{
 	return UndefinedOp( TXT("Concatenation") );
 }
 
-VariableBasePointer VariableBase::operator=(const VariableBase&){
+VariableBasePtr VariableBase::operator=(const VariableBase&){
 	return UndefinedOp( TXT("Assignment") );
 }
 
 
-VariableBasePointer VariableBase::operator==(const VariableBase&) const{
+VariableBasePtr VariableBase::operator==(const VariableBase&) const{
 	return UndefinedOp( TXT("Equal") );
 }
 
-VariableBasePointer VariableBase::operator!=(const VariableBase&) const{
+VariableBasePtr VariableBase::operator!=(const VariableBase&) const{
 	return UndefinedOp( TXT("Not-Equal") );
 }
 
-VariableBasePointer VariableBase::operator>=(const VariableBase&) const{
+VariableBasePtr VariableBase::operator>=(const VariableBase&) const{
 	return UndefinedOp( TXT("Greater-Than-Or-Equal") );
 }
 
-VariableBasePointer VariableBase::operator<=(const VariableBase&) const{
+VariableBasePtr VariableBase::operator<=(const VariableBase&) const{
 	return UndefinedOp( TXT("Less-Than-Or-Equal") );
 }
 
-VariableBasePointer VariableBase::operator>(const VariableBase&) const{
+VariableBasePtr VariableBase::operator>(const VariableBase&) const{
 	return UndefinedOp( TXT("Greater-Than") );
 }
 
-VariableBasePointer VariableBase::operator<(const VariableBase&) const{
+VariableBasePtr VariableBase::operator<(const VariableBase&) const{
 	return UndefinedOp( TXT("Less-Than") );
 }
 
-VariableBasePointer VariableBase::operator&&(const VariableBase&) const{
+VariableBasePtr VariableBase::operator&&(const VariableBase&) const{
 	return UndefinedOp( TXT("Logical-And") );
 }
 
-VariableBasePointer VariableBase::operator||(const VariableBase&) const{
+VariableBasePtr VariableBase::operator||(const VariableBase&) const{
 	return UndefinedOp( TXT("Logical-Or") );
 }
 
 
 //Unary ops
-VariableBasePointer VariableBase::op_not() const{
+VariableBasePtr VariableBase::op_not() const{
 	return UndefinedOp( TXT("Unary-Not") );
 }
 
-VariableBasePointer VariableBase::op_neg() const{
+VariableBasePtr VariableBase::op_neg() const{
 	return UndefinedOp( TXT("Negation") );
 }
 
@@ -411,7 +408,7 @@ void Variable::RegisterPredefinedVars()
 	//Every UniqueID has a PrecisionVar.
 	//This is to break that cycle.  UniqueIDs dont have PrecisionVars.
 	if( mName != LC_UniqueID ){
-		Register( ScopeObjectPointer( new PrecisionVar( LC_Precision, *this, true ) ) );
+		Register( ScopeObjectPtr( new PrecisionVar( LC_Precision, *this, true ) ) );
 	}
 
 	SetConst( WasConst );
@@ -432,20 +429,14 @@ void Variable::AcceptVisitor( ScopeObjectVisitor& V )
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::GetVariablePtr
  NOTES: Overloaded to return itself rather than create a new variable.
 */
-VariablePointer Variable::GetVariablePtr()
-{
-	ScopeObjectPointer pTemp( mpThis );
-	return boost::dynamic_pointer_cast<Variable>( pTemp );
+VariablePtr Variable::CastToVariable(){
+	return boost::dynamic_pointer_cast<Variable>( ScopeObjectPtr(mpThis) );
 }
 
-const VariablePointer Variable::GetVariablePtr() const
-{
-	const ScopeObjectPointer pTemp( mpThis );
-	const VariablePointer pReturn = boost::dynamic_pointer_cast<Variable>( pTemp );
-	return pReturn;
+const VariablePtr Variable::CastToVariable() const{
+	return boost::dynamic_pointer_cast<Variable>( ScopeObjectPtr(mpThis) );
 }
 
 
@@ -463,7 +454,7 @@ VarType Variable::GetVariableType() const{
  NOTES: Magical addition operator
 
 */
-VariableBasePointer Variable::operator+(const VariableBase& X) const
+VariableBasePtr Variable::operator+(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -471,22 +462,22 @@ VariableBasePointer Variable::operator+(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() + X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() + X.GetNumData() ) );
 		case VARTYPE_BOOL:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 		case VARTYPE_STRING:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
 		}
 	}
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION )		{
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
 		}
 		else throw;
 	}
@@ -497,7 +488,7 @@ VariableBasePointer Variable::operator+(const VariableBase& X) const
  Variable::operator-
  NOTES: Magical subtraction operator.
 */
-VariableBasePointer Variable::operator-(const VariableBase& X) const
+VariableBasePtr Variable::operator-(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -505,13 +496,13 @@ VariableBasePointer Variable::operator-(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() - X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() - X.GetNumData() ) );
 			break;
 		case VARTYPE_BOOL:
 			//TODO: Maybe think of something better than using && for boolean subtraction
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 			break;
 		default:
 			ThrowParserAnomaly( TXT("Can't subtract two strings."), ANOMALY_BADSTRINGOP ); 
@@ -532,12 +523,12 @@ VariableBasePointer Variable::operator-(const VariableBase& X) const
  Variable::operator*
  NOTES: Magically delicious multiplication operator.
 */
-VariableBasePointer Variable::operator*(const VariableBase& X) const
+VariableBasePtr Variable::operator*(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
 	//SPECIAL CASE: Strings multiplied by BigNums result in repeated strings.
-	if( this->mCurrentType == VARTYPE_NUM && X.GetVariablePtr()->mCurrentType == VARTYPE_STRING )
+	if( this->mCurrentType == VARTYPE_NUM && X.CastToVariable()->mCurrentType == VARTYPE_STRING )
 	{
 		StringType TempString;
 		NumType i;
@@ -545,10 +536,10 @@ VariableBasePointer Variable::operator*(const VariableBase& X) const
 			TempString += X.GetStringData();            
 		}
 
-		return VariableBasePointer(	CreateVariable( SS_BASE_ARGS_DEFAULTS, TempString ) );
+		return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, TempString ) );
 	}
 	else
-	if( this->mCurrentType == VARTYPE_STRING && X.GetVariablePtr()->mCurrentType == VARTYPE_NUM ) 
+	if( this->mCurrentType == VARTYPE_STRING && X.CastToVariable()->mCurrentType == VARTYPE_NUM ) 
 	{
 		StringType TempString;
 		NumType i;
@@ -556,7 +547,7 @@ VariableBasePointer Variable::operator*(const VariableBase& X) const
 			TempString += this->GetStringData();
 		}   
 
-		return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, TempString ) );
+		return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, TempString ) );
 	}
 
 
@@ -564,12 +555,12 @@ VariableBasePointer Variable::operator*(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * X.GetNumData() ) );
 			break;
 		case VARTYPE_BOOL:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 			break;
 		default:
 			ThrowParserAnomaly( TXT("Can't multiply two strings."), ANOMALY_BADSTRINGOP ); 
@@ -592,14 +583,14 @@ VariableBasePointer Variable::operator*(const VariableBase& X) const
  Variable::operator_pow
  NOTES: Exponent operator
 */
-VariableBasePointer Variable::operator_pow( const VariableBase& X ) const
+VariableBasePtr Variable::operator_pow( const VariableBase& X ) const
 {
 	NumType NewN;
 
 	mpfr_pow( NewN.get_mpfr_t(), this->GetNumData().get_mpfr_t(),
 			  X.GetNumData().get_mpfr_t(), GMP_RNDN );
 
-	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, NewN ) );
+	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, NewN ) );
 }
 
 
@@ -607,9 +598,9 @@ VariableBasePointer Variable::operator_pow( const VariableBase& X ) const
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Concatenation operator
 */
-VariableBasePointer Variable::operator_concat( const VariableBase& X ) const
+VariableBasePtr Variable::operator_concat( const VariableBase& X ) const
 {
-	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, 
+	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, 
 								this->GetStringData() + X.GetStringData() ) );
 	
 }
@@ -620,7 +611,7 @@ VariableBasePointer Variable::operator_concat( const VariableBase& X ) const
  Variable::operator/
  NOTES: ...
 */
-VariableBasePointer Variable::operator/(const VariableBase& X) const
+VariableBasePtr Variable::operator/(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -628,13 +619,13 @@ VariableBasePointer Variable::operator/(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() / X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() / X.GetNumData() ) );
 			break;
 		case VARTYPE_BOOL:
 			//TODO: This is illogical (says Spock).
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 			break;
 		default:
 			ThrowParserAnomaly( TXT("Can't divide two strings."), ANOMALY_BADSTRINGOP ); 
@@ -653,7 +644,7 @@ VariableBasePointer Variable::operator/(const VariableBase& X) const
  Variable::operator=
  NOTES: The assignments operator.  
 */
-VariableBasePointer Variable::operator=( const VariableBase& X )
+VariableBasePtr Variable::operator=( const VariableBase& X )
 {
 	//Zero everything first.  Remember that if it is not zeroed it will
 	//be assumed that the value held is the correct one.
@@ -682,10 +673,10 @@ VariableBasePointer Variable::operator=( const VariableBase& X )
 	
 
 	//return *this;
-	//return VariableBasePointer( this, null_deleter() );
-	return VariableBasePointer( 
+	//return VariableBasePtr( this, null_deleter() );
+	return VariableBasePtr( 
 		boost::dynamic_pointer_cast<VariableBase>(
-			ScopeObjectPointer(mpThis) ) 
+			ScopeObjectPtr(mpThis) ) 
 		);
 }
 
@@ -694,7 +685,7 @@ VariableBasePointer Variable::operator=( const VariableBase& X )
  Variable::operator==
  NOTES: The equality operator.
 */
-VariableBasePointer Variable::operator==( const VariableBase& X ) const
+VariableBasePtr Variable::operator==( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -716,16 +707,16 @@ VariableBasePointer Variable::operator==( const VariableBase& X ) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() == X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() == X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() == X.GetStringData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() == X.GetStringData() ) );
 		case VARTYPE_BOOL:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() == X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() == X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -733,7 +724,7 @@ VariableBasePointer Variable::operator==( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePointer(	CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -745,7 +736,7 @@ VariableBasePointer Variable::operator==( const VariableBase& X ) const
 Variable::operator==
 NOTES: The equality operator.
 */
-VariableBasePointer Variable::operator!=( const VariableBase& X ) const
+VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -753,16 +744,16 @@ VariableBasePointer Variable::operator!=( const VariableBase& X ) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() != X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() != X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() != X.GetStringData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData() != X.GetStringData() ) );
 		case VARTYPE_BOOL:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() != X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() != X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -770,7 +761,7 @@ VariableBasePointer Variable::operator!=( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePointer(	CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -782,7 +773,7 @@ VariableBasePointer Variable::operator!=( const VariableBase& X ) const
  Variable::operator>=
  NOTES: blah.
 */
-VariableBasePointer Variable::operator>=( const VariableBase& X ) const
+VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -790,17 +781,17 @@ VariableBasePointer Variable::operator>=( const VariableBase& X ) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() >= X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() >= X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >=
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >=
 										X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() >= X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() >= X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -808,7 +799,7 @@ VariableBasePointer Variable::operator>=( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -820,7 +811,7 @@ VariableBasePointer Variable::operator>=( const VariableBase& X ) const
  Variable::operator<=
  NOTES: blah, vol 2.
 */
-VariableBasePointer Variable::operator<=( const VariableBase& X ) const
+VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -828,17 +819,17 @@ VariableBasePointer Variable::operator<=( const VariableBase& X ) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() <= X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() <= X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <=
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <=
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() <= X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() <= X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -846,7 +837,7 @@ VariableBasePointer Variable::operator<=( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -857,7 +848,7 @@ VariableBasePointer Variable::operator<=( const VariableBase& X ) const
 Variable::operator>
 NOTES: blah, 3rd edition
 */
-VariableBasePointer Variable::operator>( const VariableBase& X ) const
+VariableBasePtr Variable::operator>( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -865,17 +856,17 @@ VariableBasePointer Variable::operator>( const VariableBase& X ) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() > X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() > X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() > X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() > X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -883,7 +874,7 @@ VariableBasePointer Variable::operator>( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}
@@ -893,7 +884,7 @@ VariableBasePointer Variable::operator>( const VariableBase& X ) const
 Variable::operator<
 NOTES: blah, 4th movement.
 */
-VariableBasePointer Variable::operator<( const VariableBase& X ) const
+VariableBasePtr Variable::operator<( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
@@ -901,17 +892,17 @@ VariableBasePointer Variable::operator<( const VariableBase& X ) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() < X.GetNumData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() < X.GetNumData() ) );
 			break;
 		case VARTYPE_STRING:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
-			return VariableBasePointer(
-				CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() < X.GetBoolData() ) );
+			return VariableBasePtr(
+				Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() < X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -919,7 +910,7 @@ VariableBasePointer Variable::operator<( const VariableBase& X ) const
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			return VariableBasePointer(	CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
+			return VariableBasePtr(	Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false ) );
 		}
 		else throw;
 	}	
@@ -929,20 +920,20 @@ VariableBasePointer Variable::operator<( const VariableBase& X ) const
  Variable::operator&&
  NOTES: Logical AND operator
 */
-VariableBasePointer Variable::operator&&( const VariableBase& X ) const
+VariableBasePtr Variable::operator&&( const VariableBase& X ) const
 {
-	return VariableBasePointer( 
-		CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
+	return VariableBasePtr( 
+		Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Variable::operator||
  NOTES: Logical OR operator
 */
-VariableBasePointer Variable::operator||( const VariableBase& X ) const
+VariableBasePtr Variable::operator||( const VariableBase& X ) const
 {
-	return VariableBasePointer( 
-		CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
+	return VariableBasePtr( 
+		Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 }
 	
 
@@ -951,22 +942,22 @@ VariableBasePointer Variable::operator||( const VariableBase& X ) const
  Variable::op_not
  NOTES: Unary Logical-NOT operator
 */
-VariableBasePointer Variable::op_not() const
+VariableBasePtr Variable::op_not() const
 {
-	return VariableBasePointer( CreateVariable( SS_BASE_ARGS_DEFAULTS, !(this->GetBoolData()) ) );
+	return VariableBasePtr( Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, !(this->GetBoolData()) ) );
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Variable::op_neg
  NOTES: Unary negative operator
 */
-VariableBasePointer Variable::op_neg() const
+VariableBasePtr Variable::op_neg() const
 {
 	switch( mCurrentType )
 	{
 	case VARTYPE_NUM:
-		return VariableBasePointer(
-						CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * (NumType)-1 ) );
+		return VariableBasePtr(
+						Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * (NumType)-1 ) );
 	
 	
 	
@@ -975,8 +966,8 @@ VariableBasePointer Variable::op_neg() const
 	
 	case VARTYPE_STRING:
 	default:
-		return VariableBasePointer(
-						CreateVariable( SS_BASE_ARGS_DEFAULTS, -(this->GetNumData()) ) );
+		return VariableBasePtr(
+						Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, -(this->GetNumData()) ) );
 	}
 }
 

@@ -29,32 +29,32 @@ public:
 
 	void AcceptVisitor( ScopeObjectVisitor& );
 	
-	ListPointer GetListPtr();
-	const ListPointer GetListPtr() const;
+	ListPtr GetListPtr();
+	const ListPtr GetListPtr() const;
 
 	void Resize( const NumType& );
 
-	VariableBasePointer Push( VariableBasePointer );
-	VariableBasePointer Pop();
+	VariableBasePtr Push( VariableBasePtr );
+	VariableBasePtr Pop();
 
-	void Append( const ListPointer );
+	void Append( const ListPtr );
 	
-	void AppendWithoutCopy( VariableBasePointer );
-	void AppendListWithoutCopy( ListPointer );
+	void AppendWithoutCopy( VariableBasePtr );
+	void AppendListWithoutCopy( ListPtr );
 	
-	ListPointer MakeFlatList() const;
+	ListPtr MakeFlatList() const;
 
-	VariableBasePointer operator[]( const VariableBasePointer Index );
-	VariableBasePointer operator[]( unsigned int Index );
+	VariableBasePtr operator[]( const VariableBasePtr Index );
+	VariableBasePtr operator[]( unsigned int Index );
 	
 	void operator=( const List& );
-	VariableBasePointer operator=(const VariableBase&);
-	void CopyExactly( const ListPointer );
+	VariableBasePtr operator=(const VariableBase&);
+	void CopyExactly( const ListPtr );
 
-	VariableBasePointer Remove( const VariableBasePointer Index );
-	VariableBasePointer Insert( const VariableBasePointer Index ); 
+	VariableBasePtr Remove( const VariableBasePtr Index );
+	VariableBasePtr Insert( const VariableBasePtr Index ); 
 
-	VariableBasePointer Length() const;
+	VariableBasePtr Length() const;
 
 	const ListType& GetInternalList() const;
 	ListType& GetInternalList();
@@ -63,10 +63,10 @@ public:
 	NumType GetNumData() const;
 	BoolType GetBoolData() const;
 	
-	VariablePointer GetVariablePtr();
-	const VariablePointer GetVariablePtr() const;
+	VariablePtr GetVariablePtr();
+	const VariablePtr GetVariablePtr() const;
 
-	//virtual VariableBasePointer op_not() const;
+	//virtual VariableBasePtr op_not() const;
 
 
 
@@ -74,13 +74,13 @@ private:
 	void RegisterPredefinedVars();
 	unsigned int DetermineRealIndex( const VariableBase& Index );
 	
-	VariablePointer MakeVariable() const;
+	VariablePtr MakeVariable() const;
 
 	ListType mList;
 };
 
 
-extern ListPointer gpEmptyList;
+extern ListPtr gpEmptyList;
 
 
 

@@ -59,23 +59,23 @@ public:
 	void Close();
 	
 	void Parse( const SS::STRING& BlockName );
-	void Parse( BlockPointer, bool SayBlock = true );
+	void Parse( BlockPtr, bool SayBlock = true );
 
 	Bookmark GetCurrentPos();
-	ScopePointer GetCurrentScope();
+	ScopePtr GetCurrentScope();
 	void SetPos( Bookmark& );
 
-    BlockPointer GetFirstBlock();	
+    BlockPtr GetFirstBlock();	
 	
-	ScopeObjectPointer GetScopeObject( const SS::STRING& Name );
+	ScopeObjectPtr GetScopeObject( const SS::STRING& Name );
 	
-	ScopeObjectPointer MakeScopeObject( ScopeObjectType, const SS::STRING& Name,
+	ScopeObjectPtr MakeScopeObject( ScopeObjectType, const SS::STRING& Name,
 										bool Static = false, bool Const = false );
 	
 	//These are all shortcuts for outsiders
-	VariablePointer GetVariable( const SS::STRING& Name );
-	BlockPointer    GetBlock   ( const SS::STRING& Name );
-	ScopePointer	GetScope   ( const SS::STRING& Name );
+	VariablePtr GetVariable( const SS::STRING& Name );
+	BlockPtr    GetBlock   ( const SS::STRING& Name );
+	ScopePtr	GetScope   ( const SS::STRING& Name );
 
 	Interface& GetInterface();
 	
@@ -124,17 +124,17 @@ private:
 
 
 	//This is used to keep track of the order of all the blocks in a file.
-	std::vector<BlockPointer> mBlockOrder;
+	std::vector<BlockPtr> mBlockOrder;
 
 	std::map< SS::STRING, ReaderSourceFilePtr > mFiles;
 
 	ReaderSourceFilePtr mpCurrentFile;
 
 	Scope mGlobalScope;
-	ScopePointer mpCurrentScope;
-	ScopePointer mpCurrentStaticScope;
+	ScopePtr mpCurrentScope;
+	ScopePtr mpCurrentStaticScope;
 	
-	BlockPointer mpEndBlock;
+	BlockPtr mpEndBlock;
 };
 
 }

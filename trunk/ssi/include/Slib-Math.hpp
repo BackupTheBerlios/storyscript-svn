@@ -41,7 +41,7 @@ public:
 	sqrt( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 	
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 	
 };
 
@@ -56,7 +56,7 @@ public:
 	abs( const SS::STRING& Name, bool Static = false, bool Const = false ) 
 		: Operator( Name, Static, Const ) {}
 
-    VariableBasePointer Operate( VariableBasePointer );
+    VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -70,7 +70,7 @@ public:
 	mean(  const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 };
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
@@ -83,7 +83,7 @@ public:
 	sin( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 };
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
@@ -96,7 +96,7 @@ public:
 	cos( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -110,7 +110,7 @@ public:
 	tan( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -124,7 +124,7 @@ public:
 	asin( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-		VariableBasePointer Operate( VariableBasePointer );
+		VariableBasePtr Operate( VariableBasePtr );
 };
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
@@ -137,7 +137,7 @@ public:
 	acos( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-		VariableBasePointer Operate( VariableBasePointer );
+		VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -151,7 +151,7 @@ public:
 	atan( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-		VariableBasePointer Operate( VariableBasePointer );
+		VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -165,7 +165,7 @@ public:
 	max( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -179,7 +179,7 @@ public:
 	min( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ) {}
 
-		VariableBasePointer Operate( VariableBasePointer );
+		VariableBasePtr Operate( VariableBasePtr );
 };
 
 
@@ -233,7 +233,7 @@ class MathConstPrec : public SpecialVarBase
 		MathConstPrec( const SS::STRING& Name, MathConst& Parent,
 					   bool Static = false, bool Const = false );
 
-		VariableBasePointer operator=( const VariableBase& );
+		VariableBasePtr operator=( const VariableBase& );
 	
 		VarType GetVariableType() const;
 

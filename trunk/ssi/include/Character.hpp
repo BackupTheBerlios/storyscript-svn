@@ -22,12 +22,11 @@ namespace SS{
 class SS_API Character : public Scope
 {
 public:
-	Character();
-	Character( const SS::STRING& Name, bool Static = false, bool Const = false );
-
 	void AcceptVisitor( ScopeObjectVisitor& );
 
-private:
+protected:
+	Character();
+	Character( const SS::STRING& Name, bool Static = false, bool Const = false );
 	//void RegisterPredefinedVars();
 };
 

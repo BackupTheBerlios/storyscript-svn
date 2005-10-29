@@ -48,43 +48,45 @@ StringType NumType2StringType( const NumType& );
 */
 class SS_API VariableBase : public Scope
 {
-public:
+protected:
+	friend Creator;
 	VariableBase();
 	VariableBase( const SS::STRING&, bool Static = false, bool Const = false );
+
+public:
 
 	virtual ~VariableBase();
 
 	void AcceptVisitor( ScopeObjectVisitor& );
 
-	virtual VariableBasePointer GetVariableBasePtr();
-	virtual const VariableBasePointer GetVariableBasePtr() const;
+	virtual VariableBasePtr CastToVariableBase();
+	virtual const VariableBasePtr CastToVariableBase() const;
 
-	ListPointer GetListPtr();
-	const ListPointer GetListPtr() const;
+	ListPtr CastToList();
+	const ListPtr CastToList() const;
 
-
-	virtual VariableBasePointer operator+(const VariableBase&) const;
-	virtual VariableBasePointer operator-(const VariableBase&) const;
-	virtual VariableBasePointer operator*(const VariableBase&) const;
-	virtual VariableBasePointer operator/(const VariableBase&) const;
-	virtual VariableBasePointer operator_pow( const VariableBase& ) const;
-	virtual VariableBasePointer operator_concat( const VariableBase& ) const;
+	virtual VariableBasePtr operator+(const VariableBase&) const;
+	virtual VariableBasePtr operator-(const VariableBase&) const;
+	virtual VariableBasePtr operator*(const VariableBase&) const;
+	virtual VariableBasePtr operator/(const VariableBase&) const;
+	virtual VariableBasePtr operator_pow( const VariableBase& ) const;
+	virtual VariableBasePtr operator_concat( const VariableBase& ) const;
 	
-	virtual VariableBasePointer operator=(const VariableBase&);
+	virtual VariableBasePtr operator=(const VariableBase&);
 
 
-	virtual VariableBasePointer operator==(const VariableBase&) const;
-	virtual VariableBasePointer operator!=(const VariableBase&) const;
-	virtual VariableBasePointer operator>=(const VariableBase&) const;
-	virtual VariableBasePointer operator<=(const VariableBase&) const;
-	virtual VariableBasePointer operator> (const VariableBase&) const;
-	virtual VariableBasePointer operator< (const VariableBase&) const;
-	virtual VariableBasePointer operator&&(const VariableBase&) const;
-	virtual VariableBasePointer operator||(const VariableBase&) const;
+	virtual VariableBasePtr operator==(const VariableBase&) const;
+	virtual VariableBasePtr operator!=(const VariableBase&) const;
+	virtual VariableBasePtr operator>=(const VariableBase&) const;
+	virtual VariableBasePtr operator<=(const VariableBase&) const;
+	virtual VariableBasePtr operator> (const VariableBase&) const;
+	virtual VariableBasePtr operator< (const VariableBase&) const;
+	virtual VariableBasePtr operator&&(const VariableBase&) const;
+	virtual VariableBasePtr operator||(const VariableBase&) const;
 
 	//unary operators
-	virtual VariableBasePointer op_not() const;
-	virtual VariableBasePointer op_neg() const;
+	virtual VariableBasePtr op_not() const;
+	virtual VariableBasePtr op_neg() const;
 
 
 	virtual VarType GetVariableType() const; 
@@ -102,7 +104,7 @@ public:
 	CHAR* GetStringData( CHAR* Buffer, unsigned int BufferSize ) const;
 
 private:
-	VariableBasePointer UndefinedOp(const SS::STRING& Op) const;
+	VariableBasePtr UndefinedOp(const SS::STRING& Op) const;
 
 };
 
@@ -114,9 +116,9 @@ private:
 //
 class SS_API Variable : public VariableBase
 {
-public:
-	
-	//Actualy, I don't really need this.
+protected:	
+	friend Creator;
+
 	Variable();
 	
 	Variable( const SS::STRING& Name,
@@ -134,35 +136,36 @@ public:
 	Variable( const SS::STRING& Name, 
 			  bool Static, bool Const,
 			  const BoolType& );
+public:
 
     void AcceptVisitor( ScopeObjectVisitor& );
 
-	VariablePointer GetVariablePtr();
-	const VariablePointer GetVariablePtr() const;
+	VariablePtr CastToVariable();
+	const VariablePtr CastToVariable() const;
 
-	//VariablePointer Duplicate() const;
+	//VariablePtr Duplicate() const;
 	
-	VariableBasePointer operator+(const VariableBase&) const;
-	VariableBasePointer operator-(const VariableBase&) const;
-	VariableBasePointer operator*(const VariableBase&) const;
-	VariableBasePointer operator/(const VariableBase&) const;
-	VariableBasePointer operator_pow( const VariableBase& ) const;
-	VariableBasePointer operator_concat( const VariableBase& ) const;
-	VariableBasePointer operator=(const VariableBase&);
+	VariableBasePtr operator+(const VariableBase&) const;
+	VariableBasePtr operator-(const VariableBase&) const;
+	VariableBasePtr operator*(const VariableBase&) const;
+	VariableBasePtr operator/(const VariableBase&) const;
+	VariableBasePtr operator_pow( const VariableBase& ) const;
+	VariableBasePtr operator_concat( const VariableBase& ) const;
+	VariableBasePtr operator=(const VariableBase&);
 
 	
-	VariableBasePointer operator==(const VariableBase&) const;
-	VariableBasePointer operator!=(const VariableBase&) const;
-	VariableBasePointer operator>=(const VariableBase&) const;
-	VariableBasePointer operator<=(const VariableBase&) const;
-	VariableBasePointer operator> (const VariableBase&) const;
-	VariableBasePointer operator< (const VariableBase&) const;
-	VariableBasePointer operator&&(const VariableBase&) const;
-	VariableBasePointer operator||(const VariableBase&) const;
+	VariableBasePtr operator==(const VariableBase&) const;
+	VariableBasePtr operator!=(const VariableBase&) const;
+	VariableBasePtr operator>=(const VariableBase&) const;
+	VariableBasePtr operator<=(const VariableBase&) const;
+	VariableBasePtr operator> (const VariableBase&) const;
+	VariableBasePtr operator< (const VariableBase&) const;
+	VariableBasePtr operator&&(const VariableBase&) const;
+	VariableBasePtr operator||(const VariableBase&) const;
 
 	//unary operators
-	VariableBasePointer op_not() const;
-	VariableBasePointer op_neg() const;
+	VariableBasePtr op_not() const;
+	VariableBasePtr op_neg() const;
 
 
 	void ForceConversion( VarType );

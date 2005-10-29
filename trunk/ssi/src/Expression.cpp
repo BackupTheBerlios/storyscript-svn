@@ -21,7 +21,7 @@ using namespace SS;
 
 
 
-std::vector<VariableBasePointer> Expression::mUnnamedVariables;
+std::vector<VariableBasePtr> Expression::mUnnamedVariables;
 
 
 
@@ -240,7 +240,7 @@ void Expression::RevertToLocalCopy()
 		the user, so the user doesn't try to pass parameter to it and screw
 		it up.
 */
-VariableBasePointer Expression::Evaluate() const
+VariableBasePtr Expression::Evaluate() const
 {
 	return RealInterpret();
 }
@@ -261,10 +261,10 @@ VariableBasePointer Expression::Evaluate() const
 		OUTPUT:
 		Returns the result of the expression.
 */
-VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
+VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 											   Word Before /*=NULL_WORD*/,
 											   Word After /*=NULL_WORD*/,
-											   VariableBasePointer PostValue /*=VariableBasePointer()*/ ) const
+											   VariableBasePtr PostValue /*=VariableBasePtr()*/ ) const
 {
 	//Verify that the expression has proper syntax.
 	//Note that this does not check for attempting to assign to a constant.
@@ -288,7 +288,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 			//Any identifier after it will be converted to a string variable.
 			if( Before.Extra == EXTRA_BINOP_ScopeResolution  )
 			{
-				VariableBasePointer pTempVar( new LooseIdentifier( (*this)[0].String ) );
+				VariableBasePtr pTempVar( new LooseIdentifier( (*this)[0].String ) );
 				pTempVar->SetSharedPtr( pTempVar );
 				mUnnamedVariables.push_back( pTempVar );
 				return pTempVar;				
@@ -307,7 +307,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 				{
 					if( E.ErrorCode == ANOMALY_IDNOTFOUND )
 					{
-						VariableBasePointer pTempVar( new LooseIdentifier( (*this)[0].String ) );
+						VariableBasePtr pTempVar( new LooseIdentifier( (*this)[0].String ) );
 						pTempVar->SetSharedPtr( pTempVar );
 						mUnnamedVariables.push_back( pTempVar );
 						return pTempVar;												
@@ -318,13 +318,13 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 		}
 		else if( (*this)[0].Extra == EXTRA_BOOLLITERAL_True )
 		{
-			VariablePointer pTempVar( CreateVariable( UNNAMMED, false, true, true ) );
+			VariablePtr pTempVar( Creator::CreateVariable( UNNAMMED, false, true, true ) );
 			mUnnamedVariables.push_back( pTempVar );
 			return pTempVar;
 		}
 		else if( (*this)[0].Extra == EXTRA_BOOLLITERAL_False )
 		{
-			VariablePointer pTempVar( CreateVariable( UNNAMMED, false, true, false ) );
+			VariablePtr pTempVar( Creator::CreateVariable( UNNAMMED, false, true, false ) );
 			mUnnamedVariables.push_back( pTempVar );
 			return pTempVar;
 		}
@@ -332,7 +332,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 				 (*this)[0].Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
-			VariablePointer pTempVar( CreateVariable( UNNAMMED, false, true, (*this)[0].String ) );
+			VariablePtr pTempVar( Creator::CreateVariable( UNNAMMED, false, true, (*this)[0].String ) );
 			mUnnamedVariables.push_back( pTempVar );
 
 			if( (*this)[0].Type == WORDTYPE_FLOATLITERAL ) {
@@ -493,7 +493,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 	}
 	
 
-	VariableBasePointer pLeftVar, pRightVar, pResultant;
+	VariableBasePtr pLeftVar, pRightVar, pResultant;
 	
 	
 	//SPECIAL CASES for Short-circuting in logical operators
@@ -507,10 +507,10 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 		
 		
 		if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr && pLeftVar->GetBoolData() == true ){
-			return CreateVariable( SS_BASE_ARGS_DEFAULTS, true );
+			return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, true );
 		}
 		else if( LowPrecedenceOp == EXTRA_BINOP_LogicalAnd && pLeftVar->GetBoolData() == false ){
-			return CreateVariable( SS_BASE_ARGS_DEFAULTS, false );
+			return Creator::CreateVariable( SS_BASE_ARGS_DEFAULTS, false );
 		}
 		else{
 			ThrowParserAnomaly( TXT("No possible way the program can reach this point."), ANOMALY_PANIC );
@@ -643,7 +643,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 		//Try to interpret it as a function
 		else
 		{
-			OperatorPointer pOp = 
+			OperatorPtr pOp = 
 				Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->GetOperatorPtr();
 			pResultant = pOp->Operate( pRightVar );
 		}
@@ -782,7 +782,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 	{
 		
 		/*
-		ListPointer pNewList( CreateObject<List>( SS_BASE_ARGS_DEFAULTS ) );
+		ListPtr pNewList( Creator::CreateObject<List>( SS_BASE_ARGS_DEFAULTS ) );
 		mUnnamedVariables.push_back( pNewList );
 
 		*pNewList = *(pLeftVar->GetListPtr());
@@ -801,7 +801,7 @@ VariableBasePointer Expression::RealInterpret( bool TopLevel /*=true*/,
 		}
 		else
 		{
-			ListPointer pNewList( CreateObject<List>() );
+			ListPtr pNewList( Creator::CreateObject<List>() );
 			
 			pNewList->AppendWithoutCopy( pLeftVar );
 			pNewList->AppendWithoutCopy( pRightVar );

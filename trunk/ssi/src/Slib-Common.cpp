@@ -43,14 +43,14 @@ Common::Common()
 */
 void Common::RegisterPredefined()
 {
-	Register( ScopeObjectPointer( new print( TXT("print"), true, true ) ) );
+	Register( ScopeObjectPtr( new print( TXT("print"), true, true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  print::Operate
  NOTES: Prints a message to the console.
 */
-VariableBasePointer print::Operate( VariableBasePointer X )
+VariableBasePtr print::Operate( VariableBasePtr X )
 {
 	Interpreter::Instance().GetInterface().LogMessage( X->GetStringData(), true );
 	return X;

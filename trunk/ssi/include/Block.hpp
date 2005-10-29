@@ -27,23 +27,25 @@ typedef unsigned int BlockIndex;
 //
 class SS_API Block : public Operator
 {
-public:
-	//Block( bool IsEndBlock = false );
+protected:
+	friend class Creator;
+	Block();
 	Block( const SS::STRING& Name, bool Static, bool Const,
-		   const Bookmark& Position, BlockIndex ListIndex );
-	//Block( unsigned int FilePosition, const SS::STRING& Line );
+		const Bookmark& Position, BlockIndex ListIndex );
+
+public:
 	void AcceptVisitor( ScopeObjectVisitor& );
 	
 	
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 
 	//The following four functions are to get rid of the compiler warnings
 	/*
-	ScopePointer GetScopePtr() { return Scope::GetScopePtr(); }
-	const ScopePointer GetScopePtr() const { return Scope::GetScopePtr(); }
+	ScopePtr GetScopePtr() { return Scope::GetScopePtr(); }
+	const ScopePtr GetScopePtr() const { return Scope::GetScopePtr(); }
 
-	VariableBasePointer GetVariableBasePtr() { return VariableBase::GetVariableBasePtr(); }
-	const VariableBasePointer GetVariableBasePtr() const { return VariableBase::GetVariableBasePtr(); }
+	VariableBasePtr GetVariableBasePtr() { return VariableBase::GetVariableBasePtr(); }
+	const VariableBasePtr GetVariableBasePtr() const { return VariableBase::GetVariableBasePtr(); }
 	*/
 	
 	bool HasBeenSaid() const;
@@ -59,10 +61,11 @@ public:
 	const SS::STRING& GetLine() const;
 	void          SetLine( const SS::STRING& );
 
-	BlockPointer	   GetBlockPtr();
-	const BlockPointer GetBlockPtr() const;
+	BlockPtr CastToBlock();
+	const BlockPtr CastToBlock() const;
 
 private:
+
 	void RegisterPredefinedVars();
 	
 	bool mBeenSaid;

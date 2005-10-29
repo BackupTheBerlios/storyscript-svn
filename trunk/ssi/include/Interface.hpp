@@ -36,7 +36,7 @@ public:
 	const Interpreter& GetInterpreter() const;
 
 	//Return the index of the block chosen.
-	virtual unsigned int PresentChoice( const std::vector<BlockPointer>& Choices ) = 0;
+	virtual unsigned int PresentChoice( const std::vector<BlockPtr>& Choices ) = 0;
 	
 	virtual void HandleParserAnomaly( ParserAnomaly ) = 0;
 	virtual void LogMessage( const SS::STRING&, bool UserOutput = false ) = 0;
@@ -47,7 +47,7 @@ public:
 	friend class Interpreter; 
 
 protected:
-	virtual void SayBlock( const BlockPointer ) = 0;
+	virtual void SayBlock( const BlockPtr ) = 0;
 
 	//void CheckInterpreter();
 
@@ -67,7 +67,7 @@ public:
 	NullInterface();
 	virtual ~NullInterface() {}
 	
-	virtual unsigned int PresentChoice( const std::vector<BlockPointer>& Choices ){
+	virtual unsigned int PresentChoice( const std::vector<BlockPtr>& Choices ){
 		return 0;
 	}
 	
@@ -78,7 +78,7 @@ public:
 	virtual void LogMessage( const SS::STRING&, bool = false ){}
 	
 protected:
-	virtual void SayBlock( const BlockPointer ) {}
+	virtual void SayBlock( const BlockPtr ) {}
 };
 
 

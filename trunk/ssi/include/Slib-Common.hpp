@@ -39,7 +39,7 @@ public:
 	print( const SS::STRING& Name, bool Static = false, bool Const = false )
 		: Operator( Name, Static, Const ){}
 
-	VariableBasePointer Operate( VariableBasePointer );
+	VariableBasePtr Operate( VariableBasePtr );
 };
 
 

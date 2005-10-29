@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -82,7 +82,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -144,7 +144,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2 /Ze"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -192,7 +192,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Ze"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -242,7 +242,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP;SINGLE_THREAD"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
@@ -302,7 +302,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP;SINGLE_THREAD"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -405,6 +405,9 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			</File>
 			<File
 				RelativePath="..\src\ReaderSourceFile.cpp">
+			</File>
+			<File
+				RelativePath="..\src\ReaderSourceString.cpp">
 			</File>
 			<File
 				RelativePath="..\src\Scope.cpp">
@@ -619,6 +622,9 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				RelativePath="..\include\ListBase.hpp">
 			</File>
 			<File
+				RelativePath="..\include\mpfrxx.h">
+			</File>
+			<File
 				RelativePath="..\include\Operator.hpp">
 			</File>
 			<File
@@ -647,6 +653,9 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			</File>
 			<File
 				RelativePath="..\include\ReaderSourceFile.hpp">
+			</File>
+			<File
+				RelativePath="..\include\ReaderSourceString.hpp">
 			</File>
 			<File
 				RelativePath=".\resource.h">

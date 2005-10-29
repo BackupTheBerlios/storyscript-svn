@@ -76,7 +76,6 @@ class Character;
 class Block;
 class VariableBase;
 class List;
-class ScriptFile;
 class Operator;
 class Interpreter;
 
@@ -92,21 +91,20 @@ enum VarType
 
 
 
-typedef boost::shared_ptr<ScopeObject>  ScopeObjectPointer;
-typedef boost::shared_ptr<Scope>        ScopePointer;
-typedef boost::shared_ptr<Variable>     VariablePointer;
-typedef boost::shared_ptr<Block>        BlockPointer;
-typedef boost::shared_ptr<VariableBase> VariableBasePointer;
-typedef boost::shared_ptr<ScriptFile>   ScriptFilePointer;
-typedef boost::shared_ptr<List>         ListPointer;
-typedef boost::shared_ptr<Operator>		OperatorPointer;
+typedef boost::shared_ptr<ScopeObject>  ScopeObjectPtr;
+typedef boost::shared_ptr<Scope>        ScopePtr;
+typedef boost::shared_ptr<Variable>     VariablePtr;
+typedef boost::shared_ptr<Block>        BlockPtr;
+typedef boost::shared_ptr<VariableBase> VariableBasePtr;
+typedef boost::shared_ptr<List>         ListPtr;
+typedef boost::shared_ptr<Operator>		OperatorPtr;
 
-typedef boost::weak_ptr<ScopeObject>  ScopeObjectPointerWeak;
-typedef boost::weak_ptr<Scope>        ScopePointerWeak;
-typedef boost::weak_ptr<Variable>     VariablePointerWeak;
-typedef boost::weak_ptr<Block>        BlockPointerWeak;
-typedef boost::weak_ptr<VariableBase> VariableBasePointerWeak;
-typedef boost::weak_ptr<List>         ListPointerWeak;
+typedef boost::weak_ptr<ScopeObject>  ScopeObjectPtrWeak;
+typedef boost::weak_ptr<Scope>        ScopePtrWeak;
+typedef boost::weak_ptr<Variable>     VariablePtrWeak;
+typedef boost::weak_ptr<Block>        BlockPtrWeak;
+typedef boost::weak_ptr<VariableBase> VariableBasePtrWeak;
+typedef boost::weak_ptr<List>         ListPtrWeak;
 
 
 enum ScopeObjectType
@@ -124,9 +122,9 @@ enum ScopeObjectType
 
 
 #if defined(SS_USE_VECTOR_LISTS)
-typedef std::vector<VariableBasePointer> ListType;
+typedef std::vector<VariableBasePtr> ListType;
 #elif defined(SS_USE_DEQUE_LISTS)
-typedef std::deque<VariableBasePointer> ListType;
+typedef std::deque<VariableBasePtr> ListType;
 #endif
 
 
@@ -144,13 +142,13 @@ typedef std::deque<VariableBasePointer> ListType;
 		} 
 	};
 
-	typedef STDEXT::hash_map< SS::STRING, ScopeObjectPointer, StringHash > ScopeListType;
+	typedef STDEXT::hash_map< SS::STRING, ScopeObjectPtr, StringHash > ScopeListType;
 #else
-	typedef STDEXT::hash_map< SS::STRING, ScopeObjectPointer > ScopeListType;
+	typedef STDEXT::hash_map< SS::STRING, ScopeObjectPtr > ScopeListType;
 #endif
 
 #else
-	typedef std::map< SS::STRING, ScopeObjectPointer > ScopeListType;
+	typedef std::map< SS::STRING, ScopeObjectPtr > ScopeListType;
 #endif
 
 
