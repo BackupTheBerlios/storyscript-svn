@@ -183,7 +183,7 @@ void ConsoleInterface::SayBlock( const SS::BlockPtr pBlock )
 	if( Line.empty() )  return;
 
 	SetCharacterColor();
-	CON << ParentName << TXT(": \n");
+	CON << ParentName << TXT("\n");
 	SetLineColor();
 	CON << Line << TXT("\n\n");
 	SetDefaultColor();
@@ -240,7 +240,7 @@ void ConsoleInterface::SetErrorColor()
 void ConsoleInterface::SetDebugColor()
 {
 	//CON.SetTextColor( ColorPair(ColorCyan, ColorWhite) );
-	CON.SetTextFGColor( ColorCyan );
+	CON.SetTextFGColor( ColorWhite );
 }
 
 
@@ -261,9 +261,10 @@ void ConsoleInterface::SetLineColor()
 */
 void ConsoleInterface::SetCharacterColor()
 {
-	CON.SetTextFGColor( ColorWhite );
+	CON.SetTextFGColor( ColorBlue );
 	//CON.SetTextColor( ColorPair(ColorBlack, ColorWhite) );
-	//CON.SetBold( true );
+	CON.SetBold( true );
+	CON.SetUnderline( true );
 }
 
 

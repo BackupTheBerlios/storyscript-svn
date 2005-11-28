@@ -263,7 +263,7 @@ short CursesConsole::GetCursesColor( ConsoleOutColor Color )
 	case ColorGreen   : return COLOR_GREEN;
 	case ColorYellow  : return COLOR_YELLOW;
 	case ColorBlue    : return COLOR_BLUE;
-	case COlorMegenta : return COLOR_MAGENTA;
+	case ColorMegenta : return COLOR_MAGENTA;
 	case ColorCyan    : return COLOR_CYAN;
 	case ColorWhite   : return COLOR_WHITE;
 	default           : return COLOR_BLACK;

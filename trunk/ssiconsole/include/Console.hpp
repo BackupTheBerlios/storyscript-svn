@@ -24,7 +24,7 @@ enum ConsoleOutColor
 	ColorGreen,
 	ColorYellow,
 	ColorBlue,
-	COlorMegenta,
+	ColorMegenta,
 	ColorCyan,
 	ColorWhite
 };
