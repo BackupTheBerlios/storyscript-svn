@@ -61,6 +61,27 @@ ConsoleInterface::~ConsoleInterface()
 {
 }
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: StartConversation overloads to support interactive interpreter use.
+*/
+void ConsoleInterface::StartConversation()
+{
+	try{
+	mInterpreter.SetSource( mReadlineSource );
+	}
+	catch( SS::ParserAnomaly E )
+	{
+		HandleParserAnomaly( E );
+	}
+}
+
+void ConsoleInterface::StartConversation(  const SS::STRING& FileName, const SS::STRING& BlockName )
+{
+	if( FileName.empty() ) StartConversation();
+	else Interface::StartConversation( FileName, BlockName );
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
 // ConsoleInterface::SetGCCStyleErrors
 // NOTES: Toggles the use os GCC style error output.

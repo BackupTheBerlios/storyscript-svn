@@ -1,6 +1,12 @@
 import glob
 
-env = Environment( CCFLAGS='-O2' )
+env = Environment()
+debug = ARGUMENTS.get('debug', 0 )
+if int(debug):
+	env.Append(CCFLAGS = '-g')
+else:
+	env.Append(CCFLAGS = '-O2' )
+	
 conf = Configure(env)
 env = conf.Finish()
 
@@ -8,10 +14,11 @@ src = Split("""
 	src/Console.cpp
 	src/ConsoleInterface.cpp
 	src/main.cpp
+	src/ReadlineReaderSource.cpp
 	""")
 
 #Main Program
-SSIConsole = env.Program( 'storyscript', src, CPPPATH = ['include', '../ssi/include'], LIBS=['storyscript', 'curses'])
+SSIConsole = env.Program( 'storyscript', src, CPPPATH = ['include', '../ssi/include'], LIBS=['storyscript', 'curses', 'readline'])
 #BinCopy = env.Install( './bin', SSIConsole )
 env.Alias( 'MainBuild', [SSIConsole] )
 

@@ -1,4 +1,4 @@
 
-file SConstruct,line 2:
+file SConstruct,line 10:
 	Configure( confdir = .sconf_temp )
 

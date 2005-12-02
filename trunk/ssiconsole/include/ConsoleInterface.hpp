@@ -10,6 +10,7 @@ NOTES: The SSI command line interface.
 #include "Interpreter.hpp"
 #include "ParserAnomaly.hpp"
 #include "Console.hpp"
+#include "ReadlineReaderSource.hpp"
 
 
 class ConsoleInterface : public SS::Interface
@@ -17,6 +18,9 @@ class ConsoleInterface : public SS::Interface
 public:
 	ConsoleInterface( Console& CON, bool StartupBanner = true );
 	~ConsoleInterface();
+	
+	void StartConversation();
+	void StartConversation(  const SS::STRING& FileName, const SS::STRING& BlockName = SS::STRING() );
 	
 	void SetGCCStyleErrors( bool Flag = true );
 	
@@ -28,6 +32,7 @@ public:
 
 private:
 	Console& CON;
+	SS::ReadlineReaderSource mReadlineSource;
 	void SayBlock( const SS::BlockPtr );
 
 	void PrintPosition();
