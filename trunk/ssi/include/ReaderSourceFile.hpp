@@ -33,7 +33,8 @@ public:
 	void Close();
 	bool IsOpen();
 	
-	const SS::STRING& GetFileName() const;
+	//const SS::STRING& GetFileName() const;
+	STRING GetName() const;
 	
 private:
 	SS::STRING GetNextLine();

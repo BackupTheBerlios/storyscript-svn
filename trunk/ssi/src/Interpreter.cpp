@@ -41,6 +41,13 @@ using namespace SS;
 
 
 
+struct null_deleter
+{
+    void operator()(void const *) const
+    {
+    }
+};
+
 
 boost::shared_ptr<Interpreter> Interpreter::mpInstance;
 
@@ -149,9 +156,9 @@ ScopePtr Interpreter::GetCurrentScope()
 Bookmark Interpreter::GetCurrentPos()
 {
 	AssertFileOpen();
-	Bookmark BM( mpCurrentFile->GetFileName(),
-				 mpCurrentFile->GetPos(),
-				 mpCurrentFile->GetLineNumber(),
+	Bookmark BM( mpCurrentSource->GetName(),
+				 mpCurrentSource->GetPos(),
+				 mpCurrentSource->GetLineNumber(),
 				 mpCurrentScope,
 				 mpCurrentStaticScope );
 	
@@ -160,7 +167,7 @@ Bookmark Interpreter::GetCurrentPos()
 
 void Interpreter::SetPos( Bookmark& NewPos )
 {
-	GetFile( NewPos );
+	GetSource( NewPos );
 }
 
 
@@ -200,6 +207,36 @@ bool Interpreter::IsVerbose() const{
 }
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Sets the source to some other ReaderSource (ie. not a file).
+*/
+void Interpreter::SetSource( ReaderSource& Source )
+{
+	if( mSources.find( Source.GetName() ) != mSources.end() ){
+		GetSource( Bookmark( Source.GetName(), 0, 0 ) );
+		return;
+	}
+	
+	mSources[ Source.GetName() ].reset( &Source, null_deleter() );
+	
+	ScopePtr pNewScope( CreateGeneric<Scope>( Source.GetName(), false, false ) );
+	
+	mpGlobalScope->Register( ScopeObjectPtr( pNewScope ) );
+	mpCurrentScope = pNewScope;
+	
+	mpCurrentSource.reset( &Source, null_deleter() );
+	
+	try{
+		Parse(); //Position should be 0,0
+	}
+	catch( ParserAnomaly E )
+	{
+		TackOnScriptInfo( E );
+		throw E;
+	}
+}
+
+
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Interpreter::LoadLevel
@@ -210,16 +247,16 @@ void Interpreter::LoadFile( const STRING& FileName )
 	ReaderSourceFilePtr pNewFile( new ReaderSourceFile );
 
 	pNewFile->Open( FileName );
-	mFiles[FileName] = pNewFile;
+	mSources[FileName] = pNewFile;
 
 
 	ScopePtr pNewScope( CreateGeneric<Scope>( 
-			MakeScopeNameFromFileName( pNewFile->GetFileName() ), false, false ) );
+			MakeScopeNameFromFileName( pNewFile->GetName() ), false, false ) );
 	
 	mpGlobalScope->Register( ScopeObjectPtr( pNewScope ) );
 	mpCurrentScope = pNewScope;
 
-	mpCurrentFile = pNewFile;
+	mpCurrentSource = pNewFile;
 
 	try{
 		Parse(); //Position should be 0,0
@@ -233,10 +270,10 @@ void Interpreter::LoadFile( const STRING& FileName )
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::GetFile
+ Interpreter::GetSource
  NOTES:  Call this whenever you need to go to a bookmark.
 */
-ReaderSourceFile& Interpreter::GetFile( const Bookmark& Pos )
+ReaderSource& Interpreter::GetSource( const Bookmark& Pos )
 {
 	if( Pos.IsVoid() ){
 		ThrowParserAnomaly( TXT("Attempted to open a empty file name. "
@@ -244,21 +281,21 @@ ReaderSourceFile& Interpreter::GetFile( const Bookmark& Pos )
 					ANOMALY_BADFILE );
 	}
 
-	if( mFiles.find( Pos.FileName ) == mFiles.end() )	{
+	if( mSources.find( Pos.FileName ) == mSources.end() )	{
 		LoadFile( Pos.FileName );
 	}
 
-	ReaderSourceFilePtr pFile = mFiles[Pos.FileName];
-	pFile->GotoPos( Pos.Position );
+	ReaderSourcePtr pSource = mSources[Pos.FileName];
+	pSource->GotoPos( Pos.Position );
 
-	mpCurrentFile = pFile;
+	mpCurrentSource = pSource;
 
 	if( Pos.CurrentScope ){
 		mpCurrentScope = Pos.CurrentScope;
 	}
 	else{
 		mpCurrentScope = mpGlobalScope->GetScopeObject( 
-				MakeScopeNameFromFileName(pFile->GetFileName()) )->CastToScope();
+				MakeScopeNameFromFileName(pSource->GetName()) )->CastToScope();
 	}
 
 	if( Pos.CurrentStaticScope ){
@@ -268,7 +305,7 @@ ReaderSourceFile& Interpreter::GetFile( const Bookmark& Pos )
 		mpCurrentStaticScope = mpCurrentScope;
 	}
 
-	return *pFile;
+	return *pSource;
 }
 
 
@@ -291,8 +328,8 @@ void Interpreter::Open( const SS::STRING& FileName )
 void Interpreter::Close()
 {
 	mBlockOrder.clear();
-	mFiles.clear();
-	mpCurrentScope.reset();
+	mSources.clear();
+	mpCurrentSource.reset();
 	mpGlobalScope->Clear();
 }
 
@@ -430,7 +467,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	if( mVerboseOutput ) mpInterface->LogMessage( TXT("PARSING...\n") );
 
 	if( Pos.IsVoid() ) Pos = GetCurrentPos();	
-	ReaderSourceFile& TheFile = GetFile( Pos );
+	ReaderSource& MySource = GetSource( Pos );
 	
 	
 
@@ -472,7 +509,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 		//-----------------------------------
 		//Get the next word
 
-		TempWord = TheFile.GetNextWord();
+		TempWord = MySource.GetNextWord();
  		if( TempWord == EOF_WORD ) return;
 
 
@@ -486,9 +523,9 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 			TempWord.Extra != EXTRA_CONTROL_If &&
 			TempWord.Extra != EXTRA_CONTROL_While )
 		{
-			if( TempWord.Extra == EXTRA_BRACKET_Left ) TheFile.PutBackWord();
+			if( TempWord.Extra == EXTRA_BRACKET_Left ) MySource.PutBackWord();
 
-			FastForwardToNextStatement( TheFile );
+			FastForwardToNextStatement( MySource );
 			FoundElse = false;
 			AllowElse = false;
 			continue;
@@ -648,7 +685,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 					FoundStatic = true;
 					WordBuffer.SetStatic();
 				}
-				else FastForwardToNextStatement( TheFile );
+				else FastForwardToNextStatement( MySource );
 				continue;				
 			}
 			
@@ -690,7 +727,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 					if( ExecuteElse ) FoundIf = true;
 					else
 					{
-						FastForwardToNextStatement( TheFile );
+						FastForwardToNextStatement( MySource );
 						FoundIf = false;
 						continue;
 					}
@@ -707,7 +744,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 					if( ExecuteElse )FoundWhile = true;
 					else
 					{
-						FastForwardToNextStatement( TheFile );
+						FastForwardToNextStatement( MySource );
 						FoundWhile = false;
 						continue;
 					}					
@@ -784,14 +821,14 @@ bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bo
 	else if( OneStatement )
 	{
 		//Fast forward to the end of the statement.
-		ReaderSourceFile& FileRef = GetFile( Body );
+		ReaderSource& FileRef = GetSource( Body );
 		Word TempWord;
 		while( TempWord.Type != WORDTYPE_TERMINAL ) TempWord = FileRef.GetNextWord();
 	}
 	else
 	{
 		//Fast forward to the end of the body
-		ReaderSourceFile& FileRef = GetFile( Body );
+		ReaderSource& FileRef = GetSource( Body );
 		unsigned int BracketCount = 1;
 		while( BracketCount )
 		{
@@ -824,7 +861,7 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 	if( !WasParsed && OneStatement )
 	{
 		//Fast forward to the end of the statement.
-		ReaderSourceFile& FileRef = GetFile( Body );
+		ReaderSource& FileRef = GetSource( Body );
 		Word TempWord;
 		while( TempWord.Type != WORDTYPE_TERMINAL ) TempWord = FileRef.GetNextWord();
 	}
@@ -832,7 +869,7 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 	{
 
 		//Fast forward to the end of the body
-		ReaderSourceFile& FileRef = GetFile( Body );
+		ReaderSource& FileRef = GetSource( Body );
 		unsigned int BracketCount = 1;
 		while( BracketCount )
 		{
@@ -1030,7 +1067,7 @@ ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
 	//Last chance!  Check the current file scope.  
 	//This is already checked if mpCurrentScope is a child of the current file,
 	//but not if it mpCurrentScope belongs to another scope that was imported.
-	STRING ScopeName( MakeScopeNameFromFileName( mpCurrentFile->GetFileName() ) );
+	STRING ScopeName( MakeScopeNameFromFileName( mpCurrentSource->GetName() ) );
 	
 	pObject = mpGlobalScope->GetScopeObject( ScopeName )->CastToScope()->GetScopeObject_NoThrow( Name );
 	if( pObject ) return pObject;
@@ -1070,8 +1107,8 @@ void Interpreter::TackOnScriptInfo( ParserAnomaly& E )
 {
 	AssertFileOpen();
 
-	E.ScriptFile = mpCurrentFile->GetFileName();
-	E.ScriptLine = mpCurrentFile->GetLineNumber();
+	E.ScriptFile = mpCurrentSource->GetName();
+	E.ScriptLine = mpCurrentSource->GetLineNumber();
 }
 
 
@@ -1081,7 +1118,7 @@ void Interpreter::TackOnScriptInfo( ParserAnomaly& E )
 */
 void Interpreter::AssertFileOpen()
 {
-	if( !mpCurrentFile ){
+	if( !mpCurrentSource ){
 		ThrowParserAnomaly( TXT("Cannot perform an operation due to no file being open. "
 								"This is probably due to a bug in the interpreter."), ANOMALY_PANIC );
 	}
@@ -1103,13 +1140,13 @@ void Interpreter::AssertAttachedInterface()
  NOTES: Simply skips over all the next words in the current file up
 		to (and including) the next terminal (;) it finds and stops.
 */
-void Interpreter::FastForwardToNextStatement( ReaderSourceFile& TheFile )
+void Interpreter::FastForwardToNextStatement( ReaderSource& MySource )
 {
 	Word TempWord;
 
-	for( TempWord = TheFile.GetNextWord();
+	for( TempWord = MySource.GetNextWord();
 		 TempWord.Type != WORDTYPE_TERMINAL;
-		 TempWord = TheFile.GetNextWord() )
+		 TempWord = MySource.GetNextWord() )
 	{
 		//Override the search for the ';' and instead break on
 		//a complete bracket set.
@@ -1119,7 +1156,7 @@ void Interpreter::FastForwardToNextStatement( ReaderSourceFile& TheFile )
 
 			while( true )
 			{
-				TempWord = TheFile.GetNextWord();
+				TempWord = MySource.GetNextWord();
 
 				if( TempWord.Extra == EXTRA_BRACKET_Left ) BracketCount++;
 				else if( TempWord.Extra == EXTRA_BRACKET_Right )
@@ -1163,12 +1200,12 @@ void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
 	Bookmark OldPos = Interpreter::Instance().GetCurrentPos();
 					
 	Bookmark ImportedFile( FileName, 0, 0 );
-	ReaderSourceFile& TheFile = Interpreter::Instance().GetFile( ImportedFile ); 
+	ReaderSource& MySource = Interpreter::Instance().GetSource( ImportedFile ); 
 	
-	ScopePtr pTmpObj = GetScope( MakeScopeNameFromFileName( TheFile.GetFileName() ) );
+	ScopePtr pTmpObj = GetScope( MakeScopeNameFromFileName( MySource.GetName() ) );
 
 	//Return the file and position to its previous settings
-	GetFile( OldPos );
+	GetSource( OldPos );
 
 	mpCurrentScope->Import( pTmpObj );
 }

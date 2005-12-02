@@ -84,7 +84,7 @@ bool ReaderSourceFile::IsOpen()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Returns the current file name.  Or an empty string if no file is open.
 */
-const STRING& ReaderSourceFile::GetFileName() const
+STRING ReaderSourceFile::GetName() const
 {
 	return mFileName;
 }

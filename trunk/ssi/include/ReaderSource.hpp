@@ -42,7 +42,10 @@ public:
 	void GotoLine( unsigned long LineNumber );
 	ReaderPos GetPos() const;
 	
-	unsigned long GetLineNumber() const;	
+	unsigned long GetLineNumber() const;
+	
+	//Not required, but strongly advised that you declare this.
+	virtual STRING GetName() const { return STRING(); }
 
 private:
 	//This _should_ include newline/formfeed chars,
@@ -67,6 +70,8 @@ private:
 	unsigned long mCurrentLine;
 	std::vector<ReaderPos> mLinePositions;	
 };
+
+typedef boost::shared_ptr<ReaderSource> ReaderSourcePtr;
 
 
 

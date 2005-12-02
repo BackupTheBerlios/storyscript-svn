@@ -814,8 +814,21 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	// :
 	else if( LowPrecedenceOp == EXTRA_BINOP_ScopeResolution )
 	{
-		pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
-
+		//pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
+		
+		//Try to interpret it as a LooseID
+		boost::shared_ptr<LooseIdentifier> pRightLooseID = boost::dynamic_pointer_cast<LooseIdentifier>(pRightVar);
+		if( pRightLooseID )
+		{
+			pResultant = (pLeftVar->GetScopeObject( pRightLooseID->GetLooseIDName() ))->CastToVariableBase();
+		}
+		//Otherwise just assume its a string literal of some
+		//TODO: Is this really a good idea?  What if someone puts a variable after a scope resolutio operator?
+		//		Won't it read the string from the variable and try to access that variable.  Is that what I want?
+		else
+		{
+			pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
+		}
 	}
 	//No operator found!
 	else

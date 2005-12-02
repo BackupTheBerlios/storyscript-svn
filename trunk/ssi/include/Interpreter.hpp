@@ -55,6 +55,8 @@ public:
 	void SetVerbose( bool flag = true );
 	void SetInterface( Interface& );
 	
+	void SetSource( ReaderSource& );
+	
 	void Open( const SS::STRING& FileName );
 	void Close();
 	
@@ -95,7 +97,7 @@ private:
 	void AssertFileOpen();	
 	void AssertAttachedInterface();
 	
-	ReaderSourceFile& GetFile( const Bookmark& );
+	ReaderSource& GetSource( const Bookmark& );
 	
 	static boost::shared_ptr<Interpreter> mpInstance;
 	
@@ -116,7 +118,7 @@ private:
 
 	void TackOnScriptInfo( ParserAnomaly& );
 
-	void FastForwardToNextStatement( ReaderSourceFile& );
+	void FastForwardToNextStatement( ReaderSource& );
 
 	Interface* mpInterface;
 
@@ -126,9 +128,9 @@ private:
 	//This is used to keep track of the order of all the blocks in a file.
 	std::vector<BlockPtr> mBlockOrder;
 
-	std::map< SS::STRING, ReaderSourceFilePtr > mFiles;
+	std::map< SS::STRING, ReaderSourcePtr > mSources;
 
-	ReaderSourceFilePtr mpCurrentFile;
+	ReaderSourcePtr mpCurrentSource;
 
 	ScopePtr mpGlobalScope;
 	

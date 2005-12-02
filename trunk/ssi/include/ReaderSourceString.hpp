@@ -24,6 +24,7 @@ public:
 	
 	void Reset( const STRING& );
 	
+	STRING GetName() const;
 	
 private:
 	STRING GetNextLine();

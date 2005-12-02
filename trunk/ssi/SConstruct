@@ -47,16 +47,16 @@ src = Split("""
 	""")
 
 #Main library
-SSI = env.SharedLibrary( 'SSI', src, CPPPATH = 'include', LIBS=['gmp', 'mpfr'])
-BinCopy = env.Install( './bin', SSI )
-env.Alias( 'MainBuild', [SSI, BinCopy] )
+SSI = env.SharedLibrary( 'storyscript', src, CPPPATH = 'include', LIBS=['gmp', 'mpfr'])
+#BinCopy = env.Install( './bin', SSI )
+env.Alias( 'MainBuild', [SSI] )
 
 #Install
 env.Install('/usr/lib', SSI)
-env.Install('/usr/include/SSI', glob.glob('include/*.hpp') + glob.glob('include/*.h') )
+env.Install('/usr/include/storyscript', glob.glob('include/*.hpp') + glob.glob('include/*.h') )
 
 il = env.Alias( 'install-lib', '/usr/lib' )
-ih = env.Alias( 'install-headers', '/usr/include/SSI' )
+ih = env.Alias( 'install-headers', '/usr/include/storyscript' )
 env.Alias( 'install', [il, ih] )
 
 #Backup

@@ -74,3 +74,17 @@ STRING ReaderSourceString::GetNextLine()
 	return Buffer;
 }
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Throw out some BS name.  I'm purposely using characters in the name
+ 		that are illegal in pretty much any filesystem I know of.  That way
+ 		it isn't confused with a file.
+*/
+STRING ReaderSourceString::GetName() const
+{
+	return STRING( TXT("*external-string*") );
+}
+
+
+
+
+
