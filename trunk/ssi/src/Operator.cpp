@@ -63,12 +63,14 @@ void Operator::AcceptVisitor( ScopeObjectVisitor& V ){
 //
 void Operator::RegisterPredefinedVars()
 {
+	/*
 	bool WasConst = IsConst();
 	mConst = false;
 
 	Register( ScopeObjectPtr( CreateGeneric<List>( LC_Input, true, false ) ) );
 
 	SetConst( WasConst );
+	*/
 }
 
 

@@ -195,7 +195,7 @@ VariableBasePtr SS::SLib::atan::Operate( VariableBasePtr X )
 */
 VariableBasePtr SS::SLib::max::Operate( VariableBasePtr X )
 {
-	const ListType& TheList = X->CastToList()->MakeFlatList()->GetInternalList();
+	const ListType& TheList = X->CastToList()->GetInternalList();
 
 	VariableBasePtr Result = TheList[0];
 
@@ -214,7 +214,7 @@ NOTES: The maximum function.
 */
 VariableBasePtr SS::SLib::min::Operate( VariableBasePtr X )
 {
-	const ListType& TheList = X->CastToList()->MakeFlatList()->GetInternalList();
+	const ListType& TheList = X->CastToList()->GetInternalList();
 
 	VariableBasePtr Result = TheList[0];
 

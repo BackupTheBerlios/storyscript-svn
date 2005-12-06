@@ -11,6 +11,7 @@ NOTES: Declaratios for the List class; a dynamicaly sized list.
 
 #include "DLLExport.hpp"
 #include "Variable.hpp"
+#include "Operator.hpp"
 #include <vector>
 
 
@@ -40,19 +41,18 @@ public:
 	VariableBasePtr Push( VariableBasePtr );
 	VariableBasePtr Pop();
 
-	void Append( const ListPtr );
+	void AppendList( const ListPtr );
 	
-	void AppendWithoutCopy( VariableBasePtr );
+	//ListPtr MakeFlatList() const;
+	void PushWithoutCopy( VariableBasePtr );
 	void AppendListWithoutCopy( ListPtr );
-	
-	ListPtr MakeFlatList() const;
 
 	VariableBasePtr operator[]( const VariableBasePtr Index );
 	VariableBasePtr operator[]( unsigned int Index );
 	
 	void operator=( const List& );
 	VariableBasePtr operator=(const VariableBase&);
-	void CopyExactly( const ListPtr );
+	//void CopyExactly( const ListPtr );
 
 	VariableBasePtr Remove( const VariableBasePtr Index );
 	VariableBasePtr Insert( const VariableBasePtr Index ); 
@@ -80,6 +80,55 @@ private:
 	VariablePtr MakeVariable() const;
 
 	ListType mList;
+	
+	//This are built in list functions that I am moving from SLib.
+	//It is syntactically simpler to have them members of list,
+	//rather than having to pass a reference to an external list.
+	class InternalListFunc : public Operator
+	{
+		public:
+		InternalListFunc( const STRING& Name, List& Parent )
+		: mParentList( Parent ), Operator( Name, true, true )
+		{}
+		
+		protected:
+		List& mParentList;
+		
+		private:
+		InternalListFunc();			
+	};
+	
+	class Remove : public InternalListFunc
+	{
+		public:
+		Remove( List& Parent );
+		VariableBasePtr Operate( VariableBasePtr );
+	}mRemoveFunction;
+	
+	class RemoveAll : public InternalListFunc
+	{
+		public:
+		RemoveAll( List& Parent );
+		VariableBasePtr Operate( VariableBasePtr );
+		
+	}mRemoveAllFunction;
+	
+	class Push : public InternalListFunc
+	{
+		public:
+		Push( List& Parent );
+		VariableBasePtr Operate( VariableBasePtr );
+		
+	}mPushFunction;
+	
+	class Pop : public InternalListFunc
+	{
+		public:
+		Pop( List& Parent );
+		VariableBasePtr Operate( VariableBasePtr );
+		
+	}mPopFunction;
+	
 };
 
 

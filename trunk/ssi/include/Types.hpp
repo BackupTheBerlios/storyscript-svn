@@ -18,6 +18,16 @@ NOTES: Typedefs and such for a bunch of fundamental types.
 #include "Unicode.hpp"
 
 
+//For use with boost::shared_ptr's.  Sometimes I don't
+//want something to be auto-deleted.
+struct null_deleter
+{
+    void operator()(void const *) const
+    {
+    }
+};
+
+
 
 //This only account for the gnu and microsoft implementations,
 //it may need tweaking to use stuff like stlport or sgi.

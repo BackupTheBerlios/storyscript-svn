@@ -41,12 +41,7 @@ using namespace SS;
 
 
 
-struct null_deleter
-{
-    void operator()(void const *) const
-    {
-    }
-};
+
 
 
 boost::shared_ptr<Interpreter> Interpreter::mpInstance;

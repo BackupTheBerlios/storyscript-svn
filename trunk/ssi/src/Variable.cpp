@@ -169,7 +169,7 @@ ListPtr VariableBase::CastToList()
 {
 	AssertCastingAllowed();
 	ListPtr pNewList = CreateGeneric<List>( GetName(), false, false );
-	pNewList->AppendWithoutCopy( this->CastToVariable() );
+	pNewList->PushWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
 }
@@ -178,7 +178,7 @@ const ListPtr VariableBase::CastToList() const
 {
 	AssertCastingAllowed();
 	ListPtr pNewList = CreateGeneric<List>( GetName(), false, false );
-	pNewList->AppendWithoutCopy( this->CastToVariable() );
+	pNewList->PushWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
 }

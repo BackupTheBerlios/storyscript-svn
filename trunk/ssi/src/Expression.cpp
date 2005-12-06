@@ -452,8 +452,10 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		else LastWasOperator = true;
 	
 
+		//This is very important:  If the comparison is <=, it will execute left->right,
+		//		if it's just <, it will execute right->left.
 		if( LowPrecedenceOpIndex == ~0 ||
-			Precedence((*this)[i]) < Precedence((*this)[LowPrecedenceOpIndex]) )
+			Precedence((*this)[i]) <= Precedence((*this)[LowPrecedenceOpIndex]) )
 		{
 			LowPrecedenceOpIndex = i;
 		}
@@ -497,6 +499,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	
 	
 	//SPECIAL CASES for Short-circuting in logical operators
+	// This prevents the right side from being evaluated if the left side is true/false.
 	if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr ||
 		LowPrecedenceOp == EXTRA_BINOP_LogicalAnd )
 	{
@@ -512,9 +515,12 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		else if( LowPrecedenceOp == EXTRA_BINOP_LogicalAnd && pLeftVar->GetBoolData() == false ){
 			return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
 		}
-		else{
-			ThrowParserAnomaly( TXT("No possible way the program can reach this point."), ANOMALY_PANIC );
-		}
+		
+		//Shit, now we have to deal with the right side!
+		//Don't worry, if we just let it fall through,
+		//and stop it from re-evaluating the left-side, we'll be fine.
+				
+
 	}
 	
 	
@@ -664,12 +670,17 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 
 
 	//..and we only need the leftvar if it is a binary op.
-	if( !Left.empty() )
+	
+	if( !Left.empty() ) 
 	{
-		pLeftVar = 
-			Left.RealInterpret( false,
+		//Remember, the left side may have already been evaluated if we're dealing with
+		//the and/or operators.  Thats what the !pLeftVar test is for.
+		if( !pLeftVar ){
+			pLeftVar = 
+				Left.RealInterpret( false,
 								Before, //Before Word
 								(*this)[LowPrecedenceOpIndex] ); //After Word
+		}
 	}
 	else
 	{
@@ -792,6 +803,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		pResultant = pNewList;
 		*/
 		
+		/*
 		if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_LIST &&
 		    pLeftVar->CastToList()->IsConst() &&
 			pLeftVar->GetName() == UNNAMMED )
@@ -809,6 +821,52 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 			
 			pResultant = pNewList;
 		}
+		*/
+		
+		//Third try's the charm.
+		
+		//For debugging only:
+		//ScopeObjectType TempLeft = GetScopeObjectType( pLeftVar );
+		//ScopeObjectType TempRight = GetScopeObjectType( pRightVar );
+		
+		if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_LIST && //If pLeftVar is a list
+			pLeftVar->IsConst() && 						   //that is constant
+			pLeftVar->GetName() == UNNAMMED ) 			   //and unnamed.
+		{
+			//If the right var is an actual variable and not something special.
+			if( GetScopeObjectType( pRightVar ) == SCOPEOBJ_VARIABLE )
+			{
+				pLeftVar->CastToList()->PushWithoutCopy( pRightVar );
+			}
+			//If it is something special, just make a new variable and copy the value of rightvar.
+			else
+			{
+				pLeftVar->CastToList()->Push( pRightVar );
+			}
+			
+			pResultant = pLeftVar;
+		}
+		//pLeftVar is not a list, so we have to create a new one.
+		else
+		{
+			ListPtr pNewList( CreateGeneric<List>( UNNAMMED, false, true ) );
+			
+			//If its a real variable, append the actual pointer,
+			//otherwise make a copy of the value.
+			if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_VARIABLE ){
+				 pNewList->PushWithoutCopy( pLeftVar );
+			}
+			else pNewList->Push( pLeftVar );
+			
+			if( GetScopeObjectType( pRightVar ) == SCOPEOBJ_VARIABLE ){
+				 pNewList->PushWithoutCopy( pRightVar );
+			}
+			else pNewList->Push( pRightVar );
+			
+			pResultant = pNewList->CastToVariableBase();			
+		}
+		
+		//Otherwise create a new a list and append the actual pointers
 		
 	}
 	// :
@@ -827,6 +885,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		//		Won't it read the string from the variable and try to access that variable.  Is that what I want?
 		else
 		{
+			//TODO: Maybe get the partial name instead???
 			pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
 		}
 	}

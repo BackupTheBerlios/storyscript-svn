@@ -39,25 +39,25 @@ private:
  								 then removes the first occourance of
  								 all the other arguments from the list.
 */
-SS_DECLARE_OPERATOR(Remove);
+//SS_DECLARE_OPERATOR(Remove);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: Behavior: Same as Remove, but instead of removing just the first
  				  occourance, it removes every occourance
 */
-SS_DECLARE_OPERATOR(RemoveAll);
+//SS_DECLARE_OPERATOR(RemoveAll);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: Removes the last element of a list and returns it.
  		Takes exactly one argument.
 */
-SS_DECLARE_OPERATOR(Pop);
+//SS_DECLARE_OPERATOR(Pop);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: Number of arguments must be >= to 2.
  		First argument is a list, the other arguments are added to the end of the list.
 */
-SS_DECLARE_OPERATOR(Push);
+//SS_DECLARE_OPERATOR(Push);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This is the default sorting function.  I'm using quicksort for this.

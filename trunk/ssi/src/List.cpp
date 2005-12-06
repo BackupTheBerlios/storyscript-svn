@@ -25,12 +25,21 @@ ListPtr SS::gpEmptyList;
  List::List
  NOTES: 
 */
-List::List(){
+List::List()
+: mRemoveFunction( *this ),
+  mRemoveAllFunction( *this ),
+  mPushFunction( *this ),
+  mPopFunction( *this )
+{
 	RegisterPredefinedVars();
 }
 
 List::List( const STRING& Name, bool Static /*= false*/, bool Const /*= false*/ )
-: VariableBase( Name, Static, Const )
+: VariableBase( Name, Static, Const ),
+  mRemoveFunction( *this ),
+  mRemoveAllFunction( *this ),
+  mPushFunction( *this ),
+  mPopFunction( *this )
 {
 	RegisterPredefinedVars();
 }
@@ -121,10 +130,10 @@ VariableBasePtr List::Pop(){
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- List::Append
+ List::AppendList
  NOTES: Adds all the elements of one list onto another.
 */
-void List::Append( const ListPtr OtherList ){
+void List::AppendList( const ListPtr OtherList ){
 	unsigned int i;
 	const ListType& OtherVector = OtherList->GetInternalList();
 	
@@ -138,7 +147,7 @@ void List::Append( const ListPtr OtherList ){
  		uses the pointer its given.  This is useful if you want to have
  		multiple aliases for an object.
 */
-void List::AppendWithoutCopy( VariableBasePtr X )
+void List::PushWithoutCopy( VariableBasePtr X )
 {
 	mList.push_back( X );	
 }
@@ -152,15 +161,16 @@ void List::AppendListWithoutCopy( ListPtr X )
 	unsigned int i;
 	for( i = 0; i< X->GetInternalList().size(); i++ )
 	{
-		AppendWithoutCopy( X->GetInternalList()[i] );
+		PushWithoutCopy( X->GetInternalList()[i] );
 	}
 }
 
-
+//DEPRICATED:  Lists should never be multideminsional
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: If a the list is multideminsional, FlattenList will create a single
  		deminsional version and return it.
 */
+/*
 ListPtr List::MakeFlatList() const
 {
 	
@@ -191,6 +201,7 @@ ListPtr List::MakeFlatList() const
 		
 	return pNewList;
 }
+*/
 
 
 
@@ -255,13 +266,16 @@ VariableBasePtr List::operator[]( unsigned int Index ){
 }
 
 
+//DEPRICATED: It doesn't seem like I would ever need such a function
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This one copies the pointers rather than the pointer's values.
 */
+/*
 void List::CopyExactly( const ListPtr X )
 {
 	mList = X->mList;
 }
+*/
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  List::operator=
@@ -269,7 +283,7 @@ void List::CopyExactly( const ListPtr X )
 */
 void List::operator=( const List& OtherList )
 {
-	ListPtr pFlatList = OtherList.MakeFlatList();
+	//ListPtr pFlatList = OtherList.MakeFlatList();
 	
 	if( IsConst() )
 	{
@@ -278,29 +292,29 @@ void List::operator=( const List& OtherList )
 
 		//This is just the equivalent of the the min macro, but I don't want
 		//to declare it just for this.
-		if( pFlatList->GetInternalList().size() > mList.size() ){
+		if( OtherList.GetInternalList().size() > mList.size() ){
 			MaxSize = (unsigned int)mList.size();
 		}
 		else{
-			MaxSize = (unsigned int)pFlatList->GetInternalList().size();
+			MaxSize = (unsigned int)OtherList.GetInternalList().size();
 		}
 
 		for( i = 0; i < MaxSize; i++ )
 		{
-			*(mList[i]) = *(pFlatList->GetInternalList()[i]);
+			*(mList[i]) = *(OtherList.GetInternalList()[i]);
 		}
 	}
 	else
 	{
 		//this->mList = OtherList.mList;
 		unsigned int i;
-		for( i = 0; i < pFlatList->mList.size(); i++ )
+		for( i = 0; i < OtherList.mList.size(); i++ )
 		{
 			if( i >= this->mList.size() ){
-				Append( pFlatList->mList[i]->CastToList() );
+				AppendList( OtherList.mList[i]->CastToList() );
 			}
 			else{
-				*(this->mList[i]) = *(pFlatList->mList[i]);
+				*(this->mList[i]) = *(OtherList.mList[i]);
 			}
 			
 		}
@@ -369,7 +383,14 @@ void List::RegisterPredefinedVars()
 	bool WasConst = IsConst();
 	SetConst( false );
 
-	this->Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
+	Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
+	
+	//built-in functions
+	Register( ScopeObjectPtr( &mRemoveFunction, null_deleter() ) );
+	Register( ScopeObjectPtr( &mRemoveAllFunction, null_deleter() ) );
+	Register( ScopeObjectPtr( &mPushFunction, null_deleter() ) );
+	Register( ScopeObjectPtr( &mPopFunction, null_deleter() ) );
+	
 
 	SetConst( WasConst );
 }
@@ -429,3 +450,102 @@ VariablePtr List::CastToVariable(){
 const VariablePtr List::CastToVariable() const{
 	return MakeVariable();
 }
+
+/////////////////////////////////////////////////////////BUILT IN LIST FUNCTIONS
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Remove function.  Removes the first occourance of every element in the
+ 		input list.  Returns this list operated on.
+*/
+List::Remove::Remove( List& Parent )
+: InternalListFunc( TXT("remove"), Parent )
+{}
+
+VariableBasePtr List::Remove::Operate( VariableBasePtr pX )
+{
+	const ListType& XList = pX->CastToList()->GetInternalList();
+	
+	size_t i, k;
+	for( i = 0; i < XList.size(); i++ )
+	{
+			for( k = 0; k < mParentList.mList.size(); k++ )
+			{
+					if( mParentList.mList[k] == XList[i] )
+					{
+						mParentList.mList.erase( mParentList.mList.begin() + k );
+						break;	
+					}
+			}		
+	}
+	
+	
+	return mParentList.CastToVariableBase();
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Similar to remove, but it removes all occouranced of the items in
+ 		the given list.  Returns the list operated on.
+*/
+List::RemoveAll::RemoveAll( List& Parent )
+: InternalListFunc( TXT("removeall"), Parent )
+{}
+
+VariableBasePtr List::RemoveAll::Operate( VariableBasePtr pX )
+{
+	const ListType& XList = pX->CastToList()->GetInternalList();
+	
+	size_t i, k;
+	for( i = 0; i < XList.size(); i++ )
+	{
+			for( k = 0; k < mParentList.mList.size(); k++ )
+			{
+					if( mParentList.mList[k] == XList[i] )
+					{
+						mParentList.mList.erase( mParentList.mList.begin() + k );
+						
+						//de-increment to next time around it will test the same index.
+						k--;
+						continue;
+					}
+			}
+	}
+	
+	
+	return mParentList.CastToVariableBase();
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Push every element from the given list onto this list.  Returns the
+ 		list operated on.
+*/
+List::Push::Push( List& Parent )
+: InternalListFunc( TXT("push"), Parent )
+{}
+
+VariableBasePtr List::Push::Operate( VariableBasePtr pX )
+{
+	const ListType& XList = pX->CastToList()->GetInternalList();
+	size_t i;
+	for( i = 0; i < XList.size(); i++ )
+	{
+		mParentList.Push( XList[i] );
+	}
+	
+	return mParentList.CastToVariableBase();	
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Remove one element from the list and returns it.
+ 		TODO: Consider having it take one argument giving a number of element
+ 		to remove from the end of the list.
+*/
+List::Pop::Pop( List& Parent )
+: InternalListFunc( TXT("pop"), Parent )
+{}
+
+VariableBasePtr List::Pop::Operate( VariableBasePtr pX )
+{
+	return mParentList.Pop();	
+}
+

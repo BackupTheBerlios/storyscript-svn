@@ -39,10 +39,10 @@ SLib::List::List()
 
 void SLib::List::RegisterPredefined()
 {
-	Register( ScopeObjectPtr( new Remove( TXT("remove"), true, true ) ) );
-	Register( ScopeObjectPtr( new RemoveAll( TXT("removeall"), true, true ) ) );
-	Register( ScopeObjectPtr( new Push( TXT("push"), true, true ) ) );
-	Register( ScopeObjectPtr( new Pop( TXT("pop"), true, true ) ) );
+	//Register( ScopeObjectPtr( new Remove( TXT("remove"), true, true ) ) );
+	//Register( ScopeObjectPtr( new RemoveAll( TXT("removeall"), true, true ) ) );
+	//Register( ScopeObjectPtr( new Push( TXT("push"), true, true ) ) );
+	//Register( ScopeObjectPtr( new Pop( TXT("pop"), true, true ) ) );
 	Register( ScopeObjectPtr( new Sort( TXT("sort"), true, true ) ) );
 	Register( ScopeObjectPtr( new Reverse( TXT("reverse"), true, true ) ) );
 	Register( ScopeObjectPtr( new PickOne( TXT("pickone"), true, true ) ) );
@@ -51,6 +51,7 @@ void SLib::List::RegisterPredefined()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
+/*
 VariableBasePtr Remove::Operate( VariableBasePtr X )
 {
 	ListPtr Arguments = X->CastToList();
@@ -79,10 +80,12 @@ VariableBasePtr Remove::Operate( VariableBasePtr X )
 	
 	return TheList;
 }
+*/
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
+/*
 VariableBasePtr RemoveAll::Operate( VariableBasePtr X )
 {
 	ListPtr Arguments = X->CastToList();
@@ -102,6 +105,9 @@ VariableBasePtr RemoveAll::Operate( VariableBasePtr X )
 			if( (*((*TheList)[j]) == *((*Arguments)[i]))->GetBoolData() )
 			{
 				TheList->GetInternalList().erase( TheList->GetInternalList().begin() + j );
+				
+				j--;
+				continue;
 			}
 		}
 		
@@ -110,12 +116,14 @@ VariableBasePtr RemoveAll::Operate( VariableBasePtr X )
 	
 	return TheList;	
 }
+*/
 
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
+/*
 VariableBasePtr Push::Operate( VariableBasePtr X )
 {
 	ListPtr Arguments = X->CastToList();
@@ -135,10 +143,12 @@ VariableBasePtr Push::Operate( VariableBasePtr X )
 	
 	return LastPushedVar;
 }
+*/
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: See declaration.
 */
+/*
 VariableBasePtr Pop::Operate( VariableBasePtr X )
 {
 	ListPtr Arguments = X->CastToList();
@@ -151,6 +161,7 @@ VariableBasePtr Pop::Operate( VariableBasePtr X )
 	
 	return LastPoped;
 }
+*/
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -158,16 +169,16 @@ VariableBasePtr Pop::Operate( VariableBasePtr X )
 */
 VariableBasePtr Sort::Operate( VariableBasePtr X )
 {
-	ListPtr ListX = X->CastToList()->MakeFlatList();
 	ListPtr pNewList( CreateGeneric<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
 	
 	//If I don't SetConst to false, it will do the compound assignment trick.
 	pNewList->SetConst( false );
-	*pNewList = *ListX;
+	*pNewList = *X;
 	pNewList->SetConst( true );
 	
 	return QuickSort( pNewList, 0, (unsigned long)pNewList->GetInternalList().size() );
 }
+
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -209,6 +220,7 @@ ListPtr Sort::QuickSort( ListPtr TheList, unsigned long Begin, unsigned long End
 	return TheList;	
 }
 
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Compares two values aphabetically.  If you prefer numerically, 
  		feel free to overload Sort.
@@ -219,6 +231,7 @@ ListPtr Sort::QuickSort( ListPtr TheList, unsigned long Begin, unsigned long End
  				 
  		Any overloaded versions should do the same.
 */
+
 int Sort::Compare( VariableBasePtr X, VariableBasePtr Y )
 {
 	int result = X->GetStringData().compare( Y->GetStringData() );	
@@ -233,8 +246,7 @@ int Sort::Compare( VariableBasePtr X, VariableBasePtr Y )
 VariableBasePtr Reverse::Operate( VariableBasePtr X )
 {
 	//We MUST store pTmp, or (if it is a temporary) the gc will delete it.
-	ListPtr pTmp = X->CastToList()->MakeFlatList();
-	ListType& Arg = pTmp->GetInternalList();
+	ListType& Arg = X->CastToList()->GetInternalList();
 	
 	ListPtr pNewList( CreateGeneric<SS::List>( SS_BASE_ARGS_DEFAULTS ) );
 	
@@ -255,8 +267,8 @@ VariableBasePtr Reverse::Operate( VariableBasePtr X )
 */
 VariableBasePtr PickOne::Operate( VariableBasePtr X )
 {
-	ListPtr pList = X->CastToList()->MakeFlatList();
-
+	ListPtr pList( X->CastToList() );
+	
 	if( pList->GetInternalList().size() == 0 ) return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
 
 	boost::uniform_int<unsigned int> DistributedRandom( 0, (unsigned int)pList->GetInternalList().size() - 1 );
