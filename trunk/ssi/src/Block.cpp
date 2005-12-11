@@ -61,6 +61,8 @@ void Block::RegisterPredefinedVars()
 //
 VariableBasePtr Block::Operate( VariableBasePtr In )
 {
+	*(GetScopeObject( LC_Input )->CastToVariableBase()) = *In;
+	
 	Interpreter::Instance().Parse( this->CastToBlock(), false );
 	
 	return GetScopeObject( LC_Output )->CastToVariableBase();	

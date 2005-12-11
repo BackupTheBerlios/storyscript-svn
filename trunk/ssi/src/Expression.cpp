@@ -279,6 +279,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	}
 
     StripOutlyingParenthesis();
+    
 	
 	if( size() == 1 )
 	{
@@ -427,6 +428,9 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 
 
 
+				//NOTE: IMPORTANT: Below we do a <= comparison, here we just do <.  
+				//This is becuase when we are dealing with unary operators, functions,
+				//we have to make sure the first one is the low prec op.  I'm confused.
 
 				if( LowPrecedenceOpIndex == ~0 ||
 					Precedence((*this)[i]) < Precedence((*this)[LowPrecedenceOpIndex]) )
@@ -472,8 +476,6 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 
 	const ExtraDesc& LowPrecedenceOp = (*this)[LowPrecedenceOpIndex].Extra;
 
-	//ONLY FOR DEBUGGING
-	//STRING Dump = DumpToString();
 	
 	const Expression Left( *this, GetAbsoluteIndex(0), GetAbsoluteIndex(LowPrecedenceOpIndex) );
 
@@ -824,10 +826,6 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		*/
 		
 		//Third try's the charm.
-		
-		//For debugging only:
-		//ScopeObjectType TempLeft = GetScopeObjectType( pLeftVar );
-		//ScopeObjectType TempRight = GetScopeObjectType( pRightVar );
 		
 		if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_LIST && //If pLeftVar is a list
 			pLeftVar->IsConst() && 						   //that is constant
