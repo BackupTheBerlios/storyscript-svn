@@ -5,6 +5,9 @@ This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full li
 
 NOTES: Contains defs for the Expression class which is responsible for
 	interpreting and executing expressions.
+	
+	To anyone trying to hack this:  This is the most complex and difficult to understand source file in the whole project.
+		It also defines the behavior of much of the language.  Abandon all ye who enter here.
 */
 
 
@@ -416,7 +419,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 				if( i == size()- 1 ||
 					(i < size() - 1 && 
 					((*this)[i+1].Type == WORDTYPE_BINARYOPERATOR ||
-					(*this)[i+1].Type == WORDTYPE_AMBIGUOUSOPERATOR ||
+					//(*this)[i+1].Type == WORDTYPE_AMBIGUOUSOPERATOR ||
 					(*this)[i+1].Extra == EXTRA_PARENTHESIS_Right)) )
 				{
 					LastWasOperator = false;
@@ -432,7 +435,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 				//This is becuase when we are dealing with unary operators, functions,
 				//we have to make sure the first one is the low prec op.  I'm confused.
 
-				if( LowPrecedenceOpIndex == ~0 ||
+				if( LowPrecedenceOpIndex == ~0  ||
 					Precedence((*this)[i]) < Precedence((*this)[LowPrecedenceOpIndex]) )
 				{
 					LowPrecedenceOpIndex = i;
@@ -459,7 +462,7 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		//This is very important:  If the comparison is <=, it will execute left->right,
 		//		if it's just <, it will execute right->left.
 		if( LowPrecedenceOpIndex == ~0 ||
-			Precedence((*this)[i]) <= Precedence((*this)[LowPrecedenceOpIndex]) )
+			Precedence((*this)[i]) < Precedence((*this)[LowPrecedenceOpIndex]) )
 		{
 			LowPrecedenceOpIndex = i;
 		}
@@ -945,7 +948,8 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 				  PrevWord.Type == WORDTYPE_UNARYOPERATOR ||
 				  PrevWord.Type == WORDTYPE_AMBIGUOUSOPERATOR ) &&
 				  !( CurrentWord.IsLiteral() || CurrentWord.Type == WORDTYPE_IDENTIFIER ||
-				 CurrentWord.Extra == EXTRA_PARENTHESIS_Left || CurrentWord.Type == WORDTYPE_UNARYOPERATOR ) )
+				 CurrentWord.Extra == EXTRA_PARENTHESIS_Left || CurrentWord.Type == WORDTYPE_UNARYOPERATOR ||
+				 CurrentWord.Type == WORDTYPE_AMBIGUOUSOPERATOR ) )
 		{
 			ThrowExpressionAnomaly( TXT("Either an identifier, literal, or a unary operator must follow an operator"),
 								    ANOMALY_BADGRAMMAR );
@@ -1132,6 +1136,7 @@ Expression::OperatorPrecedence Expression::Precedence( const Word& W ) const
 		PrecedenceList[EXTRA_BINOP_Times]             = 16;
 		PrecedenceList[EXTRA_BINOP_Exponent]          = 17;
 
+	/*
 		PrecedenceList[EXTRA_UNOP_Negative]           = 18;
         PrecedenceList[EXTRA_UNOP_Not]                = 18;
 
@@ -1139,6 +1144,9 @@ Expression::OperatorPrecedence Expression::Precedence( const Word& W ) const
 		PrecedenceList[EXTRA_UNOP_List]				  = 19;
 		PrecedenceList[EXTRA_UNOP_Character]		  = 19;
 		PrecedenceList[EXTRA_UNOP_Player]			  = 19;		
+	*/
+	
+		PrecedenceList[EXTRA_UNOP_GenericUnaryOperator] = 18;
 
 		PrecedenceList[EXTRA_BINOP_ListAccess]        = 20; 
 		PrecedenceList[EXTRA_BINOP_ListAppend]        = 20;
@@ -1149,12 +1157,10 @@ Expression::OperatorPrecedence Expression::Precedence( const Word& W ) const
 	}
 
 
-	//Here we assume it is a function (an Operator or Block).
-	if( W.Type != WORDTYPE_BINARYOPERATOR &&
-		W.Type != WORDTYPE_UNARYOPERATOR &&
-		W.Type != WORDTYPE_AMBIGUOUSOPERATOR )
+	//Here we assume it is a function (an Operator or Block), and return the highest precedence.
+	if( W.Type != WORDTYPE_BINARYOPERATOR )
 	{
-		return 0;
+		return PrecedenceList[EXTRA_UNOP_GenericUnaryOperator];
 	}
 
 	return PrecedenceList[ W.Extra ];

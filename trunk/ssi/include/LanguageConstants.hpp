@@ -80,6 +80,7 @@ enum ExtraDesc
 	EXTRA_BINOP_LogicalAnd,
 	EXTRA_BINOP_LogicalOr,
 
+	EXTRA_UNOP_GenericUnaryOperator,
 	EXTRA_UNOP_Not,
 	EXTRA_UNOP_Import,
 	EXTRA_UNOP_Negative,
