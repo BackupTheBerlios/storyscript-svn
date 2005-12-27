@@ -42,7 +42,8 @@ enum AnomalyCode{
 	ANOMALY_CONSTASSIGN, //Someone tried to assign to constant
 	ANOMALY_LISTTOOBIG,
 	ANOMALY_BADPRECISION, //Tried to set the precision of a variabl too high or too low.
-	ANOMALY_NOBLOCKS //No blocks were found in the file.  The interpeter doesn't know what to do.
+	ANOMALY_NOBLOCKS, //No blocks were found in the file.  The interpeter doesn't know what to do.
+	ANOMALY_NOOPERATOR //Cannot find any operator in the expression.
 
 };
 

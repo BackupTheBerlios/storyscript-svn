@@ -26,6 +26,9 @@ public:
 	Word();
 	Word( const SS::STRING& String, WordType Type, ExtraDesc Extra = EXTRA_NULL );
 	Word( WordType Type, ExtraDesc Extra = EXTRA_NULL );
+	Word( const Word& );
+	
+	virtual ~Word() {}
 
 	Word& operator=( const Word& W );
 	bool operator==( const Word& W ) const;

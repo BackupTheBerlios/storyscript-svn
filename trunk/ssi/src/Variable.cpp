@@ -534,6 +534,7 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
 	//SPECIAL CASE: Strings multiplied by BigNums result in repeated strings.
+	/*
 	if( this->mCurrentType == VARTYPE_NUM && X.CastToVariable()->mCurrentType == VARTYPE_STRING )
 	{
 		StringType TempString;
@@ -555,11 +556,13 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 
 		return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, TempString ) );
 	}
+	*/
 
 
 	try{
 		switch( ContextType )
 		{
+		case VARTYPE_STRING:
 		case VARTYPE_NUM:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * X.GetNumData() ) );

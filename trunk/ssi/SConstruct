@@ -8,7 +8,7 @@ debug = ARGUMENTS.get('debug', 0 )
 if int(debug):
 	env.Append(CCFLAGS = '-g')
 else:
-	env.Append(CCFLAGS = '-O2' )
+	env.Append(CCFLAGS = '-O3' )
 
 #env.Append( BUILDERS = {'backup' : BackupBuild } )
 conf = Configure(env)

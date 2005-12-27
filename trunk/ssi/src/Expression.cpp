@@ -23,8 +23,39 @@ NOTES: Contains defs for the Expression class which is responsible for
 using namespace SS;
 
 
+const unsigned long BAD_PRECEDENCE = ~0U;
 
-std::vector<VariableBasePtr> Expression::mUnnamedVariables;
+//std::vector<VariableBasePtr> Expression::mUnnamedVariables;
+
+
+////////////////////////////////////////////////////////////////////ExtendedWord
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Constructors
+*/
+ExtendedWord::ExtendedWord()
+{
+}
+
+ExtendedWord::ExtendedWord( const STRING& String, WordType Type,
+							ExtraDesc Extra /*= EXTRA_NULL*/     )
+: Word( String, Type, Extra )
+{}
+
+
+ExtendedWord::ExtendedWord( WordType Type, ExtraDesc Extra /*= EXTRA_NULL*/ )
+: Word( Type, Extra )
+{}
+
+ExtendedWord::ExtendedWord( const Word& BasicWord )
+: Word( BasicWord )
+{}
+
+
+
+
+//////////////////////////////////////////////////////////////////////Expression
 
 
 
@@ -83,7 +114,8 @@ private:
 */
 Expression::Expression()
 	: mStatic(false), mpWordList( new WordList ),
-      mLowerBounds(0), mUpperBounds(~0U)
+      mLowerBounds(0), mUpperBounds(~0U),
+      mIdentifiersCached( true )
 {
 }
 
@@ -92,7 +124,8 @@ Expression::Expression( const Expression& OtherExp,
 						unsigned int LowerBounds /*=0*/,
 						unsigned int UpperBounds /*=~0U*/ )
 	: mStatic(OtherExp.mStatic), mpWordList( OtherExp.mpWordList ),
- 	  mLowerBounds(LowerBounds), mUpperBounds(UpperBounds)
+ 	  mLowerBounds(LowerBounds), mUpperBounds(UpperBounds),
+ 	  mIdentifiersCached( OtherExp.mIdentifiersCached )
 {
 	if( UpperBounds < LowerBounds )
 	{
@@ -102,13 +135,6 @@ Expression::Expression( const Expression& OtherExp,
 	}
 }
 
-//This one is only for internal use
-/*
-Expression::Expression( std::vector<Word>::iterator First, std::vector<Word>::iterator Last )
-	: mStatic(false), mWordList( First, Last )
-{
-}
-*/
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  Expression::operator=
@@ -120,6 +146,7 @@ Expression& Expression::operator=( const Expression& OtherExp )
 	mLowerBounds = OtherExp.mLowerBounds;
 	mUpperBounds = OtherExp.mUpperBounds;
 	mStatic = OtherExp.mStatic;
+	mIdentifiersCached = OtherExp.mIdentifiersCached;
 	return *this;
 }
 
@@ -152,6 +179,7 @@ const Word& Expression::operator[]( unsigned long i ) const
 	return (*mpWordList)[ GetAbsoluteIndex(i) ];
 }
 
+
 void Expression::clear()
 {
 	if( mpWordList.unique() ) mpWordList->clear();
@@ -160,13 +188,17 @@ void Expression::clear()
 	mLowerBounds = 0;
 	mUpperBounds = ~0U;
 
-	mStatic = false;		
+	mStatic = false;	
+	
+	mIdentifiersCached = true;	
 }
 
 void Expression::push_back( const Word& SomeWord )
 {
 	RevertToLocalCopy();
 	mpWordList->push_back( SomeWord );
+	
+	mIdentifiersCached = false;
 }
 
 void Expression::pop_back()
@@ -193,7 +225,7 @@ unsigned long Expression::size() const
 void Expression::erase( unsigned long i )
 {
 	RevertToLocalCopy();
-	mpWordList->erase( mpWordList->begin() + i ); 	
+	mpWordList->erase( mpWordList->begin() + i );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -245,7 +277,7 @@ void Expression::RevertToLocalCopy()
 */
 VariableBasePtr Expression::Evaluate() const
 {
-	return RealInterpret();
+	return InternalEvaluate();
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MONOLITHIC~FUNCTION~~~~~~
@@ -255,89 +287,52 @@ VariableBasePtr Expression::Evaluate() const
 
 		INPUTS:
 		TopLevel - True if another function is calling ParseExpression, false if its calling itself
-		Before - The word that comes before the given "slice" of the expression
-		After - The word that comes after.
-		PreValue - Used if for some reason a value needs to be inserted before WordBuffer (in cases where
-				   expressions beging with a binary operator).
-		PostValue - Used if a value needs to be added after WordBuffer (in cases with hanging operators)
-
+		
 		OUTPUT:
 		Returns the result of the expression.
 */
-VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
-											   Word Before /*=NULL_WORD*/,
-											   Word After /*=NULL_WORD*/,
-											   VariableBasePtr PostValue /*=VariableBasePtr()*/ ) const
+VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 {
-	//Verify that the expression has proper syntax.
-	//Note that this does not check for attempting to assign to a constant.
-	//Nor does it check for identifier that do not exist.
-
+	/*
+		Take care of any business before we get started.
+	*/
+	
 	if( size() == 0 ){
 		ThrowParserAnomaly( 
-			TXT("Tried to parse an empty expression.  This means there "
-			"is a serious bug in the interpreter.  Please, please, "
-			"please report this to the author!"),
+			TXT("Tried to evaluate an empty expression.  Probably a bug, please report. "),
 			ANOMALY_PANIC );
+	}
+	
+	if( TopLevel || !mIdentifiersCached ){
+		CacheIdentifierObjects();
+		mIdentifiersCached = true;
 	}
 
     StripOutlyingParenthesis();
     
+    
+    
+    
+    /*
+		Handle single word expressions.
+	*/
 	
 	if( size() == 1 )
 	{
-		if( (*this)[0].Type == WORDTYPE_IDENTIFIER )
-		{
-			//This is a bit of a hack to allow the : operator to function.
-			//Any identifier after it will be converted to a string variable.
-			if( Before.Extra == EXTRA_BINOP_ScopeResolution  )
-			{
-				VariableBasePtr pTempVar( new LooseIdentifier( (*this)[0].String ) );
-				pTempVar->SetSharedPtr( pTempVar );
-				mUnnamedVariables.push_back( pTempVar );
-				return pTempVar;				
-			}
-			else
-			{
-				/*
-				If an identifier exists, it is returns as a VariableBase,
-				If it does not, it is returned as a special LooseIdentifier object, for use
-				by special cases such as object declarations.
-				*/
-				try{
-					return Interpreter::Instance().GetScopeObject( (*this)[0].String )->CastToVariableBase();
-				}
-				catch( ParserAnomaly E )
-				{
-					if( E.ErrorCode == ANOMALY_IDNOTFOUND )
-					{
-						VariableBasePtr pTempVar( new LooseIdentifier( (*this)[0].String ) );
-						pTempVar->SetSharedPtr( pTempVar );
-						mUnnamedVariables.push_back( pTempVar );
-						return pTempVar;												
-					}
-					else throw;
-				}
-			}
+		if( GetWord(0).Type == WORDTYPE_IDENTIFIER ) {
+			return GetWord(0).mCachedObject->CastToVariableBase();
 		}
-		else if( (*this)[0].Extra == EXTRA_BOOLLITERAL_True )
-		{
-			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, true ) );
-			mUnnamedVariables.push_back( pTempVar );
-			return pTempVar;
+		else if( GetWord(0).Extra == EXTRA_BOOLLITERAL_True ) {
+			return CreateVariable<Variable>( UNNAMMED, false, true, true );
 		}
-		else if( (*this)[0].Extra == EXTRA_BOOLLITERAL_False )
-		{
-			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, false ) );
-			mUnnamedVariables.push_back( pTempVar );
-			return pTempVar;
+		else if( GetWord(0).Extra == EXTRA_BOOLLITERAL_False ) {
+			return CreateVariable<Variable>( UNNAMMED, false, true, false );
 		}
-		else if( (*this)[0].Type == WORDTYPE_STRINGLITERAL ||
-				 (*this)[0].Type == WORDTYPE_FLOATLITERAL )
+		else if( GetWord(0).Type == WORDTYPE_STRINGLITERAL ||
+				 GetWord(0).Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
 			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, (*this)[0].String ) );
-			mUnnamedVariables.push_back( pTempVar );
 
 			if( (*this)[0].Type == WORDTYPE_FLOATLITERAL ) {
 				pTempVar->ForceConversion( VARTYPE_NUM );
@@ -345,140 +340,30 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 
 			return pTempVar;
 		}
-		else if( (*this)[0].Type == WORDTYPE_EMPTYLISTLITERAL )
-		{
+		else if( (*this)[0].Type == WORDTYPE_EMPTYLISTLITERAL )	{
 			return gpEmptyList->CastToVariableBase();
 		}
-		else
-		{
-			ThrowParserAnomaly( TXT("Expression::Interpret is confused as hell."), ANOMALY_BADGRAMMAR );
+		else {
+			ThrowParserAnomaly( TXT("Catastraphic error in single word expression evaluation.  Please report this error."), ANOMALY_PANIC );
 		}
 	}
 	
-	//This should weed out anything really fatal
-	CheckSyntax( (bool)PostValue );	
 	
-
-	//Find the low precedence operator.
-	bool LastWasOperator = false;
-	unsigned int i;
-	unsigned int ParenthesisCount = 0;
-	unsigned int LowPrecedenceOpIndex = ~0;
-	for( i = 0; i < size(); i++ )
-	{
-		if( (*this)[i].Extra == EXTRA_PARENTHESIS_Left ){
-			ParenthesisCount++;
-			LastWasOperator = false;
-			continue;
-		}
-		else if( (*this)[i].Extra == EXTRA_PARENTHESIS_Right ){
-			ParenthesisCount--;
-			LastWasOperator = false;
-			continue;
-		}
-
-		if( ParenthesisCount != 0 ) continue;
-
-		//Intercept ambiguous operators and figure out whether they
-		//should be binary or unary.
-		if( (*this)[i].Type == WORDTYPE_AMBIGUOUSOPERATOR )
-		{
-			if( i == 0 || LastWasOperator == true ||
-				(i != 0 && (*this)[i-1].Extra == EXTRA_PARENTHESIS_Right ) )
-			{
-				(*this)[i].InterpretAsUnaryOp();
-			}
-			else
-			{
-				(*this)[i].InterpretAsBinaryOp();
-			}
-		}
-		//Test if it is a user defined or SLib operator
-		if( (*this)[i].Type == WORDTYPE_IDENTIFIER )
-		{
-			ScopeObjectType ObjType;
-
-			try{
-				ObjType = GetScopeObjectType(
-					Interpreter::Instance().GetScopeObject( (*this)[i].String ) );
-			}
-			//If its an unkown ID, we just ignore it here and it will get dealt with later.
-			catch( ParserAnomaly E )
-			{
-				if( E.ErrorCode == ANOMALY_IDNOTFOUND ){
-					LastWasOperator = false;
-					continue;
-				}
-				else throw;
-			}
-
-			if( ObjType == SCOPEOBJ_OPERATOR || ObjType == SCOPEOBJ_BLOCK )
-			{
-				//This part figures out whether to interpret this thing
-				//as an operator or just as a block
-				if( i == size()- 1 ||
-					(i < size() - 1 && 
-					((*this)[i+1].Type == WORDTYPE_BINARYOPERATOR ||
-					//(*this)[i+1].Type == WORDTYPE_AMBIGUOUSOPERATOR ||
-					(*this)[i+1].Extra == EXTRA_PARENTHESIS_Right)) )
-				{
-					LastWasOperator = false;
-					continue;
-				}
-				
-				//Translation; If "foo" is the last word, or is followed by binop, ambigop, or ),
-				//			   then interpret it as an ID.  Otherwise its an operator.
-
-
-
-				//NOTE: IMPORTANT: Below we do a <= comparison, here we just do <.  
-				//This is becuase when we are dealing with unary operators, functions,
-				//we have to make sure the first one is the low prec op.  I'm confused.
-
-				if( LowPrecedenceOpIndex == ~0  ||
-					Precedence((*this)[i]) < Precedence((*this)[LowPrecedenceOpIndex]) )
-				{
-					LowPrecedenceOpIndex = i;
-				}
-
-				LastWasOperator = true;
-				continue;
-			}
-			else
-			{
-				LastWasOperator = false;
-				continue;
-			}
-		}
-		else if( (*this)[i].Type != WORDTYPE_BINARYOPERATOR &&
-				 (*this)[i].Type != WORDTYPE_UNARYOPERATOR )
-		{
-			LastWasOperator = false;
-			continue;
-		}
-		else LastWasOperator = true;
 	
-
-		//This is very important:  If the comparison is <=, it will execute left->right,
-		//		if it's just <, it will execute right->left.
-		if( LowPrecedenceOpIndex == ~0 ||
-			Precedence((*this)[i]) < Precedence((*this)[LowPrecedenceOpIndex]) )
-		{
-			LowPrecedenceOpIndex = i;
-		}
-	}
-
-	//I'm not really sure if this is possible, but
-	//it is better error on the side of caution
-	if( LowPrecedenceOpIndex == ~0 ){
-		ThrowExpressionAnomaly( TXT("Can't find a low precedence operator.  This means"
-							" that there is a serious bug in the interpreter.  Please"
-							" contact the author."), ANOMALY_PANIC );		
-	}
-
-
-	const ExtraDesc& LowPrecedenceOp = (*this)[LowPrecedenceOpIndex].Extra;
-
+	/*
+		Determine the low precedence operator
+	*/
+	
+	unsigned long LowPrecedenceOpIndex = CalculateLowPrecedenceOperator();
+	const ExtraDesc& LowPrecedenceOp = GetWord( LowPrecedenceOpIndex ).Extra;
+	//Wow that was easy =)
+	
+	
+	
+	/*
+		Split the expression in two parts: everything left of the the low precedence op,
+		and everything right of it.
+	*/
 	
 	const Expression Left( *this, GetAbsoluteIndex(0), GetAbsoluteIndex(LowPrecedenceOpIndex) );
 
@@ -500,19 +385,20 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 	}
 	
 
+
 	VariableBasePtr pLeftVar, pRightVar, pResultant;
+
 	
 	
-	//SPECIAL CASES for Short-circuting in logical operators
-	// This prevents the right side from being evaluated if the left side is true/false.
+	/*
+		Special Case for handling short-circuting of logical operators.
+		This prevents the right side from being evaluated if the left side is true/false.
+	*/
+	
 	if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr ||
 		LowPrecedenceOp == EXTRA_BINOP_LogicalAnd )
 	{
-		pLeftVar =
-			Left.RealInterpret( false,
-							Before, //Before Word
-							(*this)[LowPrecedenceOpIndex] ); //After Word
-		
+		pLeftVar =	Left.InternalEvaluate( false ); 		
 		
 		if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr && pLeftVar->GetBoolData() == true ){
 			return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, true );
@@ -520,388 +406,85 @@ VariableBasePtr Expression::RealInterpret( bool TopLevel /*=true*/,
 		else if( LowPrecedenceOp == EXTRA_BINOP_LogicalAnd && pLeftVar->GetBoolData() == false ){
 			return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
 		}
-		
-		//Shit, now we have to deal with the right side!
+	
+		//Shit, no short-circuting necessary so now we have to deal with the right side!
 		//Don't worry, if we just let it fall through,
 		//and stop it from re-evaluating the left-side, we'll be fine.
-				
-
 	}
 	
 	
 	
-
-
-	if( !Right.empty() )
-	{
-		pRightVar = 
-			Right.RealInterpret( false,
-								 (*this)[LowPrecedenceOpIndex], //Before Word
-								 After, //After Word
-								 PostValue ); //Remeber to pass this on.
+	/*
+		Evaluate the right side expression.
+	*/
+	if( !Right.empty() ) {
+		pRightVar = Right.InternalEvaluate( false );
+			
 	}
-	else if( PostValue )
-	{
-		pRightVar = PostValue;
-	}
-	//UserOps at the end of an expression sometimes get flagged as the low-precedence op
-	//even though they should be interpreted as Variables.
-	else if( (*this)[LowPrecedenceOpIndex].Type == WORDTYPE_IDENTIFIER )
-	{
-		pResultant = Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->CastToVariableBase();
-
-		//Now we handle the left part.
-		if( !Left.empty() )
-		{
-			return Left.RealInterpret( false, Before, (*this)[LowPrecedenceOpIndex],
-									   pResultant );
-		}
-		else
-		{
-			//It should under no circumstances be able to get here.
-			ThrowExpressionAnomaly( TXT("Catastraphic expression parsing error."), ANOMALY_PANIC );
-		}
-	}
-	else
-	{
+	//Somehow a trailing operator got flagged as the low precedence op.
+	else {
 		ThrowExpressionAnomaly( TXT("Trailing operator with no argument."),
 								ANOMALY_BADGRAMMAR );
 	}
-
-
-	//EXAUSTIVE LISTING OF UNARY OPERATORS
-	if( (*this)[LowPrecedenceOpIndex].Type == WORDTYPE_UNARYOPERATOR ||
-		(*this)[LowPrecedenceOpIndex].Type == WORDTYPE_AMBIGUOUSOPERATOR ||
-		(*this)[LowPrecedenceOpIndex].Type == WORDTYPE_IDENTIFIER )
+	
+	
+	
+	/*
+		Evaluate a functions/usr-ops.
+	*/
+	if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_IDENTIFIER )
 	{
-		// not
-		if( LowPrecedenceOp == EXTRA_UNOP_Not ){
-			pResultant = pRightVar->op_not();
-		}
-		//-
-		else if( LowPrecedenceOp == EXTRA_UNOP_Negative || 
-				 ((*this)[LowPrecedenceOpIndex].Type == WORDTYPE_AMBIGUOUSOPERATOR &&
-				  LowPrecedenceOp == EXTRA_BINOP_Minus ) )
-		{
-			pResultant = pRightVar->op_neg();			
-		}
-		//import
-		else if( LowPrecedenceOp == EXTRA_UNOP_Import ){
-			//Identifiers will always start with ':'
-			if( pRightVar->GetStringData()[0] == LC_ScopeResolution[0] )
-			{
-				Interpreter::Instance().ImportIntoCurrentScope(
-						pRightVar->GetStringData() );
-			}
-			else
-			{
-				Interpreter::Instance().ImportFileIntoCurrentScope(
-						pRightVar->GetStringData() );								
-			}			
-						
-			pResultant = pRightVar;
-		}
-		//Declarations
-		else if( LowPrecedenceOp == EXTRA_UNOP_Var ||
-				 LowPrecedenceOp == EXTRA_UNOP_List || 
-				 LowPrecedenceOp == EXTRA_UNOP_Character || 
-				 LowPrecedenceOp == EXTRA_UNOP_Player )
-		{
-			boost::shared_ptr<LooseIdentifier> pLooseID;
-			if( pLooseID = boost::dynamic_pointer_cast<LooseIdentifier>( pRightVar ) )
-			{
-				if( LowPrecedenceOp == EXTRA_UNOP_Var )
-				{
-					pResultant = 
-						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_VARIABLE, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
-				}
-				else if( LowPrecedenceOp == EXTRA_UNOP_List )
-				{
-					pResultant = 
-						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_LIST, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
-				}
-				else if( LowPrecedenceOp == EXTRA_UNOP_Player )
-				{
-					//HACK: This says player, but currently it just creates a standard character.
-					//		At this point there is no spereation between players and characters.
-					pResultant = 
-						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
-				}
-				else if( LowPrecedenceOp == EXTRA_UNOP_Character )
-				{
-					pResultant = 
-						Interpreter::Instance().MakeScopeObject( 
-						SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
-				}
-				else
-				{
-					//This will generate an error saying that the identifier cannot be found.
-					pRightVar->GetStringData();
-				}
-			}
-			//Trying to declare a variable with something other than an unused identifier.
-			else
-			{
-				ThrowExpressionAnomaly( TXT("Bad declaration syntax.  Either you tried to declare"
-										" an object with an identifier already being used, or you"
-										" tried to declare an object using a literal."),
-										ANOMALY_BADDECLARATION );
-			}
-		}
-		//Try to interpret it as a function
-		else
-		{
-			OperatorPtr pOp = 
-				Interpreter::Instance().GetScopeObject( (*this)[LowPrecedenceOpIndex].String )->CastToOperator();
-			pResultant = pOp->Operate( pRightVar );
-		}
-
-		//Now we handle the left part.
-		if( !Left.empty() )
-		{
-			return Left.RealInterpret( false, Before, (*this)[LowPrecedenceOpIndex],
-									   pResultant );
-		}
-
-        return pResultant;
+		OperatorPtr pOp = 
+			Interpreter::Instance().GetScopeObject( GetWord( LowPrecedenceOpIndex ).String )->CastToOperator();
+		
+		VariableBasePtr ReturnVal = pOp->Operate( pRightVar );
+		if( !Left.empty() ) Left.InternalEvaluate(false);
+		
+		return ReturnVal;
 	}
-			
-
-	//From here on we assume that we are dealing with a binary operator.
 	
-
-
-	//..and we only need the leftvar if it is a binary op.
 	
-	if( !Left.empty() ) 
+	/*
+		(Hard-coded) Unary Operators.
+	*/
+	else if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_UNARYOPERATOR )
 	{
-		//Remember, the left side may have already been evaluated if we're dealing with
-		//the and/or operators.  Thats what the !pLeftVar test is for.
+		VariableBasePtr ReturnVal = EvaluateUnaryOp( GetWord( LowPrecedenceOpIndex ).Extra, pRightVar );
+		if( !Left.empty() ) Left.InternalEvaluate(false);
+		
+		return ReturnVal;
+	}
+	
+	
+	/*
+		Evaluate the left side expression
+	*/
+	if( !Left.empty() ) {
 		if( !pLeftVar ){
-			pLeftVar = 
-				Left.RealInterpret( false,
-								Before, //Before Word
-								(*this)[LowPrecedenceOpIndex] ); //After Word
+			pLeftVar = Left.InternalEvaluate( false );
 		}
 	}
-	else
-	{
-		ThrowExpressionAnomaly( TXT("Expression beginning with binary operator.  No left-side value."),
+	//Binary operator without a left operand.
+	else {
+		ThrowExpressionAnomaly( TXT("Binary operator found without a left operand."),
 								ANOMALY_BADGRAMMAR );
 	}
+
+	
+	/*
+		Binary Operators
+	*/
+	if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_BINARYOPERATOR )
+	{
+		return EvaluateBinaryOp( GetWord( LowPrecedenceOpIndex ).Extra, pLeftVar, pRightVar );
+	}
 	
 	
-	//EXAUSTIVE LISTING OF BINARY OPERATORS
-
-	// -
-	if( LowPrecedenceOp == EXTRA_BINOP_Minus ){
-		pResultant = *pLeftVar - *pRightVar;
-	}
-	// +
-	else if( LowPrecedenceOp == EXTRA_BINOP_Plus ){
-		pResultant = *pLeftVar + *pRightVar;
-	}
-	// /
-	else if( LowPrecedenceOp == EXTRA_BINOP_Divide ){
-		pResultant = *pLeftVar / *pRightVar;
-	}
-	// *
-	else if( LowPrecedenceOp == EXTRA_BINOP_Times ){
-		pResultant = *pLeftVar * *pRightVar;
-	}
-	// **
-	else if( LowPrecedenceOp == EXTRA_BINOP_Exponent ){
-		pResultant = pLeftVar->operator_pow( *pRightVar );
-	}
-	// >
-	else if( LowPrecedenceOp == EXTRA_BINOP_LargerThan ){
-		pResultant = *pLeftVar > *pRightVar;
-	}
-	// <
-	else if( LowPrecedenceOp == EXTRA_BINOP_LessThan ){
-		pResultant = *pLeftVar < *pRightVar;
-	}
-	// >=
-	else if( LowPrecedenceOp == EXTRA_BINOP_LargerThanOrEqual ){
-		pResultant = *pLeftVar >= *pRightVar;
-	}
-	// <=
-	else if( LowPrecedenceOp == EXTRA_BINOP_LessThanOrEqual ){
-		pResultant = *pLeftVar <= *pRightVar;
-	}
-	// ==
-	else if( LowPrecedenceOp == EXTRA_BINOP_Equals ){
-		pResultant = *pLeftVar == *pRightVar;
-	}
-	// !=
-	else if( LowPrecedenceOp == EXTRA_BINOP_NotEquals ){
-		pResultant = *pLeftVar != *pRightVar;
-	}
-	// &=
-	else if( LowPrecedenceOp == EXTRA_BINOP_LogicalAnd ){
-		pResultant = *pLeftVar && *pRightVar;
-	}
-	// ||
-	else if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr ){
-		pResultant = *pLeftVar || *pRightVar;
-	}
-	// -=
-	else if( LowPrecedenceOp == EXTRA_BINOP_MinusAssign ){
-		pResultant = (*pLeftVar = *(*pLeftVar - *pRightVar));
-	}
-	// +=
-	else if( LowPrecedenceOp == EXTRA_BINOP_PlusAssign ){
-		pResultant = (*pLeftVar = *(*pLeftVar + *pRightVar));
-	}
-	// /=
-	else if( LowPrecedenceOp == EXTRA_BINOP_DivideAssign ){
-		pResultant = (*pLeftVar = *(*pLeftVar / *pRightVar));
-	}
-	// *=
-	else if( LowPrecedenceOp == EXTRA_BINOP_TimesAssign ){
-		pResultant = (*pLeftVar = *(*pLeftVar * *pRightVar));
-	}
-	// **=
-	else if( LowPrecedenceOp == EXTRA_BINOP_ExponentAssign ){
-		pResultant = (*pLeftVar = *(pLeftVar->operator_pow( *pRightVar ) ) );
-	}
-	else if( LowPrecedenceOp == EXTRA_BINOP_Concat ){
-		pResultant = pLeftVar->operator_concat( *pRightVar );
-	}
-	else if( LowPrecedenceOp == EXTRA_BINOP_ConcatAssign ){
-		pResultant = (*pLeftVar = *(pLeftVar->operator_concat( *pRightVar ) ) );
-	}
-	// =
-	else if( LowPrecedenceOp == EXTRA_BINOP_Assign ){
-		pResultant = (*pLeftVar = *pRightVar);
-	}
-	// []
-	else if( LowPrecedenceOp == EXTRA_BINOP_ListAccess )
-	{		
-		pResultant = (*(pLeftVar->CastToList()))[ pRightVar ];
-	}
-	// +[]
-	else if( LowPrecedenceOp == EXTRA_BINOP_ListAppend )
-	{
-		pResultant = pLeftVar->CastToList()->Insert( pRightVar );
-	}
-	// -[]
-	else if( LowPrecedenceOp == EXTRA_BINOP_ListRemove )
-	{
-		pResultant = pLeftVar->CastToList()->Remove( pRightVar );
-	}
-	// ,
-	else if( LowPrecedenceOp == EXTRA_BINOP_ListSeperator )
-	{
-		
-		/*
-		ListPtr pNewList( Creator::CreateObject<List>( SS_BASE_ARGS_DEFAULTS ) );
-		mUnnamedVariables.push_back( pNewList );
-
-		*pNewList = *(pLeftVar->CastToList());
-		pNewList->Append( pRightVar->CastToList() );
-		pNewList->SetConst();
-
-		pResultant = pNewList;
-		*/
-		
-		/*
-		if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_LIST &&
-		    pLeftVar->CastToList()->IsConst() &&
-			pLeftVar->GetName() == UNNAMMED )
-		{
-			pLeftVar->CastToList()->Push( pRightVar );
-			pResultant = pLeftVar;			
-		}
-		else
-		{
-			ListPtr pNewList( CreateGeneric<List>( SS_BASE_ARGS_DEFAULTS ) );
-			
-			pNewList->AppendWithoutCopy( pLeftVar );
-			pNewList->AppendWithoutCopy( pRightVar );
-			pNewList->SetConst();
-			
-			pResultant = pNewList;
-		}
-		*/
-		
-		//Third try's the charm.
-		
-		if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_LIST && //If pLeftVar is a list
-			pLeftVar->IsConst() && 						   //that is constant
-			pLeftVar->GetName() == UNNAMMED ) 			   //and unnamed.
-		{
-			//If the right var is an actual variable and not something special.
-			if( GetScopeObjectType( pRightVar ) == SCOPEOBJ_VARIABLE )
-			{
-				pLeftVar->CastToList()->PushWithoutCopy( pRightVar );
-			}
-			//If it is something special, just make a new variable and copy the value of rightvar.
-			else
-			{
-				pLeftVar->CastToList()->Push( pRightVar );
-			}
-			
-			pResultant = pLeftVar;
-		}
-		//pLeftVar is not a list, so we have to create a new one.
-		else
-		{
-			ListPtr pNewList( CreateGeneric<List>( UNNAMMED, false, true ) );
-			
-			//If its a real variable, append the actual pointer,
-			//otherwise make a copy of the value.
-			if( GetScopeObjectType( pLeftVar ) == SCOPEOBJ_VARIABLE ){
-				 pNewList->PushWithoutCopy( pLeftVar );
-			}
-			else pNewList->Push( pLeftVar );
-			
-			if( GetScopeObjectType( pRightVar ) == SCOPEOBJ_VARIABLE ){
-				 pNewList->PushWithoutCopy( pRightVar );
-			}
-			else pNewList->Push( pRightVar );
-			
-			pResultant = pNewList->CastToVariableBase();			
-		}
-		
-		//Otherwise create a new a list and append the actual pointers
-		
-	}
-	// :
-	else if( LowPrecedenceOp == EXTRA_BINOP_ScopeResolution )
-	{
-		//pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
-		
-		//Try to interpret it as a LooseID
-		boost::shared_ptr<LooseIdentifier> pRightLooseID = boost::dynamic_pointer_cast<LooseIdentifier>(pRightVar);
-		if( pRightLooseID )
-		{
-			pResultant = (pLeftVar->GetScopeObject( pRightLooseID->GetLooseIDName() ))->CastToVariableBase();
-		}
-		//Otherwise just assume its a string literal of some
-		//TODO: Is this really a good idea?  What if someone puts a variable after a scope resolutio operator?
-		//		Won't it read the string from the variable and try to access that variable.  Is that what I want?
-		else
-		{
-			//TODO: Maybe get the partial name instead???
-			pResultant = (pLeftVar->GetScopeObject( pRightVar->GetStringData() ))->CastToVariableBase();
-		}
-	}
-	//No operator found!
-	else
-	{
-		STRING tmp = TXT("Binary operator \'");
-		tmp += LowPrecedenceOp;
-		tmp += TXT("\' is unknown.");
-		ThrowParserAnomaly( tmp, ANOMALY_UNKNOWNOP );
-	}
-
-	if( TopLevel ) mUnnamedVariables.clear();
-	return pResultant;
-
+	/*
+		Whoa! WTF!  The LPO isn't a unary-operator, a binary-operator, or a function!
+	*/
+	ThrowExpressionAnomaly( TXT("Catastrophicly, horrificly, terrifyingly bad bug in the "
+								"expression evaluater.  Report this, please!"), ANOMALY_PANIC );
 }
 
 
@@ -1101,10 +684,9 @@ STRING Expression::DumpToString() const
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::Precedence
  NOTES: Returns the precedence of the given operator.
 */
-Expression::OperatorPrecedence Expression::Precedence( const Word& W ) const
+Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) const
 {
 		//A list of operators in order of lowest to highest precedence
 
@@ -1129,24 +711,30 @@ Expression::OperatorPrecedence Expression::Precedence( const Word& W ) const
 		PrecedenceList[EXTRA_BINOP_LargerThanOrEqual] = 10;
 		PrecedenceList[EXTRA_BINOP_LessThan]          = 11;
 		PrecedenceList[EXTRA_BINOP_LargerThan]        = 11;
-		PrecedenceList[EXTRA_BINOP_ListSeperator]     = 12;
-		PrecedenceList[EXTRA_BINOP_Minus]             = 13;
-		PrecedenceList[EXTRA_BINOP_Plus]              = 14;
-		PrecedenceList[EXTRA_BINOP_Divide]            = 15;
-		PrecedenceList[EXTRA_BINOP_Times]             = 16;
-		PrecedenceList[EXTRA_BINOP_Exponent]          = 17;
-
-	/*
-		PrecedenceList[EXTRA_UNOP_Negative]           = 18;
-        PrecedenceList[EXTRA_UNOP_Not]                = 18;
+		
+		/*
+			Where to put the precedence of unary operators has been a great
+			concern for me.  For now it is right here, below all the math
+			operators and above logical comparisons.  
+		*/
+		PrecedenceList[EXTRA_UNOP_GenericUnaryOperator] = 12;
+		
+		
+		PrecedenceList[EXTRA_BINOP_ListSeperator]     = 13;
+		PrecedenceList[EXTRA_BINOP_Minus]             = 14;
+		PrecedenceList[EXTRA_BINOP_Plus]              = 15;
+		PrecedenceList[EXTRA_BINOP_Divide]            = 16;
+		PrecedenceList[EXTRA_BINOP_Times]             = 17;
+		PrecedenceList[EXTRA_BINOP_Exponent]          = 18;
+		
+		PrecedenceList[EXTRA_UNOP_Negative]           = 19;
+        PrecedenceList[EXTRA_UNOP_Not]                = 19;
 
 		PrecedenceList[EXTRA_UNOP_Var]				  = 19;
 		PrecedenceList[EXTRA_UNOP_List]				  = 19;
 		PrecedenceList[EXTRA_UNOP_Character]		  = 19;
 		PrecedenceList[EXTRA_UNOP_Player]			  = 19;		
-	*/
-	
-		PrecedenceList[EXTRA_UNOP_GenericUnaryOperator] = 18;
+
 
 		PrecedenceList[EXTRA_BINOP_ListAccess]        = 20; 
 		PrecedenceList[EXTRA_BINOP_ListAppend]        = 20;
@@ -1158,10 +746,515 @@ Expression::OperatorPrecedence Expression::Precedence( const Word& W ) const
 
 
 	//Here we assume it is a function (an Operator or Block), and return the highest precedence.
-	if( W.Type != WORDTYPE_BINARYOPERATOR )
+	if( W.Type != WORDTYPE_BINARYOPERATOR ||
+		PrecedenceList.find( W.Extra ) == PrecedenceList.end() )
 	{
 		return PrecedenceList[EXTRA_UNOP_GenericUnaryOperator];
 	}
 
 	return PrecedenceList[ W.Extra ];
 }
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Calculates the the precedence order for the whole expression.
+*/
+unsigned long Expression::CalculateLowPrecedenceOperator() const
+{
+	/*
+		Its important to keep track of what the last word was,
+		so these are simple classifications only used by this function.
+	*/
+	enum SimpleType{
+		UNARY_OP, //built-in, or functions
+		BINARY_OP,
+		OPERAND, //literals, identifiers, etc
+		RIGHT_PAREN, //closing parenthesis
+		OTHER //nothing/other
+	};	
+	
+	CheckSyntax();
+	if( !mIdentifiersCached ) CacheIdentifierObjects();
+	
+	unsigned long i;
+	unsigned long ParenthesisCount = 0;
+	unsigned long LowPrecedenceOpIndex = BAD_PRECEDENCE;
+	SimpleType LastWordType = OTHER;
+	
+	for( i = 0; i < size(); i++ )
+	{
+		/*
+		  Skip through parenthesis. Don't worry about mismatches.
+		  They were already checked handled by CheckSyntax();
+		*/
+		
+		if( GetWord( i ).Extra == EXTRA_PARENTHESIS_Left ){
+			ParenthesisCount++;
+			LastWordType = OTHER;
+			continue;
+		}
+		else
+		if( GetWord( i ).Extra == EXTRA_PARENTHESIS_Right ){			
+			ParenthesisCount--;	
+			LastWordType = RIGHT_PAREN;
+			continue;
+		}
+		
+		if( ParenthesisCount != 0 ) continue;
+		
+		
+		
+		
+		/*
+			Ambigous operators (operators that can be either binary or unary
+			depending on the contex) are intercepted here and their identity
+			determined.		
+		*/
+		if( GetWord( i ).Type == WORDTYPE_AMBIGUOUSOPERATOR )
+		{
+			if( i == 0 || LastWordType == UNARY_OP || LastWordType == BINARY_OP ||
+			    LastWordType == RIGHT_PAREN )
+			{
+				GetWord( i ).InterpretAsUnaryOp();
+			}
+			else
+			{
+				GetWord( i ).InterpretAsBinaryOp();	
+			}			
+		}
+		
+		
+		
+		/*
+			Here we determine if identifiers are functions or just variables, etc.
+		*/
+		if( GetWord( i ).Type == WORDTYPE_IDENTIFIER )
+		{
+			if( !GetWord( i ).mCachedObject ){
+				LastWordType = OPERAND;
+				continue;
+			}
+			
+			ScopeObjectType ObjType = GetScopeObjectType( GetWord( i ).mCachedObject );
+			if( ObjType == SCOPEOBJ_OPERATOR || ObjType == SCOPEOBJ_BLOCK )
+			{
+				//The current word is not a function if it is at the end of the expression,
+				//followed by by a binary operator, or followed by a closing parenthesis.
+				if( i == size()-1 ||
+					GetWord( i+1 ).Type == WORDTYPE_BINARYOPERATOR ||
+					GetWord( i+1 ).Extra == EXTRA_PARENTHESIS_Right )
+				{
+					LastWordType = OPERAND;
+					continue;
+				}
+				
+				//Unary operators will not take low precedence over each other.
+				//They are always parsed left->right.  Hence we don't even test
+				//the precedence if the last word was also a unary operator.
+				if( LastWordType != UNARY_OP &&
+					(LowPrecedenceOpIndex == BAD_PRECEDENCE ||
+					(GetPrecedenceLevel( GetWord( i ) ) <= GetPrecedenceLevel( GetWord( LowPrecedenceOpIndex ) ) &&
+					
+					/*Unary operators are not alowed to take low precedence from
+					  a binary operator.  Consider the expression:
+					      a + -b
+					  If '-' gets flaged as the low precedence operator it will leave
+					  on the left side 'a +', which is not a valid expression.  This solves
+					  that problem.
+					*/
+					GetWord( LowPrecedenceOpIndex ).Type != WORDTYPE_BINARYOPERATOR))
+				  )
+				{
+					LowPrecedenceOpIndex = i;
+				}
+				
+				LastWordType = UNARY_OP;
+				continue;				
+			}
+			else
+			{			
+				LastWordType = OPERAND;
+				continue;
+			}
+		}
+		
+		
+		/*
+			(Hard-coded) Unary Operators. 
+		*/
+		else if( GetWord(i).Type == WORDTYPE_UNARYOPERATOR )
+		{
+			if( LastWordType != UNARY_OP &&
+				(LowPrecedenceOpIndex == BAD_PRECEDENCE ||
+				(GetPrecedenceLevel( GetWord( i ) ) <= GetPrecedenceLevel( GetWord( LowPrecedenceOpIndex ) ) &&
+				GetWord( LowPrecedenceOpIndex ).Type != WORDTYPE_BINARYOPERATOR))
+			  )				
+			{
+				LowPrecedenceOpIndex = i;
+			}
+			
+			LastWordType = UNARY_OP;
+			continue;				
+		}
+		
+		
+		/*
+			Binary Operators.
+		*/
+		else if( GetWord(i).Type == WORDTYPE_BINARYOPERATOR )
+		{
+			if( LowPrecedenceOpIndex == BAD_PRECEDENCE ||
+				GetPrecedenceLevel( GetWord(i) ) <= GetPrecedenceLevel( GetWord( LowPrecedenceOpIndex ) ) )
+			{
+				LowPrecedenceOpIndex = i;
+			}
+			
+			LastWordType = BINARY_OP;
+			continue;			
+		}
+		
+		
+		/*
+			Anything else get skipped over.  I'm really not sure if
+			anything can possibly trigger this, but better safe than sorry.
+		*/
+		else
+		{
+			LastWordType = OTHER;
+			continue;	
+		}
+	}
+	
+	
+	if( LowPrecedenceOpIndex == BAD_PRECEDENCE ){
+		ThrowExpressionAnomaly( TXT("Cannot find an operator in this expression."), ANOMALY_NOOPERATOR );
+	}
+	else return LowPrecedenceOpIndex;
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: These are the equivalent of operator[], but they return ExtendedWord's
+ 		insted of Words.
+*/
+ExtendedWord& Expression::GetWord( unsigned long i ){
+	return (*mpWordList)[ GetAbsoluteIndex(i) ];
+}
+
+const ExtendedWord& Expression::GetWord( unsigned long i ) const{
+	return (*mpWordList)[ GetAbsoluteIndex(i) ];
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Looks up all the identifiers in the current context and stores their
+ 		objects.   This is really just optimizations sake.  Otherwise most of the
+ 		time spend parsing expressions is due to having to loop up identifiers
+ 		over and over.
+*/
+void Expression::CacheIdentifierObjects() const
+{
+	unsigned long i;
+	
+	for( i = 0; i < size(); i++ )
+	{
+		if( GetWord(i).Type == WORDTYPE_IDENTIFIER )
+		{
+			//If the identifier comes right after a scope resolution operator (:),
+			//don't even try to get it, because it won't be the one we want.
+			//Just returns a LooseID.				
+			if( i > 0 && GetWord( i-1 ).Extra == EXTRA_BINOP_ScopeResolution )
+			{
+				ScopeObjectPtr pTmpPtr( new LooseIdentifier( GetWord(i).String ) );
+				pTmpPtr->SetSharedPtr( pTmpPtr );
+				GetWord(i).mCachedObject = pTmpPtr;
+				continue;
+			}			
+			
+			
+			try{
+				GetWord(i).mCachedObject =
+				Interpreter::Instance().GetScopeObject( GetWord(i).String );
+			}
+			catch( ParserAnomaly E )
+			{
+				if( E.ErrorCode == ANOMALY_IDNOTFOUND )
+				{
+					//We don't throw an error yet, because this may be a variable/block/character
+					//declaration.  Just create a LooseID and it will get taken care of later.
+					ScopeObjectPtr pTmpPtr( new LooseIdentifier( GetWord(i).String ) );
+					pTmpPtr->SetSharedPtr( pTmpPtr );
+					GetWord(i).mCachedObject = pTmpPtr;
+					
+				}
+				else throw;				
+			}
+		} 
+		
+	}//end for	
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Maps unary operators onto their actual operations.  Essentially part of
+ 		InternalEvaluate, broken off to aid with readbility.
+*/
+VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRight ) const
+{
+	//not
+	if( Op == EXTRA_UNOP_Not ){
+		return pRight->op_not();
+	}
+	//- (negate)
+	else if( Op == EXTRA_UNOP_Negative ){
+		return pRight->op_neg();
+	}
+	//use (import)
+	else if( Op == EXTRA_UNOP_Import )
+	{
+		//Identifiers will always start with ':'
+		if( pRight->GetStringData()[0] == LC_ScopeResolution[0] )		{
+			Interpreter::Instance().ImportIntoCurrentScope(	pRight->GetStringData() );
+		}
+		else		{
+			Interpreter::Instance().ImportFileIntoCurrentScope( pRight->GetStringData() );								
+		}			
+					
+		return pRight;
+	}
+	//Declarations
+	else if( Op == EXTRA_UNOP_Var ||
+			 Op == EXTRA_UNOP_List ||
+			 Op == EXTRA_UNOP_Character ||
+			 Op == EXTRA_UNOP_Player )
+	{
+		boost::shared_ptr<LooseIdentifier> pLooseID;
+		if( pLooseID = boost::dynamic_pointer_cast<LooseIdentifier>( pRight ) )
+		{
+			if( Op == EXTRA_UNOP_Var )
+			{
+				return
+					Interpreter::Instance().MakeScopeObject( 
+					SCOPEOBJ_VARIABLE, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
+			}
+			else if( Op == EXTRA_UNOP_List )
+			{
+				return
+					Interpreter::Instance().MakeScopeObject( 
+					SCOPEOBJ_LIST, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
+			}
+			else if( Op == EXTRA_UNOP_Player )
+			{
+				//HACK: This says player, but currently it just creates a standard character.
+				//		At this point there is no spereation between players and characters.
+				return
+					Interpreter::Instance().MakeScopeObject( 
+					SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
+			}
+			else if( Op == EXTRA_UNOP_Character )
+			{
+				return
+					Interpreter::Instance().MakeScopeObject( 
+					SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
+			}
+			else
+			{
+				//This will throw an error saying that the identifier cannot be found.
+				pRight->GetStringData();
+				
+				//This point never reached.  This is just to placate the compiler.
+				return VariableBasePtr();
+			}
+		}
+		//Trying to declare a variable with something other than an unused identifier.
+		else
+		{
+			ThrowExpressionAnomaly( TXT("Bad declaration syntax.  The identifier you used is already"
+										"in use (or it isn't even an identifier)."), ANOMALY_BADDECLARATION );
+		}
+	}
+	else
+	{
+		ThrowExpressionAnomaly( TXT("Unhandled hard-coded unary operator.  Please report this."),
+								ANOMALY_PANIC );
+	}	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Maps binary operators onto their actual operations.  Essentially part of
+ 		InternalEvaluate, broken off to aid with readbility.
+*/
+VariableBasePtr Expression::EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr pLeft,
+											  VariableBasePtr pRight ) const
+{
+	// -
+	if( Op == EXTRA_BINOP_Minus ){
+		return *pLeft - *pRight;
+	}
+	// +
+	else if( Op == EXTRA_BINOP_Plus ){
+		return *pLeft + *pRight;
+	}
+	// /
+	else if( Op == EXTRA_BINOP_Divide ){
+		return *pLeft / *pRight;
+	}
+	// *
+	else if( Op == EXTRA_BINOP_Times ){
+		return *pLeft * *pRight;
+	}
+	// **
+	else if( Op == EXTRA_BINOP_Exponent ){
+		return pLeft->operator_pow( *pRight );
+	}
+	// >
+	else if( Op == EXTRA_BINOP_LargerThan ){
+		return *pLeft > *pRight;
+	}
+	// <
+	else if( Op == EXTRA_BINOP_LessThan ){
+		return *pLeft < *pRight;
+	}
+	// >=
+	else if( Op == EXTRA_BINOP_LargerThanOrEqual ){
+		return *pLeft >= *pRight;
+	}
+	// <=
+	else if( Op == EXTRA_BINOP_LessThanOrEqual ){
+		return *pLeft <= *pRight;
+	}
+	// ==
+	else if( Op == EXTRA_BINOP_Equals ){
+		return *pLeft == *pRight;
+	}
+	// !=
+	else if( Op == EXTRA_BINOP_NotEquals ){
+		return *pLeft != *pRight;
+	}
+	// &=
+	else if( Op == EXTRA_BINOP_LogicalAnd ){
+		return *pLeft && *pRight;
+	}
+	// ||
+	else if( Op == EXTRA_BINOP_LogicalOr ){
+		return *pLeft || *pRight;
+	}
+	// -=
+	else if( Op == EXTRA_BINOP_MinusAssign ){
+		return (*pLeft = *(*pLeft - *pRight));
+	}
+	// +=
+	else if( Op == EXTRA_BINOP_PlusAssign ){
+		return (*pLeft = *(*pLeft + *pRight));
+	}
+	// /=
+	else if( Op == EXTRA_BINOP_DivideAssign ){
+		return (*pLeft = *(*pLeft / *pRight));
+	}
+	// *=
+	else if( Op == EXTRA_BINOP_TimesAssign ){
+		return (*pLeft = *(*pLeft * *pRight));
+	}
+	// **=
+	else if( Op == EXTRA_BINOP_ExponentAssign ){
+		return (*pLeft = *(pLeft->operator_pow( *pRight ) ) );
+	}
+	else if( Op == EXTRA_BINOP_Concat ){
+		return pLeft->operator_concat( *pRight );
+	}
+	else if( Op == EXTRA_BINOP_ConcatAssign ){
+		return (*pLeft = *(pLeft->operator_concat( *pRight ) ) );
+	}
+	// =
+	else if( Op == EXTRA_BINOP_Assign ){
+		return (*pLeft = *pRight);
+	}
+	// []
+	else if( Op == EXTRA_BINOP_ListAccess )
+	{		
+		return (*(pLeft->CastToList()))[ pRight ];
+	}
+	// +[]
+	else if( Op == EXTRA_BINOP_ListAppend )
+	{
+		return pLeft->CastToList()->Insert( pRight );
+	}
+	// -[]
+	else if( Op == EXTRA_BINOP_ListRemove )
+	{
+		return pLeft->CastToList()->Remove( pRight );
+	}
+	// ,
+	else if( Op == EXTRA_BINOP_ListSeperator )
+	{
+		//Third try's the charm.
+		
+		if( GetScopeObjectType( pLeft ) == SCOPEOBJ_LIST && //If pLeft is a list
+			pLeft->IsConst() && 						   //that is constant
+			pLeft->GetName() == UNNAMMED ) 			   //and unnamed.
+		{
+			//If the right var is an actual variable and not something special.
+			if( GetScopeObjectType( pRight ) == SCOPEOBJ_VARIABLE )
+			{
+				pLeft->CastToList()->PushWithoutCopy( pRight );
+			}
+			//If it is something special, just make a new variable and copy the value of rightvar.
+			else
+			{
+				pLeft->CastToList()->Push( pRight );
+			}
+			
+			return pLeft;
+		}
+		//pLeft is not a list, so we have to create a new one.
+		else
+		{
+			ListPtr pNewList( CreateGeneric<List>( UNNAMMED, false, true ) );
+			
+			//If its a real variable, append the actual pointer,
+			//otherwise make a copy of the value.
+			if( GetScopeObjectType( pLeft ) == SCOPEOBJ_VARIABLE ){
+				 pNewList->PushWithoutCopy( pLeft );
+			}
+			else pNewList->Push( pLeft );
+			
+			if( GetScopeObjectType( pRight ) == SCOPEOBJ_VARIABLE ){
+				 pNewList->PushWithoutCopy( pRight );
+			}
+			else pNewList->Push( pRight );
+			
+			return pNewList->CastToVariableBase();			
+		}
+		
+		//Otherwise create a new a list and append the actual pointers
+		
+	}
+	// :
+	else if( Op == EXTRA_BINOP_ScopeResolution )
+	{
+		//Try to interpret it as a LooseID
+		boost::shared_ptr<LooseIdentifier> pRightLooseID = boost::dynamic_pointer_cast<LooseIdentifier>(pRight);
+		if( pRightLooseID )
+		{
+			return (pLeft->GetScopeObject( pRightLooseID->GetLooseIDName() ))->CastToVariableBase();
+		}
+		//Otherwise just assume its a string literal of some
+		//TODO: Is this really a good idea?  What if someone puts a variable after a scope resolutio operator?
+		//		Won't it read the string from the variable and try to access that variable.  Is that what I want?
+		else
+		{
+			//TODO: Maybe get the partial name instead???
+			return (pLeft->GetScopeObject( pRight->GetStringData() ))->CastToVariableBase();
+		}
+	}
+	//No operator found!
+	else
+	{
+		STRING tmp = TXT("Binary operator \'");
+		tmp += Op;
+		tmp += TXT("\' is unknown.");
+		ThrowParserAnomaly( tmp, ANOMALY_UNKNOWNOP );
+	}
+}
+
+
