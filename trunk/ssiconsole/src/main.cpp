@@ -43,11 +43,11 @@ int main( int argc, char* argv[] )
 		CON << TXT("SS Console Interpreter, \n");
 		CON << TXT("Usage: storyscript [OPTIONS] FILE\n");
 		CON << TXT("Options are:\n");
-		CON << TXT("(Note that \'-\' is interchangeable with \'/\'.)\n");
 		CON << TXT(" -u, -ungodly-verbose    Rediculously verbose output.\n");
 		CON << TXT(" -b, -block BLOCKNAME    Specifies the starting block.\n");
 		CON << TXT(" -h, --help              Prints the message you are looking at right now.\n");
 		CON << TXT(" -c, --curses            Use curses for output (ie. Fancy, colorful text).\n");
+		CON << TXT("                         Currently a little buggy, but works well for files.\n");
 		CON << TXT(" -v, --verbose       	 Adds some extra info, mainly with error output.\n");
 		CON << TXT(" --version               Prints the version number, contact info, etc.\n");
 		

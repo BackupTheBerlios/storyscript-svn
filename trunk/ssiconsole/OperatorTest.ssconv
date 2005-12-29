@@ -1,0 +1,29 @@
+/*
+	This is not a formal test right now.  I've just been using it
+	as a scratch pad of sorts.
+*/
+
+main{
+
+
+	print 2 * (2) - 1;
+
+/*
+	list foo = "2", "4", "6";
+	var a = foo[asdf] - 1;
+	
+	print a;
+	
+*/
+	next = end;
+	
+}
+
+/*
+
+foo{
+	print in;
+	next = end;
+}
+
+*/
