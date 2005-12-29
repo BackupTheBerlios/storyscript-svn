@@ -61,7 +61,7 @@ public:
 	void Close();
 	
 	void Parse( const SS::STRING& BlockName );
-	void Parse( BlockPtr, bool SayBlock = true );
+	void Parse( BlockPtr, bool SayBlock = true, VariableBasePtr In = VariableBasePtr() );
 
 	Bookmark GetCurrentPos();
 	ScopePtr GetCurrentScope();

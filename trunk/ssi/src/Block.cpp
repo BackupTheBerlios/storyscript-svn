@@ -40,7 +40,10 @@ void Block::RegisterPredefinedVars()
 	SetConst( false );
 
 	Register( ScopeObjectPtr( new BoundFlagVar( LC_BeenSaid, mBeenSaid, true ) ) );
-	Register( ScopeObjectPtr( CreateGeneric<List>( LC_Input, true, false ) ) );
+	
+	//This is dangerous to create here (it break recursion), so instead it get done in each instance.
+	//Register( ScopeObjectPtr( CreateGeneric<List>( LC_Input, true, false ) ) );
+	
 	Register( CreateVariable<Variable>( LC_Output, true, false, STRING() ) );
 
 	//The STRING(TXT("")) is probably not necessary.  I just want to make sure it
@@ -61,11 +64,16 @@ void Block::RegisterPredefinedVars()
 //
 VariableBasePtr Block::Operate( VariableBasePtr In )
 {
-	*(GetScopeObject( LC_Input )->CastToVariableBase()) = *In;
+	//*(GetScopeObject( LC_Input )->CastToVariableBase()) = *In;
 	
-	Interpreter::Instance().Parse( this->CastToBlock(), false );
+	Interpreter::Instance().Parse( this->CastToBlock(), false, In );
 	
-	return GetScopeObject( LC_Output )->CastToVariableBase();	
+	//Nope, this is not good.  This would allow modifcation of the blocks out var.
+	//return GetScopeObject( LC_Output )->CastToVariableBase();	
+	
+	//Instead we make a copy and return that.
+	return CreateVariable<Variable>( LC_Output, false, true,
+			 					     *GetScopeObject( LC_Output )->CastToVariable() );
 }
 
 

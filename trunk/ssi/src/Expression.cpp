@@ -746,8 +746,7 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 
 
 	//Here we assume it is a function (an Operator or Block), and return the highest precedence.
-	if( W.Type != WORDTYPE_BINARYOPERATOR ||
-		PrecedenceList.find( W.Extra ) == PrecedenceList.end() )
+	if( PrecedenceList.find( W.Extra ) == PrecedenceList.end() )
 	{
 		return PrecedenceList[EXTRA_UNOP_GenericUnaryOperator];
 	}
@@ -812,8 +811,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		*/
 		if( GetWord( i ).Type == WORDTYPE_AMBIGUOUSOPERATOR )
 		{
-			if( i == 0 || LastWordType == UNARY_OP || LastWordType == BINARY_OP ||
-			    LastWordType == RIGHT_PAREN )
+			if( i == 0 || LastWordType == UNARY_OP || LastWordType == BINARY_OP )
 			{
 				GetWord( i ).InterpretAsUnaryOp();
 			}

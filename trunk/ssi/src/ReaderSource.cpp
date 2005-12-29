@@ -634,9 +634,14 @@ const Word& ReaderSource::PushWord( const Word& W )
 */
 void ReaderSource::UpdateCurrentLine()
 {
+	//FOR DEBUGGING PURPOSES
+	size_t SIZE = mLinePositions.size();
+	unsigned long First = mLinePositions[ mLinePositions.size() - 1 ];
+	unsigned long Last = mLinePositions[ 0 ];
+	
 	//Go down a line
 	while( mCurrentLine != 0 &&
-		   mBufferPos >= mLinePositions[mCurrentLine - 1] )
+		   mBufferPos <= mLinePositions[mCurrentLine - 1] )
 	{
 		mCurrentLine--;		
 	}

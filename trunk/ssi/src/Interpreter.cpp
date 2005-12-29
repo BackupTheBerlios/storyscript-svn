@@ -353,7 +353,8 @@ void Interpreter::Parse( const STRING& BlockName )
 
 
 
-void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/ )
+void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
+						 VariableBasePtr In /*= VariableBasePtr()*/ )
 {
 	try{
 	if( mVerboseOutput )
@@ -384,6 +385,10 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/ )
 	//Every time a block gets executed it creates this temporary instance
 	//scope, which all non-statics get created on
 	ScopePtr pInstance = CreateGeneric<Scope>();
+	ListPtr InInstance = CreateGeneric<List>( LC_Input, false, false );
+	if( In ) *InInstance = *In;
+	pInstance->Register( InInstance );
+	
 	pBlock->Import( pInstance );
 
 	Pos.CurrentStaticScope = pBlock;
