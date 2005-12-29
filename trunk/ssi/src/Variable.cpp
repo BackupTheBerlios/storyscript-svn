@@ -405,6 +405,7 @@ VarType Variable::mTypeConversionTable[VARTYPE_STRING+1][VARTYPE_STRING+1] =
 */
 void Variable::RegisterPredefinedVars()
 {
+	/*
 	bool WasConst = IsConst();
 	SetConst( false );
 
@@ -416,9 +417,24 @@ void Variable::RegisterPredefinedVars()
 	}
 
 	SetConst( WasConst );
+	*/
 }
 
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Hook to create precision magicvar.
+*/
+ScopeObjectPtr Variable::GetScopeObjectHook( const STRING& Name )
+{
+	static bool PrecisionVarCreated = false;
+	
+	if( !PrecisionVarCreated && Name == LC_Precision ){
+		PrecisionVarCreated = true;
+		return Register( ScopeObjectPtr( new PrecisionVar( LC_Precision, *this, true ) ) );
+	}
+	else return VariableBase::GetScopeObjectHook( Name );
+}
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

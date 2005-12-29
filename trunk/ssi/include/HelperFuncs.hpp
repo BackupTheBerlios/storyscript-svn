@@ -31,6 +31,7 @@ namespace SS{
 
 
 	SS::STRING SS_API BreakOffFirstID( SS::STRING& );
+	SS::STRING SS_API BreakOffFirstID( const SS::STRING& Original, SS::STRING& Remainder );
 	SS::STRING SS_API BreakOffLastID ( SS::STRING& ); 
 
 	void SS_API BreakOffLastID( const SS::STRING& src, CHAR* dest, unsigned int DestSize );

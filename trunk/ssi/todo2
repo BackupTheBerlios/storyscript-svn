@@ -1,0 +1,16 @@
+Bugs
+
+-Line number tracking still doesn't work right.
+-Printing of zeros doesn't work.  (Because they are considered the same as empty strings.)
+-Dumping expressions to strings doesn't work near as well as it should.
+
+Optimizations
+
+-Be more aggressive about redundantly looking up identifiers in expression parsing.
+-Expressions should be cached, so they don't have to be built up every time they are parsed.  I'm not yet sure how to go about doing this.
+-(DONE!) Predefined variables shouldn't exist until they are needed, at which time they spring into existance.
+
+Features
+
+-A return function, that sets out and then exits the function.
+-A predefined variable in every block that tells what level of recursion its on.-A default precision predef-var.

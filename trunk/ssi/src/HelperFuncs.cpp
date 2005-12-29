@@ -53,22 +53,50 @@ SS::STRING SS::MakeScopeNameFromFileName( const SS::STRING& FileName )
 SS::STRING SS::BreakOffFirstID( SS::STRING& S )
 {
 	SS::STRING TempString;
+	
+	size_t i = 0;
 
-	if( S[0] == LC_ScopeResolution[0] ) S.erase(0,1);
-
-	while( !S.empty() && (IsAlpha(S[0]) || IsNumber(S[0])) || S[0] == '_' )
-	{
-		TempString += S[0];
-		S.erase(0,1);
+	if( S[0] == LC_ScopeResolution[0] ) i++;
+	
+	for( ; i < S.size(); i++ ){
+		if( IsAlpha(S[i]) || IsNumber(S[i]) || S[i] == '_' ){
+			TempString += S[i];
+		}	
 	}
 
 	//remove the excess fat
-	while( !S.empty() && !(IsAlpha(S[0]) || IsNumber(S[0]) || S[0] == '_') )
-	{
-		S.erase(0,1);
+	while( i < S.size() && !(IsAlpha(S[i]) || IsNumber(S[i]) || S[i] == '_') )	{
+		i++;
 	}
+	
+	if( i ) S.erase( 0, i );
 
 	return TempString;
+}
+
+//This version should be faster, I think
+SS::STRING SS::BreakOffFirstID( const SS::STRING& S, SS::STRING& Remainder )
+{
+	SS::STRING TempString;
+	
+	size_t i = 0;
+
+	if( S[0] == LC_ScopeResolution[0] ) i++;
+	
+	for( ; i < S.size(); i++ ){
+		if( IsAlpha(S[i]) || IsNumber(S[i]) || S[i] == '_' ){
+			TempString += S[i];
+		}	
+	}
+
+	//remove the excess fat
+	while( i < S.size() && !(IsAlpha(S[i]) || IsNumber(S[i]) || S[i] == '_') )	{
+		i++;
+	}
+
+	if( i < S.size() ) Remainder.assign( S, i+1, S.size() );
+
+	return TempString;	
 }
 
 

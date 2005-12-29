@@ -297,18 +297,27 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 		Take care of any business before we get started.
 	*/
 	
+	
 	if( size() == 0 ){
 		ThrowParserAnomaly( 
 			TXT("Tried to evaluate an empty expression.  Probably a bug, please report. "),
 			ANOMALY_PANIC );
 	}
 	
-	if( TopLevel || !mIdentifiersCached ){
+	if( TopLevel )
+	{
+		 CheckSyntax();
+		 CacheIdentifierObjects();
+		 mIdentifiersCached = true;		 
+	}
+	else if( !mIdentifiersCached )
+	{
 		CacheIdentifierObjects();
 		mIdentifiersCached = true;
 	}
 
     StripOutlyingParenthesis();
+    const unsigned long ExpressionSize = size();
     
     
     
@@ -317,30 +326,32 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 		Handle single word expressions.
 	*/
 	
-	if( size() == 1 )
+	if( ExpressionSize == 1 )
 	{
-		if( GetWord(0).Type == WORDTYPE_IDENTIFIER ) {
-			return GetWord(0).mCachedObject->CastToVariableBase();
+		const ExtendedWord& FirstWord = GetWord(0);
+		
+		if( FirstWord.Type == WORDTYPE_IDENTIFIER ) {
+			return FirstWord.mCachedObject->CastToVariableBase();
 		}
-		else if( GetWord(0).Extra == EXTRA_BOOLLITERAL_True ) {
+		else if( FirstWord.Extra == EXTRA_BOOLLITERAL_True ) {
 			return CreateVariable<Variable>( UNNAMMED, false, true, true );
 		}
-		else if( GetWord(0).Extra == EXTRA_BOOLLITERAL_False ) {
+		else if( FirstWord.Extra == EXTRA_BOOLLITERAL_False ) {
 			return CreateVariable<Variable>( UNNAMMED, false, true, false );
 		}
-		else if( GetWord(0).Type == WORDTYPE_STRINGLITERAL ||
-				 GetWord(0).Type == WORDTYPE_FLOATLITERAL )
+		else if( FirstWord.Type == WORDTYPE_STRINGLITERAL ||
+				 FirstWord.Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
 			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, (*this)[0].String ) );
 
-			if( (*this)[0].Type == WORDTYPE_FLOATLITERAL ) {
+			if( FirstWord.Type == WORDTYPE_FLOATLITERAL ) {
 				pTempVar->ForceConversion( VARTYPE_NUM );
 			}
 
 			return pTempVar;
 		}
-		else if( (*this)[0].Type == WORDTYPE_EMPTYLISTLITERAL )	{
+		else if( FirstWord.Type == WORDTYPE_EMPTYLISTLITERAL )	{
 			return gpEmptyList->CastToVariableBase();
 		}
 		else {
@@ -368,7 +379,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 	const Expression Left( *this, GetAbsoluteIndex(0), GetAbsoluteIndex(LowPrecedenceOpIndex) );
 
 	unsigned long RightLower, RightUpper;
-	if( LowPrecedenceOpIndex + 1 < size() )	{ 
+	if( LowPrecedenceOpIndex + 1 < ExpressionSize )	{ 
 		RightLower = GetAbsoluteIndex(LowPrecedenceOpIndex + 1);
 		RightUpper = mUpperBounds;		
 	}
@@ -494,18 +505,20 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 */
 void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 {
-	Word PrevWord;
-	Word CurrentWord;
+	const Word* pPrevWord = &NULL_WORD;
+	const Word* pCurrentWord = &NULL_WORD;
+	
+	const unsigned long ExpressionSize = size();
 
 	unsigned int i;
 	unsigned int ParenthesisCount = 0;
-	for( i = 0; i < size(); i++, PrevWord = CurrentWord )
+	for( i = 0; i < ExpressionSize; i++, pPrevWord = pCurrentWord )
 	{
-		CurrentWord = (*this)[i];
+		pCurrentWord = &(*this)[i];
 
 		//RULE: All ')' must have a matching '('
-		if( CurrentWord.Extra == EXTRA_PARENTHESIS_Left ) ParenthesisCount++;
-		else if( CurrentWord.Extra == EXTRA_PARENTHESIS_Right )
+		if( pCurrentWord->Extra == EXTRA_PARENTHESIS_Left ) ParenthesisCount++;
+		else if( pCurrentWord->Extra == EXTRA_PARENTHESIS_Right )
 		{
 			if( ParenthesisCount == 0 )
 			{
@@ -516,37 +529,37 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 		}
 
 		//RULE: Expressions must begin with an identifier, literal, or '(', or (unary) operator
-		if( PrevWord.Type == WORDTYPE_UNKNOWN && 
-			!(CurrentWord.Type == WORDTYPE_IDENTIFIER || 
-			CurrentWord.IsLiteral() ||
-			CurrentWord.Extra == EXTRA_PARENTHESIS_Left ||
-			CurrentWord.Type == WORDTYPE_UNARYOPERATOR ||
-			CurrentWord.Type == WORDTYPE_AMBIGUOUSOPERATOR )  )
+		if( pPrevWord->Type == WORDTYPE_UNKNOWN && 
+			!(pCurrentWord->Type == WORDTYPE_IDENTIFIER || 
+			pCurrentWord->IsLiteral() ||
+			pCurrentWord->Extra == EXTRA_PARENTHESIS_Left ||
+			pCurrentWord->Type == WORDTYPE_UNARYOPERATOR ||
+			pCurrentWord->Type == WORDTYPE_AMBIGUOUSOPERATOR )  )
 		{
 			ThrowExpressionAnomaly( TXT("Expressions must begin with an identifier, literal, or unary operator."),
 								    ANOMALY_BADGRAMMAR );
 		}
 		//RULE: Either an identifier, literal, or '(' must follow an operator
-		else if( (PrevWord.Type == WORDTYPE_BINARYOPERATOR || 
-				  PrevWord.Type == WORDTYPE_UNARYOPERATOR ||
-				  PrevWord.Type == WORDTYPE_AMBIGUOUSOPERATOR ) &&
-				  !( CurrentWord.IsLiteral() || CurrentWord.Type == WORDTYPE_IDENTIFIER ||
-				 CurrentWord.Extra == EXTRA_PARENTHESIS_Left || CurrentWord.Type == WORDTYPE_UNARYOPERATOR ||
-				 CurrentWord.Type == WORDTYPE_AMBIGUOUSOPERATOR ) )
+		else if( (pPrevWord->Type == WORDTYPE_BINARYOPERATOR || 
+				  pPrevWord->Type == WORDTYPE_UNARYOPERATOR ||
+				  pPrevWord->Type == WORDTYPE_AMBIGUOUSOPERATOR ) &&
+				  !( pCurrentWord->IsLiteral() || pCurrentWord->Type == WORDTYPE_IDENTIFIER ||
+				 pCurrentWord->Extra == EXTRA_PARENTHESIS_Left || pCurrentWord->Type == WORDTYPE_UNARYOPERATOR ||
+				 pCurrentWord->Type == WORDTYPE_AMBIGUOUSOPERATOR ) )
 		{
 			ThrowExpressionAnomaly( TXT("Either an identifier, literal, or a unary operator must follow an operator"),
 								    ANOMALY_BADGRAMMAR );
 		}
 		//RULE: operators can not be followed by ')' or preceded by '('.  (i.e. No "x (+) b" stuff)
-		else if( PrevWord.Extra == EXTRA_PARENTHESIS_Left &&
-				 CurrentWord.Type == WORDTYPE_BINARYOPERATOR )
+		else if( pPrevWord->Extra == EXTRA_PARENTHESIS_Left &&
+				 pCurrentWord->Type == WORDTYPE_BINARYOPERATOR )
 		{
 			ThrowExpressionAnomaly( TXT("Operators cannot be preceded by a \'(\'."), ANOMALY_BADGRAMMAR );
 		}
-		else if( (PrevWord.Type == WORDTYPE_BINARYOPERATOR ||
-				  PrevWord.Type == WORDTYPE_UNARYOPERATOR ||
-				  PrevWord.Type == WORDTYPE_AMBIGUOUSOPERATOR) &&
-				 CurrentWord.Extra == EXTRA_PARENTHESIS_Right )
+		else if( (pPrevWord->Type == WORDTYPE_BINARYOPERATOR ||
+				  pPrevWord->Type == WORDTYPE_UNARYOPERATOR ||
+				  pPrevWord->Type == WORDTYPE_AMBIGUOUSOPERATOR) &&
+				 pCurrentWord->Extra == EXTRA_PARENTHESIS_Right )
 		{
 			ThrowExpressionAnomaly( TXT("Operators cannot be followed by a \')\'."), ANOMALY_BADGRAMMAR );
 		}
@@ -558,8 +571,8 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 	//RULE: The last word must be an identifier, literal, or ')'
 	if( !IgnoreTrailingOps )
 	{
-		if( !( CurrentWord.IsLiteral() || CurrentWord.Type == WORDTYPE_IDENTIFIER ||
-			CurrentWord.Extra == EXTRA_PARENTHESIS_Right ) )
+		if( !( pCurrentWord->IsLiteral() || pCurrentWord->Type == WORDTYPE_IDENTIFIER ||
+			pCurrentWord->Extra == EXTRA_PARENTHESIS_Right ) )
 		{
 			ThrowExpressionAnomaly( TXT("Last word in an expression must be an identifier or literal."),
 									ANOMALY_BADGRAMMAR );
@@ -583,11 +596,13 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 */
 void Expression::StripOutlyingParenthesis() const
 {
+	unsigned long ExpressionSize = size();
+	
 	int ParenthesisCount = 0; //Gets reused later down
 	if( (*this)[0].Extra == EXTRA_PARENTHESIS_Left )
 	{
 		unsigned int i;
-		for( i = 0; i < size(); i++ )
+		for( i = 0; i < ExpressionSize; i++ )
 		{
 			if( (*this)[i].Extra == EXTRA_PARENTHESIS_Left ) ParenthesisCount++;
 			else if( (*this)[i].Extra == EXTRA_PARENTHESIS_Right ) ParenthesisCount--;
@@ -596,11 +611,11 @@ void Expression::StripOutlyingParenthesis() const
 			if( ParenthesisCount == 0 ) break;
 		}
 
-		if( i == size() )//Parenthesis mismatch
+		if( i == ExpressionSize )//Parenthesis mismatch
 		{ 
 			ThrowParserAnomaly( TXT("Parenthesis mismatch."), ANOMALY_BADGRAMMAR );
 		}
-		else if( i == size() - 1 )//Outlying parenthesis, ok to strip
+		else if( i == ExpressionSize - 1 )//Outlying parenthesis, ok to strip
 		{
 			mLowerBounds++;
 			mUpperBounds = GetAbsoluteIndex( size() - 1 );
@@ -742,6 +757,8 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 
 		//Always keep these at the highest
 		PrecedenceList[EXTRA_BINOP_ScopeResolution]   = 21;
+		
+		FirstRun = false;
 	}
 
 
@@ -772,7 +789,6 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		OTHER //nothing/other
 	};	
 	
-	CheckSyntax();
 	if( !mIdentifiersCached ) CacheIdentifierObjects();
 	
 	unsigned long i;
@@ -780,20 +796,32 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 	unsigned long LowPrecedenceOpIndex = BAD_PRECEDENCE;
 	SimpleType LastWordType = OTHER;
 	
-	for( i = 0; i < size(); i++ )
+	const ExtendedWord* pCurrentWord;
+	const ExtendedWord* pLowPrecWord;
+	
+	static ExtendedWord NullExtendedWord;
+	
+	const unsigned long ExpressionSize = size();
+	
+	for( i = 0; i < ExpressionSize; i++ )
 	{
+		pCurrentWord = &GetWord( i );
+		if( LowPrecedenceOpIndex != BAD_PRECEDENCE ) pLowPrecWord = &GetWord( LowPrecedenceOpIndex );
+		else pLowPrecWord = &NullExtendedWord;
+		
+		
 		/*
 		  Skip through parenthesis. Don't worry about mismatches.
 		  They were already checked handled by CheckSyntax();
 		*/
-		
-		if( GetWord( i ).Extra == EXTRA_PARENTHESIS_Left ){
+				
+		if( pCurrentWord->Extra == EXTRA_PARENTHESIS_Left ){
 			ParenthesisCount++;
 			LastWordType = OTHER;
 			continue;
 		}
 		else
-		if( GetWord( i ).Extra == EXTRA_PARENTHESIS_Right ){			
+		if( pCurrentWord->Extra == EXTRA_PARENTHESIS_Right ){			
 			ParenthesisCount--;	
 			LastWordType = RIGHT_PAREN;
 			continue;
@@ -809,15 +837,15 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 			depending on the contex) are intercepted here and their identity
 			determined.		
 		*/
-		if( GetWord( i ).Type == WORDTYPE_AMBIGUOUSOPERATOR )
+		if( pCurrentWord->Type == WORDTYPE_AMBIGUOUSOPERATOR )
 		{
 			if( i == 0 || LastWordType == UNARY_OP || LastWordType == BINARY_OP )
 			{
-				GetWord( i ).InterpretAsUnaryOp();
+				pCurrentWord->InterpretAsUnaryOp();
 			}
 			else
 			{
-				GetWord( i ).InterpretAsBinaryOp();	
+				pCurrentWord->InterpretAsBinaryOp();	
 			}			
 		}
 		
@@ -826,19 +854,19 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		/*
 			Here we determine if identifiers are functions or just variables, etc.
 		*/
-		if( GetWord( i ).Type == WORDTYPE_IDENTIFIER )
+		if( pCurrentWord->Type == WORDTYPE_IDENTIFIER )
 		{
-			if( !GetWord( i ).mCachedObject ){
+			if( !pCurrentWord->mCachedObject ){
 				LastWordType = OPERAND;
 				continue;
 			}
 			
-			ScopeObjectType ObjType = GetScopeObjectType( GetWord( i ).mCachedObject );
+			ScopeObjectType ObjType = GetScopeObjectType( pCurrentWord->mCachedObject );
 			if( ObjType == SCOPEOBJ_OPERATOR || ObjType == SCOPEOBJ_BLOCK )
 			{
 				//The current word is not a function if it is at the end of the expression,
 				//followed by by a binary operator, or followed by a closing parenthesis.
-				if( i == size()-1 ||
+				if( i == ExpressionSize-1 ||
 					GetWord( i+1 ).Type == WORDTYPE_BINARYOPERATOR ||
 					GetWord( i+1 ).Extra == EXTRA_PARENTHESIS_Right )
 				{
@@ -851,7 +879,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 				//the precedence if the last word was also a unary operator.
 				if( LastWordType != UNARY_OP &&
 					(LowPrecedenceOpIndex == BAD_PRECEDENCE ||
-					(GetPrecedenceLevel( GetWord( i ) ) <= GetPrecedenceLevel( GetWord( LowPrecedenceOpIndex ) ) &&
+					(GetPrecedenceLevel( *pCurrentWord ) <= GetPrecedenceLevel( *pLowPrecWord ) &&
 					
 					/*Unary operators are not alowed to take low precedence from
 					  a binary operator.  Consider the expression:
@@ -860,7 +888,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 					  on the left side 'a +', which is not a valid expression.  This solves
 					  that problem.
 					*/
-					GetWord( LowPrecedenceOpIndex ).Type != WORDTYPE_BINARYOPERATOR))
+					pLowPrecWord->Type != WORDTYPE_BINARYOPERATOR))
 				  )
 				{
 					LowPrecedenceOpIndex = i;
@@ -880,12 +908,12 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		/*
 			(Hard-coded) Unary Operators. 
 		*/
-		else if( GetWord(i).Type == WORDTYPE_UNARYOPERATOR )
+		else if( pCurrentWord->Type == WORDTYPE_UNARYOPERATOR )
 		{
 			if( LastWordType != UNARY_OP &&
 				(LowPrecedenceOpIndex == BAD_PRECEDENCE ||
-				(GetPrecedenceLevel( GetWord( i ) ) <= GetPrecedenceLevel( GetWord( LowPrecedenceOpIndex ) ) &&
-				GetWord( LowPrecedenceOpIndex ).Type != WORDTYPE_BINARYOPERATOR))
+				(GetPrecedenceLevel( *pCurrentWord ) <= GetPrecedenceLevel( *pLowPrecWord ) &&
+				pLowPrecWord->Type != WORDTYPE_BINARYOPERATOR))
 			  )				
 			{
 				LowPrecedenceOpIndex = i;
@@ -899,10 +927,10 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		/*
 			Binary Operators.
 		*/
-		else if( GetWord(i).Type == WORDTYPE_BINARYOPERATOR )
+		else if( pCurrentWord->Type == WORDTYPE_BINARYOPERATOR )
 		{
 			if( LowPrecedenceOpIndex == BAD_PRECEDENCE ||
-				GetPrecedenceLevel( GetWord(i) ) <= GetPrecedenceLevel( GetWord( LowPrecedenceOpIndex ) ) )
+				GetPrecedenceLevel( *pCurrentWord ) <= GetPrecedenceLevel( *pLowPrecWord ) )
 			{
 				LowPrecedenceOpIndex = i;
 			}
@@ -954,7 +982,9 @@ void Expression::CacheIdentifierObjects() const
 {
 	unsigned long i;
 	
-	for( i = 0; i < size(); i++ )
+	const unsigned long ExpressionSize = size();
+	
+	for( i = 0; i < ExpressionSize; i++ )
 	{
 		if( GetWord(i).Type == WORDTYPE_IDENTIFIER )
 		{

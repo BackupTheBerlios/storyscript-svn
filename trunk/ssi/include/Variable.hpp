@@ -181,6 +181,9 @@ public:
 	NumType& GetActualNumData();
 	BoolType& GetActualBoolData();
 	StringType& GetActualStringData();
+	
+protected:
+	virtual ScopeObjectPtr GetScopeObjectHook( const STRING& );
 
 private:
 	void RegisterPredefinedVars();

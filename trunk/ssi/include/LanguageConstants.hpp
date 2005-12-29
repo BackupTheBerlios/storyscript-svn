@@ -196,6 +196,13 @@ extern SS::STRING LC_DecimalPoint;
 extern SS::STRING LC_ThousandsSep;
 
 
+//List built-ins
+extern const SS::STRING LC_LIST_Pop;
+extern const SS::STRING LC_LIST_Push;
+extern const SS::STRING LC_LIST_RemoveAll;
+extern const SS::STRING LC_LIST_Remove;
+
+
 //SLib Stuff
 extern const SS::STRING LC_SL_Time;
 extern const SS::STRING LC_SL_Time_Time;

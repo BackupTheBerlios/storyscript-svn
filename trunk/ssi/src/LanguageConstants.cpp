@@ -102,6 +102,12 @@ const SS::STRING LC_Import = TXT("use");
 const SS::STRING LC_Terminal = TXT(";");
 const SS::STRING LC_NameOfBracket  = TXT("|");
 
+//List built-ins
+const SS::STRING LC_LIST_Pop = TXT("pop");
+const SS::STRING LC_LIST_Push = TXT("push");
+const SS::STRING LC_LIST_RemoveAll = TXT("removeall");
+const SS::STRING LC_LIST_Remove = TXT("remove");
+
 
 //SLib Stuff
 const SS::STRING LC_SL_Time = TXT("SSTime");

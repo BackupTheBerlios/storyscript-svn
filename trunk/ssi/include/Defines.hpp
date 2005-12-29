@@ -30,8 +30,8 @@ you like to live dangerously.
 
 Exactly one of these must be uncommented.
 */
-//#define SS_USE_MAP_SCOPES
-#define SS_USE_HASH_MAP_SCOPES
+#define SS_USE_MAP_SCOPES
+//#define SS_USE_HASH_MAP_SCOPES
 
 /*
 Similar to the above.  Exactly one of these must be uncommented.

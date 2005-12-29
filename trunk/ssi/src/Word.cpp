@@ -62,7 +62,7 @@ Word& Word::operator=( const Word& W )
 */
 bool Word::operator==( const Word& W ) const
 {
-	if( String == W.String && Type == W.Type && Extra == W.Extra )
+	if( Type == W.Type && Extra == W.Extra && String == W.String )
 	{
 		return true;
 	}

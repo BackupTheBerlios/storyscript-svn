@@ -33,8 +33,8 @@ public:
 
 	ScopeObjectPtr operator[]( const SS::STRING& );
 	
-	void Register  ( ScopeObjectPtr );
-	void UnRegister( const SS::STRING& );
+	ScopeObjectPtr Register  ( ScopeObjectPtr );
+	ScopeObjectPtr UnRegister( const SS::STRING& );
 	//void UnRegister( ScopeObjectPtr );
 
 	void Clear();
@@ -43,7 +43,7 @@ public:
 
 	BlockPtr GetNextBlock( BlockPtr );
 
-	ScopeObjectPtr GetScopeObject_NoThrow( const SS::STRING& );
+	virtual ScopeObjectPtr GetScopeObject_NoThrow( const SS::STRING& );
 	ScopeObjectPtr GetScopeObject( const SS::STRING& );
 	
 	void Import( ScopePtr );
@@ -55,6 +55,8 @@ public:
 protected:
 	Scope();
 	Scope( const SS::STRING& Name, bool Static = false, bool Const = false );
+	
+	virtual ScopeObjectPtr GetScopeObjectHook( const STRING& );
 
 
 private:

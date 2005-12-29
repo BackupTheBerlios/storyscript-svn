@@ -68,16 +68,18 @@ public:
 	
 	VariablePtr CastToVariable();
 	const VariablePtr CastToVariable() const;
-
+	
 	//virtual VariableBasePtr op_not() const;
 
-
+protected:
+	virtual ScopeObjectPtr GetScopeObjectHook( const SS::STRING& );
 
 private:
 	void RegisterPredefinedVars();
 	unsigned int DetermineRealIndex( const VariableBase& Index );
 	
 	VariablePtr MakeVariable() const;
+	
 
 	ListType mList;
 	
@@ -98,36 +100,36 @@ private:
 		InternalListFunc();			
 	};
 	
-	class Remove : public InternalListFunc
+	class RemoveOp : public InternalListFunc
 	{
 		public:
-		Remove( List& Parent );
+		RemoveOp( List& Parent );
 		VariableBasePtr Operate( VariableBasePtr );
-	}mRemoveFunction;
+	};
 	
-	class RemoveAll : public InternalListFunc
+	class RemoveAllOp : public InternalListFunc
 	{
 		public:
-		RemoveAll( List& Parent );
+		RemoveAllOp( List& Parent );
 		VariableBasePtr Operate( VariableBasePtr );
 		
-	}mRemoveAllFunction;
+	};
 	
-	class Push : public InternalListFunc
+	class PushOp : public InternalListFunc
 	{
 		public:
-		Push( List& Parent );
+		PushOp( List& Parent );
 		VariableBasePtr Operate( VariableBasePtr );
 		
-	}mPushFunction;
+	};
 	
-	class Pop : public InternalListFunc
+	class PopOp : public InternalListFunc
 	{
 		public:
-		Pop( List& Parent );
+		PopOp( List& Parent );
 		VariableBasePtr Operate( VariableBasePtr );
 		
-	}mPopFunction;
+	};
 	
 };
 

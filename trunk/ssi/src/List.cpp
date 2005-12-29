@@ -26,20 +26,12 @@ ListPtr SS::gpEmptyList;
  NOTES: 
 */
 List::List()
-: mRemoveFunction( *this ),
-  mRemoveAllFunction( *this ),
-  mPushFunction( *this ),
-  mPopFunction( *this )
 {
 	RegisterPredefinedVars();
 }
 
 List::List( const STRING& Name, bool Static /*= false*/, bool Const /*= false*/ )
-: VariableBase( Name, Static, Const ),
-  mRemoveFunction( *this ),
-  mRemoveAllFunction( *this ),
-  mPushFunction( *this ),
-  mPopFunction( *this )
+: VariableBase( Name, Static, Const )
 {
 	RegisterPredefinedVars();
 }
@@ -380,19 +372,15 @@ VariableBasePtr List::Length() const{
 */
 void List::RegisterPredefinedVars()
 {
+	/*
 	bool WasConst = IsConst();
 	SetConst( false );
 
-	Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
 	
-	//built-in functions
-	Register( ScopeObjectPtr( &mRemoveFunction, null_deleter() ) );
-	Register( ScopeObjectPtr( &mRemoveAllFunction, null_deleter() ) );
-	Register( ScopeObjectPtr( &mPushFunction, null_deleter() ) );
-	Register( ScopeObjectPtr( &mPopFunction, null_deleter() ) );
 	
 
 	SetConst( WasConst );
+	*/
 }
 
 
@@ -451,17 +439,58 @@ const VariablePtr List::CastToVariable() const{
 	return MakeVariable();
 }
 
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Overloaded to intercept lookups to predef'ed objecs and creates them
+ 		on the fly.  Otherwise there is lot of overhead for stuff you probably
+ 		won't even use.
+*/
+ScopeObjectPtr List::GetScopeObjectHook( const STRING& Name )
+{
+	static bool PopCreated = false,
+				PushCreated = false,
+				RemoveAllCreated = false,
+				RemoveCreated = false,
+				LengthCreated = false;
+		
+	if( !PopCreated && Name == LC_LIST_Pop ){
+		PopCreated = true;
+		return Register( ScopeObjectPtr( new PopOp( *this ) ) );
+	}
+	else if( !PushCreated && Name == LC_LIST_Push ){
+		PushCreated = true;
+		return Register( ScopeObjectPtr( new PushOp( *this ) ) );
+	}
+	else if( !RemoveAllCreated && Name == LC_LIST_RemoveAll ){
+		RemoveAllCreated = true;
+		return Register( ScopeObjectPtr( new RemoveAllOp( *this ) ) );
+	}
+	else if( !RemoveCreated && Name == LC_LIST_Remove ){
+		RemoveCreated = true;
+		return Register( ScopeObjectPtr( new RemoveOp( *this ) ) );
+	}
+	else if( !LengthCreated && Name == LC_Length ){
+		LengthCreated = true;
+		return Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
+	}	
+	else return VariableBase::GetScopeObjectHook( Name );	
+}
+
+
+
+
 /////////////////////////////////////////////////////////BUILT IN LIST FUNCTIONS
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Remove function.  Removes the first occourance of every element in the
  		input list.  Returns this list operated on.
 */
-List::Remove::Remove( List& Parent )
-: InternalListFunc( TXT("remove"), Parent )
+List::RemoveOp::RemoveOp( List& Parent )
+: InternalListFunc( LC_LIST_Remove, Parent )
 {}
 
-VariableBasePtr List::Remove::Operate( VariableBasePtr pX )
+VariableBasePtr List::RemoveOp::Operate( VariableBasePtr pX )
 {
 	const ListType& XList = pX->CastToList()->GetInternalList();
 	
@@ -486,11 +515,11 @@ VariableBasePtr List::Remove::Operate( VariableBasePtr pX )
  NOTES: Similar to remove, but it removes all occouranced of the items in
  		the given list.  Returns the list operated on.
 */
-List::RemoveAll::RemoveAll( List& Parent )
-: InternalListFunc( TXT("removeall"), Parent )
+List::RemoveAllOp::RemoveAllOp( List& Parent )
+: InternalListFunc( LC_LIST_RemoveAll, Parent )
 {}
 
-VariableBasePtr List::RemoveAll::Operate( VariableBasePtr pX )
+VariableBasePtr List::RemoveAllOp::Operate( VariableBasePtr pX )
 {
 	const ListType& XList = pX->CastToList()->GetInternalList();
 	
@@ -518,11 +547,11 @@ VariableBasePtr List::RemoveAll::Operate( VariableBasePtr pX )
  NOTES: Push every element from the given list onto this list.  Returns the
  		list operated on.
 */
-List::Push::Push( List& Parent )
-: InternalListFunc( TXT("push"), Parent )
+List::PushOp::PushOp( List& Parent )
+: InternalListFunc( LC_LIST_Push, Parent )
 {}
 
-VariableBasePtr List::Push::Operate( VariableBasePtr pX )
+VariableBasePtr List::PushOp::Operate( VariableBasePtr pX )
 {
 	const ListType& XList = pX->CastToList()->GetInternalList();
 	size_t i;
@@ -540,11 +569,11 @@ VariableBasePtr List::Push::Operate( VariableBasePtr pX )
  		TODO: Consider having it take one argument giving a number of element
  		to remove from the end of the list.
 */
-List::Pop::Pop( List& Parent )
-: InternalListFunc( TXT("pop"), Parent )
+List::PopOp::PopOp( List& Parent )
+: InternalListFunc( LC_LIST_Pop, Parent )
 {}
 
-VariableBasePtr List::Pop::Operate( VariableBasePtr pX )
+VariableBasePtr List::PopOp::Operate( VariableBasePtr pX )
 {
 	return mParentList.Pop();	
 }

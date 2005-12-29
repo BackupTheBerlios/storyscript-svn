@@ -52,6 +52,7 @@ Scope::Scope( const STRING& Name,
 */
 void Scope::RegisterPredefinedVars()
 {
+	/*
 	//TThis check is very, very important.
 	//Without it there will be an infinite loop that will cause a very quick
 	//and very hard to track down stack overflow.
@@ -77,11 +78,10 @@ void Scope::RegisterPredefinedVars()
 	bool WasConst = mConst;
 	mConst = false;
 
-	Register( ScopeObjectPtr( new BoundStringVar( LC_Name, mName, true, true ) ) );
-	Register( ScopeObjectPtr( new FullNameVar( LC_FullName, *this, true, true ) ) );
-	Register( ScopeObjectPtr( new BoundNumVar( LC_UniqueID, mUniqueID, true, false ) ) );
 	
+		
 	mConst = WasConst;
+	*/
 }
 
 
@@ -102,7 +102,7 @@ ScopeObjectPtr Scope::operator[]( const STRING& i )
 // Scope::Register
 // NOTES: Adds a ScopeObject into the Scope.
 //
-void Scope::Register( ScopeObjectPtr pNewScopeObject )
+ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 {
 	AssertNonConst();
 	
@@ -142,6 +142,8 @@ void Scope::Register( ScopeObjectPtr pNewScopeObject )
 	pNewScopeObject->mpThis = pNewScopeObject;
 	
 	NextID += 1;
+	
+	return pNewScopeObject;
 }
 
 
@@ -150,7 +152,7 @@ void Scope::Register( ScopeObjectPtr pNewScopeObject )
 // Scope::UnRegister
 // NOTES: Removes a ScopeObject from the Scope list.
 //
-void Scope::UnRegister( const SS::STRING& ObjName )
+ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 {
 	AssertNonConst();
 	
@@ -167,7 +169,11 @@ void Scope::UnRegister( const SS::STRING& ObjName )
 	i->second->mUniqueID = SS_INITIAL_UID;
 	i->second->mpParent = 0;
 	
+	ScopeObjectPtr RetVal = i->second;
+	
 	mList.erase( i );
+	
+	return RetVal;
 }
 
 
@@ -267,9 +273,9 @@ ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 {
 	//Extract the first part of the identifier (maybe there just is one part).
 	STRING FirstPart;
-	STRING RemainingPart = Identifier;
+	STRING RemainingPart;
 
-	FirstPart = BreakOffFirstID( RemainingPart );
+	FirstPart = BreakOffFirstID( Identifier, RemainingPart );
 
 
 	//If the first part is empty, and the remaining part is not
@@ -278,6 +284,10 @@ ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 	{
 		return GetGlobalScope().GetScopeObject( RemainingPart );
 	}
+	
+	//First check the hooks, so objects can take care of any business.
+	ScopeObjectPtr pPotentialObj;
+	if( pPotentialObj = GetScopeObjectHook( Identifier ) ) return pPotentialObj;
 	
 	ScopeListType::iterator i;
 	
@@ -292,7 +302,7 @@ ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 	
 	//Check the imported scopes
 	const ScopeObjectPtr NULL_SO_PTR;
-	ScopeObjectPtr pPotentialObj;
+	
 		
 	unsigned int j;
 	for( j = 0; j < mImportedScopes.size(); j++ )
@@ -410,6 +420,34 @@ Scope& Scope::GetGlobalScope()
 	if( mpParent ) return mpParent->GetGlobalScope();
 	else return *this;
 }
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: 
+*/
+ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
+{
+	static bool NameCreated = false,
+				FullNameCreated = false,
+				UniqueIDCreated = false;
+				
+	if( !NameCreated && Name == LC_Name ){
+		NameCreated = true;	
+		return Register( ScopeObjectPtr( new BoundStringVar( LC_Name, mName, true, true ) ) );
+	}
+	else if( !FullNameCreated && Name == LC_FullName ){
+		FullNameCreated = true;
+		return Register( ScopeObjectPtr( new FullNameVar( LC_FullName, *this, true, true ) ) );
+		
+	}
+	else if( !UniqueIDCreated && Name == LC_UniqueID ){
+		UniqueIDCreated = true;
+		return Register( ScopeObjectPtr( new BoundNumVar( LC_UniqueID, mUniqueID, true, false ) ) );
+	}
+	else return ScopeObjectPtr();
+	
+}
+
 
 
 
