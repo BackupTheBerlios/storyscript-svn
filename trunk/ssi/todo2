@@ -1,7 +1,7 @@
 Bugs
 
 -There are issues with PerformanceFactorialTest.  The result for high values are not correct.
--Line number tracking still doesn't work right.
+-(FIXED!) Line number tracking still doesn't work right.
 -Printing of zeros doesn't work.  (Because they are considered the same as empty strings.)
 -Dumping expressions to strings doesn't work near as well as it should.
 

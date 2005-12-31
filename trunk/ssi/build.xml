@@ -37,22 +37,21 @@
 	
 	<target name="install" depends="build"
 		description="Install the project to the default location.">
-		<copy file="lib${name}.so" todir="/usr/lib" />
-		<copy todir="/usr/include/storyscript">
-			<fileset dir="${includedir}" includes="*.h, *.hpp" />
-		</copy>
+		<exec executable="linux-install.sh" os="Linux" resolveexecutable="true"/>
+		<!-- TODO: Add other scripts for other operating systems -->
+		
 	</target>
 	
 	<target name="clean"
 		description="Remove compiled files.">
 		<delete>
-			<fileset dir="$(src)" includes="**/*.o, history.xml, dependencies.xml"/>
+			<fileset dir="${srcdir}" includes="**/*.o, history.xml, dependencies.xml"/>
 			<fileset dir="." includes="*.tar, *.tar*, *.zip"/>
 		</delete>
 		<delete file="lib${name}.so"/>
 	</target>
 	
-	<target name="switchcompiler" description="Prompts user for compiler to use.">
+	<target name="switchcompiler" depends="clean" description="Prompts user for compiler to use.">
 		<input message="Input the compiler you would like to use: " 
 			   addproperty="UserCompiler"/>
 		<propertyfile file="ssi.properties">
@@ -60,11 +59,11 @@
 		</propertyfile>
 	</target>
 	
-	<target name="switchdebug" description="Toggles between debug and release build.">
+	<target name="switchdebug" depends="clean" description="Toggles between debug and release build.">
 		<input message="Include debug information? (true/false, yes/no): " 
 			   addproperty="UserDebug"/>
 		<propertyfile file="ssi.properties">
-			<entry key="debug" value="${UserCompiler}"/>
+			<entry key="debug" value="${UserDebug}"/>
 		</propertyfile>
 	</target>
 	

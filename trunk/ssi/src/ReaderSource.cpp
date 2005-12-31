@@ -454,7 +454,18 @@ ReaderPos ReaderSource::GetPos() const
 */
 unsigned long ReaderSource::GetLineNumber() const
 {
-	return mCurrentLine + 1;
+	/*
+		If we are at the beginning of a new line, we just report it as
+		the previous line.  Otherwise it will report the wrong line
+		when it throws errors sometimes.
+	*/
+	if( mLinePositions[mCurrentLine] == mBufferPos )
+	{
+		unsigned long i = mCurrentLine;
+		while( mBufferPos <= mLinePositions[i] && i > 0 ) i--;
+		return i+1;
+	}
+	else return mCurrentLine + 1;
 }
 
 
@@ -641,7 +652,7 @@ void ReaderSource::UpdateCurrentLine()
 	
 	//Go down a line
 	while( mCurrentLine != 0 &&
-		   mBufferPos <= mLinePositions[mCurrentLine - 1] )
+		   mBufferPos < mLinePositions[mCurrentLine] )
 	{
 		mCurrentLine--;		
 	}
