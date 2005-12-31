@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+
+<!-- I've never done this before.  Hopefully it works. -->
+
+
+<project name="ssi" default="build" basedir=".">
+	
+	<typedef resource="cpptasks.types"/>
+	<taskdef resource="cpptasks.tasks"/>
+	
+	<property file="ssi.properties"/>
+	
+	<target name="build"
+		description="The default target.  Builds the project.">
+		
+		<cc objdir="${srcdir}"
+			outfile="${name}"
+			outtype="${type}"
+			name="${compiler}"
+			multithreaded="true"
+			runtime="dynamic">
+					
+			<fileset dir="${srcdir}" casesensitive="true" includes="*.cpp" />
+			<libset libs="gmp, mpfr" type="${type}"/>
+			<includepath path="${includedir}" />
+			
+			<compiler name="${compiler}"
+					  exceptions="true"
+					  rtti="true"
+					  optimize="extreme"
+					  debug="${debug}"
+					  />
+			<linker name="${compiler}"/>
+		</cc>
+	</target>
+	
+	
+	<target name="install" depends="build"
+		description="Install the project to the default location.">
+		<copy file="lib${name}.so" todir="/usr/lib" />
+		<copy todir="/usr/include/storyscript">
+			<fileset dir="${includedir}" includes="*.h, *.hpp" />
+		</copy>
+	</target>
+	
+	<target name="clean"
+		description="Remove compiled files.">
+		<delete>
+			<fileset dir="$(src)" includes="**/*.o, history.xml, dependencies.xml"/>
+			<fileset dir="." includes="*.tar, *.tar*, *.zip"/>
+		</delete>
+		<delete file="lib${name}.so"/>
+	</target>
+	
+	<target name="switchcompiler" description="Prompts user for compiler to use.">
+		<input message="Input the compiler you would like to use: " 
+			   addproperty="UserCompiler"/>
+		<propertyfile file="ssi.properties">
+			<entry key="compiler" value="${UserCompiler}"/>
+		</propertyfile>
+	</target>
+	
+	<target name="switchdebug" description="Toggles between debug and release build.">
+		<input message="Include debug information? (true/false, yes/no): " 
+			   addproperty="UserDebug"/>
+		<propertyfile file="ssi.properties">
+			<entry key="debug" value="${UserCompiler}"/>
+		</propertyfile>
+	</target>
+	
+	<target name="tar" depends="clean">
+		<tar destfile="${name}.tar"
+			 basedir="."
+			 excludes="**/callgrind*, **/.sconsign, **/.svn, **/*.pcs, *.sconf_temp" />
+	</target>
+	
+	<target name="bzip2" depends="tar">
+		<bzip2 src="${name}-lib.tar" destfile="${name}-lib.tar.bz2" />
+	</target>
+	
+	<target name="gzip" depends="tar">
+		<gzip src="${name}-lib.tar" destfile="${name}-lib.tar.gz" />
+	</target>
+	
+	<target name="zip" depends="clean">
+		<zip destfile="${name}-lib.zip"
+			 basedir="."
+			 excludes="**/callgrind*, **/.sconsign, **/.svn, **/*.pcs, *.sconf_temp" />
+	</target>
+	
+	
+</project>
