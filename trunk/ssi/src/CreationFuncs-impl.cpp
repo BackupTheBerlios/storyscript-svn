@@ -21,7 +21,7 @@ NOTES: Implementation of various creation function templates enumerated here.
 
 #include "CreationFuncs.cpp"
 
-namespace SS{
+using namespace SS;
 
 #define Implement_CreateGeneric(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ( SS_DECLARE_BASE_ARGS );\
 template boost::shared_ptr<x> SS::CreateGeneric<x> ()
@@ -43,9 +43,9 @@ Implement_CreateGeneric_NoArgs(SLib::Common);
 Implement_CreateGeneric_NoArgs(SLib::List);
 Implement_CreateGeneric_NoArgs(SLib::Math);
 Implement_CreateGeneric_NoArgs(SLib::Time);
+Implement_CreateGeneric_NoArgs(SLib::LangOpts);
 
 Implement_CreateVariable(Variable);
 
 Implement_CreateBlock(Block);
 
-}

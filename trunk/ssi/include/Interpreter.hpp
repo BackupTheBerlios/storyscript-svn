@@ -122,7 +122,8 @@ private:
 
 	Interface* mpInterface;
 
-	bool mVerboseOutput;
+	//This is bound to SS::LangOpts::Verbose, for convenience.
+	static bool& mVerboseOutput;
 
 
 	//This is used to keep track of the order of all the blocks in a file.

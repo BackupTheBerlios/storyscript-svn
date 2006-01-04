@@ -7,31 +7,30 @@
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.make.core.makeBuilder</name>
-			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.arguments</key>
-					<value>debug=1</value>
+					<value></value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.core.errorOutputParser</key>
 					<value>org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.VCErrorParser;</value>
 				</dictionary>
 				<dictionary>
-					<key>org.eclipse.cdt.make.core.environment</key>
-					<value></value>
-				</dictionary>
-				<dictionary>
 					<key>org.eclipse.cdt.make.core.enableAutoBuild</key>
 					<value>false</value>
 				</dictionary>
 				<dictionary>
-					<key>org.eclipse.cdt.make.core.build.target.inc</key>
+					<key>org.eclipse.cdt.make.core.environment</key>
 					<value></value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
 					<value>true</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.target.inc</key>
+					<value></value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.enabledIncrementalBuild</key>
@@ -42,12 +41,12 @@
 					<value></value>
 				</dictionary>
 				<dictionary>
-					<key>org.eclipse.cdt.make.core.build.command</key>
-					<value>scons</value>
+					<key>org.eclipse.cdt.make.core.build.target.clean</key>
+					<value>clean</value>
 				</dictionary>
 				<dictionary>
-					<key>org.eclipse.cdt.make.core.build.target.clean</key>
-					<value>-c</value>
+					<key>org.eclipse.cdt.make.core.build.command</key>
+					<value>ant</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.enableCleanBuild</key>
@@ -59,7 +58,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.target.full</key>
-					<value></value>
+					<value>clean build</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
@@ -78,6 +77,16 @@
 		<buildCommand>
 			<name>org.eclipse.cdt.make.core.ScannerConfigBuilder</name>
 			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
+			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/AntBuilder.launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>

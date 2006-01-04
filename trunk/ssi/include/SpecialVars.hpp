@@ -143,6 +143,26 @@ private:
 };
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Binds a unsigned long to an SS variable.
+*/
+class BoundULongVar : public SpecialVarBase
+{
+public:
+	BoundULongVar( const STRING& Name, unsigned long& ULong,
+				bool Static = false, bool Const = false );
+
+	virtual VariableBasePtr operator=( const VariableBase& );
+	
+	VarType GetVariableType() const;
+	
+	NumType    GetNumData() const;
+	BoolType   GetBoolData()   const;
+	StringType GetStringData() const;
+
+private:
+	unsigned long& mNum;
+};
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  FullNameVar

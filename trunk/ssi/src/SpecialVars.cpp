@@ -335,6 +335,46 @@ BoolType BoundNumVar::GetBoolData() const
 }
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Constructor
+*/
+BoundULongVar::BoundULongVar( const STRING& Name, unsigned long& ULong,
+						bool Static /*= false*/, bool Const /*= false*/ )
+: SpecialVarBase( Name, Static, Const ), mNum( ULong )
+{
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Overloaded assignment operator.
+*/
+VariableBasePtr BoundULongVar::operator=( const VariableBase& X )
+{
+	mNum = X.GetNumData().get_ui();
+	return CastToVariableBase();	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Return prefered type (number).
+*/
+VarType BoundULongVar::GetVariableType() const{
+	return VARTYPE_NUM;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Get__Data -- Return useable data.
+*/
+NumType BoundULongVar::GetNumData() const{
+	return NumType( mNum );
+}
+
+BoolType BoundULongVar::GetBoolData() const{
+	return GetBoolDataFromNum();
+}
+
+StringType BoundULongVar::GetStringData() const{
+	return GetStringDataFromNum();
+}
+
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

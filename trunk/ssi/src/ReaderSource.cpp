@@ -296,7 +296,7 @@ Word ReaderSource::GetNextWord()
 				continue;                
 			}
 			else
-				if( IsAlpha(TempChar) )
+				if( IsAlpha(TempChar) || TempChar == '_' )
 			{
 				TempString += TempChar;
 				if( IDBeginning ) IDBeginning = false;                

@@ -49,10 +49,10 @@
 </profile>
 </item>
 <item id="org.eclipse.cdt.core.pathentry">
-<pathentry kind="inc" path="" include="include" system="true" base-path="ssi"/>
-<pathentry kind="src" path=""/>
+<pathentry kind="src" path="" excluding="win32/stdafx.h"/>
 <pathentry kind="out" path=""/>
 <pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>
+<pathentry kind="inc" path="" include="include" system="true" base-path="ssi"/>
 </item>
 </data>
 </cdtproject>

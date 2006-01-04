@@ -29,9 +29,15 @@ StringType SS::NumType2StringType( const NumType& Foo ){
 	
 	//Special case because zeros don't seem to want to work.
 	//if( Foo == 0 ) return StringType(TXT("0"));
+	
+	if( Foo == gpNANConst->GetNumData() ) return TXT("");
+	if( Foo == gpInfinityConst->GetNumData() ) return TXT("%Inf%");
+	if( Foo == gpNegInfinityConst->GetNumData() ) return TXT("%-Inf%");	
 
 	mp_exp_t Exponent = 0;
-	SS::STRING FooStr = NormalizeString( Foo.get_str( &Exponent, gNumberBase, gMaxDigitOutput ) );
+	SS::STRING FooStr = NormalizeString( Foo.get_str( &Exponent,
+													  LangOpts::Instance().NumberBase,
+													  LangOpts::Instance().MaxDigitOutput ) );
 
 	if( Exponent < 0 )
 	{
@@ -348,7 +354,7 @@ Variable::Variable( const SS::STRING& Name,
 
 Variable::Variable()
 : mCurrentType( DEFAULT_VARTYPE ),
-  mNumPart(0, gDefaultPrecis)
+  mNumPart(0, LangOpts::Instance().DefaultPrecision)
 {
 	RegisterPredefinedVars();
 }
@@ -371,7 +377,7 @@ Variable::Variable( const STRING& Name,
   mCurrentType( VARTYPE_STRING ),
   mStringPart( X ),
   mBoolPart(false),
-  mNumPart(0, gDefaultPrecis)
+  mNumPart(0, LangOpts::Instance().DefaultPrecision)
 {
 	RegisterPredefinedVars();
 }
@@ -382,7 +388,7 @@ Variable::Variable( const STRING& Name,
 : VariableBase(Name, Static, Const),
   mCurrentType( VARTYPE_BOOL ),
   mBoolPart( X ),
-  mNumPart(0, gDefaultPrecis)
+  mNumPart(0, LangOpts::Instance().DefaultPrecision)
 {
 	RegisterPredefinedVars();
 }
@@ -405,19 +411,7 @@ VarType Variable::mTypeConversionTable[VARTYPE_STRING+1][VARTYPE_STRING+1] =
 */
 void Variable::RegisterPredefinedVars()
 {
-	/*
-	bool WasConst = IsConst();
-	SetConst( false );
-
-	//Every PrecisionVar has a UniqueID,
-	//Every UniqueID has a PrecisionVar.
-	//This is to break that cycle.  UniqueIDs dont have PrecisionVars.
-	if( mName != LC_UniqueID ){
-		Register( ScopeObjectPtr( new PrecisionVar( LC_Precision, *this, true ) ) );
-	}
-
-	SetConst( WasConst );
-	*/
+	//All predefines are now handled by GetScopeObjectHook
 }
 
 
@@ -1036,7 +1030,8 @@ NumType Variable::GetNumData() const
 	switch( mCurrentType )
 	{
 	case VARTYPE_BOOL:
-		mNumPart = mBoolPart ? 1 : 0;
+		if( mBoolPart ) mNumPart = 1; //I'm not sure if this a good idea, or what.
+		else mNumPart = gpNANConst->mNumPart;
 		break;
 	case VARTYPE_STRING:
 		//This is a little expensive, but we need to make sure the string is indeed a number.
@@ -1053,8 +1048,7 @@ NumType Variable::GetNumData() const
 			}
 		}
 
-		//TODO: Calculate the actual precision required to hold that string.
-		mNumPart.set_prec( gDefaultPrecis );
+		mNumPart.set_prec( LangOpts::Instance().DefaultPrecision ); //I'm not sure if this has a point.
 		mNumPart = NarrowizeString( mStringPart );
 		
 	}
@@ -1074,7 +1068,8 @@ BoolType Variable::GetBoolData() const
 	switch( mCurrentType )
 	{
 	case VARTYPE_NUM:
-		mBoolPart = mNumPart == NumType(0) ? false : true;
+		if( mNumPart == gpNANConst->GetActualNumData() ) mBoolPart = false;
+		else mBoolPart = true;
 		break;
 	case VARTYPE_STRING:
 		mBoolPart = mStringPart.empty() ? false : true;

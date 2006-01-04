@@ -13,10 +13,51 @@ NOTES: This is a list of language constants that can be changed to effect
 //To initialize gpEmptyList
 #include "CreationFuncs.hpp"
 #include "List.hpp"
+#include "Variable.hpp"
 
 using namespace SS;
 
 #include <clocale>
+
+
+//Don't worry, these get initialized by InitConstants
+VariablePtr SS::gpNANConst;
+VariablePtr SS::gpInfinityConst;
+VariablePtr SS::gpNegInfinityConst;
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Language option singleton intilization code
+*/
+
+boost::shared_ptr<LangOpts> LangOpts::mpInstance;
+
+LangOpts& LangOpts::Instance()
+{
+	if( !mpInstance ){
+		mpInstance.reset( new LangOpts );
+	}
+	
+	return *mpInstance;
+	
+}
+
+LangOpts::LangOpts()
+//!!! This is important!  Default Language settings !!!
+: DefaultPrecision( 256 ),
+  RoundingMode( GMP_RNDN ),
+  MaxDigitOutput( 0 ), //0 means infinate
+  NumberBase( 10 ),
+  UseStrictLists( false ),
+  Verbose( false )
+{
+	
+}
+
+
+
+
 
 namespace SS{
 std::map< SS::STRING, ExtraDesc > gUnaryOperatorMap;
@@ -122,6 +163,8 @@ const SS::STRING LC_SL_Common = TXT("SSCommon");
 
 const SS::STRING LC_SL_List = TXT("SSList");
 
+const SS::STRING LC_SL_LangOpts = TXT("SSLangOpts");
+
 } //end namespace SS
 
 
@@ -136,6 +179,23 @@ const SS::STRING LC_SL_List = TXT("SSList");
 void SS::InitConstants(){
 	static bool HasBeenCalled = false;
 	if( HasBeenCalled ) return;
+	
+	//Set up the in-language ones
+	gpNANConst = CreateVariable<Variable>( TXT("_NAN_"), true, false, 0 );
+	mpfr_set_nan( gpNANConst->GetActualNumData().get_mpfr_t() );
+	gpNANConst->ForceConversion( VARTYPE_NUM );
+	gpNANConst->SetConst();
+		
+	gpInfinityConst = CreateVariable<Variable>( TXT("_INF_"), true, false, 0 );
+	mpfr_set_inf( gpInfinityConst->GetActualNumData().get_mpfr_t(), 1 );
+	gpInfinityConst->ForceConversion( VARTYPE_NUM );
+	gpInfinityConst->SetConst();
+	
+	gpNegInfinityConst = CreateVariable<Variable>( TXT("_NEGINF_"), true, false, 0 );
+	mpfr_set_inf( gpNegInfinityConst->GetActualNumData().get_mpfr_t(), -1 );
+	gpNegInfinityConst->ForceConversion( VARTYPE_NUM );
+	gpNegInfinityConst->SetConst();
+	
 
 	lconv* pLconv = localeconv();
 

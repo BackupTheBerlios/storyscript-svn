@@ -44,6 +44,7 @@ using namespace SS;
 
 
 
+bool& Interpreter::mVerboseOutput = SS::LangOpts::Instance().Verbose;
 boost::shared_ptr<Interpreter> Interpreter::mpInstance;
 
 
@@ -64,7 +65,6 @@ Interpreter& Interpreter::Instance(){
 // NOTES: ctor
 //
 Interpreter::Interpreter()
-: mVerboseOutput(false)
 {
 	mpGlobalScope = CreateGeneric<Scope>();
 	InitConstants();
@@ -129,10 +129,7 @@ void Interpreter::RegisterSpecials()
 
 	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Time>() ) );
 	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Math>() ) );
-	
-	//It is OK to use new, when the objects are directly being registered.
-	mpGlobalScope->Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("verbose"), mVerboseOutput, true, true ) ) );
-	mpGlobalScope->Register( ScopeObjectPtr( new BoundFlagVar  ( TXT("strict_lists"), gUsingStrictLists, true, true ) ) );
+	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::LangOpts>() ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

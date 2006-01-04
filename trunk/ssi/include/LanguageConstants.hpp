@@ -11,10 +11,46 @@ NOTES: This is a list of language constants that can be changed to effect
 #define SS_LanguageConstants
 
 #include "Unicode.hpp"
+#include <boost/shared_ptr.hpp>
 #include <map>
+#include "Types.hpp"
 
 
 namespace SS{
+	
+	
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: A singleton containing important variable affecting language behavior.
+*/
+struct LangOpts
+{
+public:
+	static LangOpts& Instance();
+	
+	unsigned long DefaultPrecision;
+	unsigned long RoundingMode;
+	unsigned long MaxDigitOutput;
+	unsigned long NumberBase;
+	bool UseStrictLists;
+	bool Verbose;
+	
+			
+
+private:
+	LangOpts();
+	static boost::shared_ptr<LangOpts> mpInstance;
+	
+};
+
+
+/*
+	EXTREMELY IMPORTANT:
+	These are language constants that will be registered in the global scope.
+*/
+extern VariablePtr gpNANConst;
+extern VariablePtr gpInfinityConst;
+extern VariablePtr gpNegInfinityConst;
+//extern VariablePtr 
 
 
 //Call this once to set up all the locale info and such
@@ -215,6 +251,8 @@ extern const SS::STRING LC_SL_Math;
 extern const SS::STRING LC_SL_Common;
 
 extern const SS::STRING LC_SL_List;
+
+extern const SS::STRING LC_SL_LangOpts;
 
 
 }

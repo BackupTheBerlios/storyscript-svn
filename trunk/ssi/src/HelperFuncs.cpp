@@ -61,7 +61,8 @@ SS::STRING SS::BreakOffFirstID( SS::STRING& S )
 	for( ; i < S.size(); i++ ){
 		if( IsAlpha(S[i]) || IsNumber(S[i]) || S[i] == '_' ){
 			TempString += S[i];
-		}	
+		}
+		else break;
 	}
 
 	//remove the excess fat
@@ -86,7 +87,8 @@ SS::STRING SS::BreakOffFirstID( const SS::STRING& S, SS::STRING& Remainder )
 	for( ; i < S.size(); i++ ){
 		if( IsAlpha(S[i]) || IsNumber(S[i]) || S[i] == '_' ){
 			TempString += S[i];
-		}	
+		}
+		else break;
 	}
 
 	//remove the excess fat
@@ -94,7 +96,7 @@ SS::STRING SS::BreakOffFirstID( const SS::STRING& S, SS::STRING& Remainder )
 		i++;
 	}
 
-	if( i < S.size() ) Remainder.assign( S, i+1, S.size() );
+	if( i < S.size() ) Remainder.assign( S, i, S.size() );
 
 	return TempString;	
 }

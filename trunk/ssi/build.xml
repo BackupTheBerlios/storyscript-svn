@@ -17,8 +17,7 @@
 			outfile="${name}"
 			outtype="${type}"
 			name="${compiler}"
-			multithreaded="true"
-			runtime="dynamic">
+			multithreaded="true">
 					
 			<fileset dir="${srcdir}" casesensitive="true" includes="*.cpp" />
 			<libset libs="gmp, mpfr" type="${type}"/>

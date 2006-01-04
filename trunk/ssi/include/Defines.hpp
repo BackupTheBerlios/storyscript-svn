@@ -63,20 +63,6 @@ vector is faster at some things, deque at others.
     #define EXPIMP_TEMPLATE
 #endif
 
-//----------------Language Settings------------------
-
-//With this turned on, it will throw an error if you try to access
-//a list element that doesn't exist.  With it off, the element will
-//just quietly spring into existance.
-
-//TODO: This won't work if they get modified.  Make them extern.
-
-static bool gUsingStrictLists = false;
-
-static unsigned int gNumberBase = 10;
-//0 for maximum
-static unsigned int gMaxDigitOutput = 0;
-static unsigned long gDefaultPrecis = 256; //In bits I think
 
 } //namespace
 #endif

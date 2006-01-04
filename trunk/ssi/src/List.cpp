@@ -221,7 +221,7 @@ unsigned int List::DetermineRealIndex( const VariableBase& Index )
 	{
 		while( (unsigned int)TrueIndex >= mList.size() )
 		{
-			if( gUsingStrictLists )
+			if( LangOpts::Instance().UseStrictLists )
 			{
 				SS::STRING tmp = TXT("Cannot access element ");
 				tmp += boost::lexical_cast<SS::STRING>(GoodIndex);

@@ -29,6 +29,23 @@ private:
 	void RegisterPredefined();
 };
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Contains magic variable that change the behavior of the language in
+ 		various ways.
+*/
+class LangOpts : public Scope
+{
+public:
+	LangOpts();
+
+private:
+	void RegisterPredefined();
+};
+
+
+
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  print
  NOTES: Prints something to the console.

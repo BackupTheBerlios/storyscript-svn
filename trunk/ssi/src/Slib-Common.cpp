@@ -17,7 +17,7 @@ NOTES: S-Lib functions/mvars that are miscilaneous and used often.
 
 
 #include "CreationFuncs.hpp"
-
+#include "SpecialVars.hpp"
 
 
 
@@ -44,6 +44,40 @@ Common::Common()
 void Common::RegisterPredefined()
 {
 	Register( ScopeObjectPtr( new print( TXT("print"), true, true ) ) );
+	Register( ScopeObjectPtr( gpNANConst ) );
+	Register( ScopeObjectPtr( gpInfinityConst ) );
+	Register( ScopeObjectPtr( gpNegInfinityConst ) );
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Contructor
+*/
+SS::SLib::LangOpts::LangOpts()
+	: Scope( LC_SL_LangOpts, true )
+{
+	RegisterPredefined();
+	SetConst();
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Register bindings for SS:LangOpts.
+*/
+void SS::SLib::LangOpts::RegisterPredefined()
+{
+	SS::LangOpts& MyLangOpts = SS::LangOpts::Instance();
+	
+	Register( ScopeObjectPtr( 
+		new BoundULongVar( TXT("default_precision"), MyLangOpts.DefaultPrecision, true, false ) ) );
+	Register( ScopeObjectPtr( 
+		new BoundULongVar( TXT("rounding_mode"), MyLangOpts.RoundingMode, true, false ) ) );
+	Register( ScopeObjectPtr( 
+		new BoundULongVar( TXT("max_digit_output"), MyLangOpts.MaxDigitOutput, true, false ) ) );
+	Register( ScopeObjectPtr( 
+		new BoundULongVar( TXT("number_base"), MyLangOpts.NumberBase, true, false ) ) );
+	Register( ScopeObjectPtr( 
+		new BoundFlagVar( TXT("use_strict_lists"), MyLangOpts.UseStrictLists, true, false ) ) );
+	Register( ScopeObjectPtr(
+		new BoundFlagVar( TXT("verbose"), MyLangOpts.Verbose, true, false ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

@@ -199,6 +199,7 @@ private:
 
 
 
+
 }//namespace SS
 #endif //!defined(SS_Variable)
 
