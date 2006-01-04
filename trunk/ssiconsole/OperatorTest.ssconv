@@ -3,20 +3,37 @@
 	as a scratch pad of sorts.
 */
 
+//use SSLangOpts;
+//use SSMath;
+
 main{
-
-
-	print 2 * (2) - 1;
+	`Make your choice.`;
+	
+	//print SSLangOpts:rounding_mode;
 
 /*
-	list foo = "2", "4", "6";
-	var a = foo[asdf] - 1;
-	
-	print a;
-	
+	print SSLangOpts:number_base;
+	SSLangOpts:number_base = 16;
+	print SSLangOpts:number_base;
 */
-	next = end;
+	//print 10;
 	
+	//print SSMath:pi;
+
+	next = foo, bar;
+	
+}
+
+foo{
+	`foo`;
+	
+	next=end;
+}
+
+bar{
+	`bar`;
+	
+	next=end;
 }
 
 /*

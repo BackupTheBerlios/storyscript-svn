@@ -188,6 +188,8 @@ void ConsoleInterface::LogMessage( const SS::STRING& Msg, bool UserOutput /*=fal
 	}
 
 	LastWasUserOutput = UserOutput;
+	
+	SetDefaultColor();
 }
 
 
@@ -205,6 +207,7 @@ void ConsoleInterface::SayBlock( const SS::BlockPtr pBlock )
 
 	SetCharacterColor();
 	CON << ParentName << TXT("\n");
+	SetDefaultColor();
 	SetLineColor();
 	CON << Line << TXT("\n\n");
 	SetDefaultColor();
@@ -240,6 +243,9 @@ void ConsoleInterface::PrintPosition()
 */
 void ConsoleInterface::SetDefaultColor()
 {
+	CON.SetUnderline( false );
+	CON.SetBold( false );
+	CON.SetTextFGColor( ColorBlack );
 //	CON.SetBackgroundFull( ColorPair( ColorBlack, ColorWhite ) );
 //	CON.SetTextColor( ColorPair( ColorBlack, ColorWhite ) );
 }
@@ -282,10 +288,10 @@ void ConsoleInterface::SetLineColor()
 */
 void ConsoleInterface::SetCharacterColor()
 {
-	CON.SetTextFGColor( ColorBlue );
 	//CON.SetTextColor( ColorPair(ColorBlack, ColorWhite) );
+	CON.SetTextFGColor( ColorBlue );
 	CON.SetBold( true );
-	CON.SetUnderline( true );
+	CON.SetUnderline( true );	
 }
 
 

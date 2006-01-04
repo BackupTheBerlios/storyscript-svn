@@ -2,6 +2,8 @@
 Tests basic list operations.
 */
 
+
+//Compound assignments are some of the more sophisticated and likely to break code.
 var a;
 var b;
 var c;
@@ -16,6 +18,8 @@ else print "BORKED!";
 print "\
 ";
 
+
+//Just some random complex list accessing.s
 
 print "Testing some random operations...";
 

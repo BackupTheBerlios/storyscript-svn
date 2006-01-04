@@ -47,7 +47,7 @@ struct ColorPair{
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  Console
- NOTES: The interface for console i/o
+ NOTES: The interface for console i/o.  Nothing fancy but it gets the job done.
 */
 class Console
 {
@@ -80,8 +80,7 @@ public:
 	virtual Console& SetTextColor( ColorPair ) { return *this; }
 
 	virtual Console& SetBackground( ColorPair, char FillChar = 0 ) { return *this; }
-	virtual Console& SetBackgroundFull( ColorPair, char FillChar = 0 ) { return *this; }	
-
+	virtual Console& SetBackgroundFull( ColorPair, char FillChar = 0 ) { return *this; }
 };
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
@@ -91,7 +90,7 @@ public:
 class StdConsole : public Console
 {
 public:
-	StdConsole() {}
+	StdConsole() : mBold(false), mUnderline(false), mCurrentColor(ColorBlack) {}
 	~StdConsole() {}
 
 	Console& operator << ( const SS::STRING& s );
@@ -107,6 +106,18 @@ public:
 	Console& operator >> ( long& l );
 	Console& operator >> ( unsigned long& ul );
 	Console& operator >> ( float& f );
+	
+	Console& SetBold( bool Flag );
+	Console& SetUnderline( bool Flag );
+	Console& SetTextFGColor( ConsoleOutColor Color );
+	Console& SetTextColor( ColorPair );
+	
+private:
+	void Fix();
+
+	bool mBold;
+	bool mUnderline;
+	ConsoleOutColor mCurrentColor;
 
 };
 

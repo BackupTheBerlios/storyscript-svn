@@ -15,6 +15,7 @@ NOTES: A console abstraction.
 
 //Used by StdConsole
 #include <iostream>
+#include "../ansicolor/ansicolor.h" //Thank you very much Jamie Moyers
 
 
 
@@ -387,4 +388,93 @@ Console& StdConsole::operator>>( float& f ){
 	STD_CIN >> f;
 	return *this;
 }
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Change to color!
+*/
+Console& StdConsole::SetBold( bool Flag )
+{
+	if( Flag )
+	{
+		STD_COUT << ANSIColor::bold;
+		mBold = true;
+	}
+	else
+	{
+		STD_COUT << ANSIColor::reset;
+		mBold = false;
+		Fix();
+	}
+	
+	return * this;	
+}
+
+Console& StdConsole::SetUnderline( bool Flag )
+{
+		if( Flag )
+	{
+		STD_COUT << ANSIColor::underline;
+		mUnderline = true;
+	}
+	else
+	{
+		STD_COUT << ANSIColor::reset;
+		mUnderline = false;
+		Fix();
+	}
+	
+	return * this;	
+}
+
+Console& StdConsole::SetTextFGColor( ConsoleOutColor Color )
+{
+	switch( Color )
+	{
+	case ColorBlack:
+		STD_COUT << ANSIColor::black;
+		break;
+	case ColorRed:
+		STD_COUT << ANSIColor::red;
+		break;
+	case ColorGreen:
+		STD_COUT << ANSIColor::green;
+		break;
+	case ColorYellow:
+		STD_COUT << ANSIColor::yellow;
+		break;
+	case ColorBlue:
+		STD_COUT << ANSIColor::blue;
+		break;
+	case ColorMegenta:
+		STD_COUT << ANSIColor::magenta;
+		break;
+	case ColorCyan:
+		STD_COUT << ANSIColor::cyan;
+		break;
+	case ColorWhite:
+		STD_COUT << ANSIColor::white;
+		break;		
+	}
+	
+	mCurrentColor = Color;	
+	return *this;
+}
+
+Console& StdConsole::SetTextColor( ColorPair CP )
+{
+	return SetTextFGColor( CP.FG );	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: This gets called to turn on setting that get unset by reset but should
+ 		stay set.  Or something like that.
+*/
+void StdConsole::Fix()
+{
+	if( mBold ) STD_COUT << ANSIColor::bold;
+	if( mUnderline ) STD_COUT << ANSIColor::underline;
+	
+	SetTextFGColor( mCurrentColor );
+}
+
 

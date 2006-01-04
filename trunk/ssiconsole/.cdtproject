@@ -49,11 +49,11 @@
 </profile>
 </item>
 <item id="org.eclipse.cdt.core.pathentry">
-<pathentry kind="inc" path="" include="include" system="true" base-path="ssiconsole"/>
-<pathentry kind="inc" path="" include="../ssi/include" system="true"/>
 <pathentry kind="src" path=""/>
 <pathentry kind="out" path=""/>
 <pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>
+<pathentry kind="inc" path="" include="include" system="true" base-path="ssiconsole"/>
+<pathentry kind="inc" path="" include="../ssi/include" system="true"/>
 </item>
 </data>
 </cdtproject>

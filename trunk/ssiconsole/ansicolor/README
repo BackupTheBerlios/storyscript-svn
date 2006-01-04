@@ -1,0 +1,29 @@
+
+About
+=====
+
+ansicolor version 1.0.0  Copyright (C) 1999 Jamie Moyers
+
+ansicolor provides a set of ostream manipulators for emitting the escape
+codes used to display colored text on terminals that support it.
+
+The test program "colortest" takes an optional argument to disable the
+manipulators:
+
+   colortest [no]
+
+
+
+Author
+======
+
+   Jamie Moyers <jmoyers@geeks.com>
+
+
+Credits
+=======
+
+   Inspired by the perl module "ANSIColor.pm" by
+
+      Russ Allbery <rra@stanford.edu> and
+      Zenin <zenin@best.com>

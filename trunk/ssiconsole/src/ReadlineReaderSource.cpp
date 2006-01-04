@@ -1,5 +1,6 @@
 #include "ReadlineReaderSource.hpp"
 #include <readline/readline.h>
+#include <readline/history.h>
 
 using namespace SS;
 
@@ -8,6 +9,7 @@ using namespace SS;
 */
 ReadlineReaderSource::ReadlineReaderSource()
 {
+	using_history();
 }
 
 
@@ -19,9 +21,11 @@ STRING ReadlineReaderSource::GetNextLine()
 	char* Buffer = 0;
 
 	//Gotta love that python prompt.
-	Buffer = readline(">>> ");
+	Buffer = readline("\n>>> ");
 	
 	if( Buffer == 0 ) return STRING();
+	
+	add_history( Buffer );
 	
 	STRING StringizedBuffer = NormalizeString( Buffer );
 	
