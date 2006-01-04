@@ -30,9 +30,9 @@ StringType SS::NumType2StringType( const NumType& Foo ){
 	//Special case because zeros don't seem to want to work.
 	//if( Foo == 0 ) return StringType(TXT("0"));
 	
-	if( Foo == gpNANConst->GetNumData() ) return TXT("");
-	if( Foo == gpInfinityConst->GetNumData() ) return TXT("%Inf%");
-	if( Foo == gpNegInfinityConst->GetNumData() ) return TXT("%-Inf%");	
+	if( mpfr_nan_p( Foo.get_mpfr_t() ) != 0 ) return TXT("");
+	if( mpfr_inf_p( Foo.get_mpfr_t() ) ) return TXT("%Inf%");
+	//if( Foo == gpNegInfinityConst->GetNumData() ) return TXT("%-Inf%");	
 
 	mp_exp_t Exponent = 0;
 	SS::STRING FooStr = NormalizeString( Foo.get_str( &Exponent,
@@ -1068,7 +1068,7 @@ BoolType Variable::GetBoolData() const
 	switch( mCurrentType )
 	{
 	case VARTYPE_NUM:
-		if( mNumPart == gpNANConst->GetActualNumData() ) mBoolPart = false;
+		if( mpfr_nan_p( mNumPart.get_mpfr_t() ) != 0 ) mBoolPart = false;
 		else mBoolPart = true;
 		break;
 	case VARTYPE_STRING:
