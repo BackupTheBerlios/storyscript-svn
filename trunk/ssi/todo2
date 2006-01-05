@@ -13,6 +13,4 @@ Optimizations
 
 Features
 
--A doc string in every operator. (Maybe magic vars too).
--A return function, that sets out and then exits the function.
 -A predefined variable in every block that tells what level of recursion its on.-A default precision predef-var. (MAYBE)

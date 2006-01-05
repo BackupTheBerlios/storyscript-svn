@@ -19,6 +19,7 @@ NOTES: Contains definitions for the Interprer class which handles the bulk
 #include "DLLExport.hpp"
 #include "LanguageConstants.hpp"
 #include "CreationFuncs.hpp"
+#include "BuiltInFunctions.hpp"
 
 //Standard Lib
 #include "Slib-Common.hpp"
@@ -69,6 +70,7 @@ Interpreter::Interpreter()
 	mpGlobalScope = CreateGeneric<Scope>();
 	InitConstants();
 	RegisterSpecials();
+	mStop = false;
 }
 
 
@@ -130,6 +132,11 @@ void Interpreter::RegisterSpecials()
 	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Time>() ) );
 	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Math>() ) );
 	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::LangOpts>() ) );
+	
+	//Register build in functions
+	mpGlobalScope->Register( CreateGeneric<ImportOperator>() );
+	mpGlobalScope->Register( CreateGeneric<UnImportOperator>() );
+	mpGlobalScope->Register( CreateGeneric<ReturnOperator>() );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -139,6 +146,14 @@ void Interpreter::RegisterSpecials()
 ScopePtr Interpreter::GetCurrentScope()
 {
 	return mpCurrentScope;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Returns a pointer the current static scope.
+*/
+ScopePtr Interpreter::GetCurrentStaticScope()
+{
+	return mpCurrentStaticScope;
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -500,7 +515,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	
 	bool FoundStatic = false;
     	
-    while( true )
+    while( !mStop )
 	{
 		
 		//-----------------------------------
@@ -595,10 +610,18 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 			//Block Declarations
 			if( WordBuffer.size() == 1 && WordBuffer[0].Type == WORDTYPE_IDENTIFIER )
 			{
-				//Right now, it isn't very strict.  A block can belong to anything.
-				//In the future it may be a good idea to force it to belong to a character.
-
-				MakeScopeObject( SCOPEOBJ_BLOCK, WordBuffer[0].String );	
+				Word TmpWord = MySource.GetNextWord();
+				if( TmpWord.Type == WORDTYPE_DOCSTRING )
+				{
+					ScopeObjectPtr pNewBlock =
+						MakeScopeObject( SCOPEOBJ_BLOCK, WordBuffer[0].String );
+					pNewBlock->CastToScope()->GetDocString() = TmpWord.String;		
+				}
+				else
+				{
+					MySource.PutBackWord();
+					MakeScopeObject( SCOPEOBJ_BLOCK, WordBuffer[0].String );
+				}
 				
 
 				//clear & continue
@@ -1206,3 +1229,13 @@ void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
 
 	mpCurrentScope->Import( pTmpObj );
 }
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Tells the interpreter to return from the block when it finishes the
+ 		expression its on.
+*/
+void Interpreter::Stop()
+{
+	mStop = true;	
+}
+

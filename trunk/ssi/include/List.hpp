@@ -76,10 +76,14 @@ protected:
 
 private:
 	void RegisterPredefinedVars();
+	bool mPopCreated, mPushCreated, mRemoveAllCreated,
+		 mRemoveCreated, mLengthCreated;
+	
+	
+	
 	unsigned int DetermineRealIndex( const VariableBase& Index );
 	
 	VariablePtr MakeVariable() const;
-	
 
 	ListType mList;
 	

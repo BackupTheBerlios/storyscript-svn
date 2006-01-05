@@ -187,6 +187,7 @@ protected:
 
 private:
 	void RegisterPredefinedVars();
+	bool mPrecisionVarCreated;
 
 	VarType mCurrentType;
 

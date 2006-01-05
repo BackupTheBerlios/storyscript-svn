@@ -136,7 +136,7 @@ Word ReaderSource::GetNextWord()
 		}
 	}
 	//STRING LITERAL
-	else if( TempChar == '\"' || TempChar == '`' )
+	else if( TempChar == '\"' || TempChar == '`' || TempChar == '\'' )
 	{
 		CHAR TerminalChar = TempChar;
 		
@@ -172,6 +172,10 @@ Word ReaderSource::GetNextWord()
 						QueuedWords.push( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Right ) );
 						
 						return PushWord( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Left ) );						
+					}
+					else if( TerminalChar = '\'' )
+					{
+						return PushWord( Word( TempString, WORDTYPE_DOCSTRING ) );						
 					}
 					else return PushWord( Word( TempString, WORDTYPE_STRINGLITERAL ) );
 				}

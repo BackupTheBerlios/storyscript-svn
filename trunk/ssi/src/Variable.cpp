@@ -411,7 +411,7 @@ VarType Variable::mTypeConversionTable[VARTYPE_STRING+1][VARTYPE_STRING+1] =
 */
 void Variable::RegisterPredefinedVars()
 {
-	//All predefines are now handled by GetScopeObjectHook
+	mPrecisionVarCreated = false;
 }
 
 
@@ -421,10 +421,8 @@ void Variable::RegisterPredefinedVars()
 */
 ScopeObjectPtr Variable::GetScopeObjectHook( const STRING& Name )
 {
-	static bool PrecisionVarCreated = false;
-	
-	if( !PrecisionVarCreated && Name == LC_Precision ){
-		PrecisionVarCreated = true;
+	if( !mPrecisionVarCreated && Name == LC_Precision ){
+		mPrecisionVarCreated = true;
 		return Register( ScopeObjectPtr( new PrecisionVar( LC_Precision, *this, true ) ) );
 	}
 	else return VariableBase::GetScopeObjectHook( Name );

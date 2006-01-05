@@ -710,8 +710,6 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 
 	if( FirstRun )
 	{
-		PrecedenceList[EXTRA_UNOP_Import]             = 0;
-
 		PrecedenceList[EXTRA_BINOP_Assign]            = 1;
 		PrecedenceList[EXTRA_BINOP_MinusAssign]       = 2;
 		PrecedenceList[EXTRA_BINOP_PlusAssign]        = 3;
@@ -1036,19 +1034,6 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 	//- (negate)
 	else if( Op == EXTRA_UNOP_Negative ){
 		return pRight->op_neg();
-	}
-	//use (import)
-	else if( Op == EXTRA_UNOP_Import )
-	{
-		//Identifiers will always start with ':'
-		if( pRight->GetStringData()[0] == LC_ScopeResolution[0] )		{
-			Interpreter::Instance().ImportIntoCurrentScope(	pRight->GetStringData() );
-		}
-		else		{
-			Interpreter::Instance().ImportFileIntoCurrentScope( pRight->GetStringData() );								
-		}			
-					
-		return pRight;
 	}
 	//Declarations
 	else if( Op == EXTRA_UNOP_Var ||

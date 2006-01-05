@@ -28,6 +28,8 @@ class SS_API Scope : public ScopeObject
 public:
 	SS_FRIENDIFY_GENERIC_CREATOR(Scope);
 	virtual ~Scope() {};
+	
+	STRING& GetDocString();
 
 	virtual void AcceptVisitor( ScopeObjectVisitor& );
 
@@ -63,15 +65,11 @@ private:
 	void RegisterPredefinedVars();
 
 	Scope& GetGlobalScope();
-
-	
-
-	//typedef __gnu_cxx::hash_map< SS::STRING, ScopeObjectPtr > ScopeListType;
-	
+		
 	ScopeListType mList;
-	
 	std::vector< ScopePtr > mImportedScopes;
-
+	
+	bool mNameCreated, mFullNameCreated, mUniqueIDCreated, mDocStringCreated;
 };
 
 

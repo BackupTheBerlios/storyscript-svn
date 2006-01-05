@@ -372,15 +372,8 @@ VariableBasePtr List::Length() const{
 */
 void List::RegisterPredefinedVars()
 {
-	/*
-	bool WasConst = IsConst();
-	SetConst( false );
-
-	
-	
-
-	SetConst( WasConst );
-	*/
+	mPopCreated = mPushCreated = mRemoveAllCreated =
+		 mRemoveCreated = mLengthCreated = false;
 }
 
 
@@ -448,30 +441,24 @@ const VariablePtr List::CastToVariable() const{
 */
 ScopeObjectPtr List::GetScopeObjectHook( const STRING& Name )
 {
-	static bool PopCreated = false,
-				PushCreated = false,
-				RemoveAllCreated = false,
-				RemoveCreated = false,
-				LengthCreated = false;
-		
-	if( !PopCreated && Name == LC_LIST_Pop ){
-		PopCreated = true;
+	if( !mPopCreated && Name == LC_LIST_Pop ){
+		mPopCreated = true;
 		return Register( ScopeObjectPtr( new PopOp( *this ) ) );
 	}
-	else if( !PushCreated && Name == LC_LIST_Push ){
-		PushCreated = true;
+	else if( !mPushCreated && Name == LC_LIST_Push ){
+		mPushCreated = true;
 		return Register( ScopeObjectPtr( new PushOp( *this ) ) );
 	}
-	else if( !RemoveAllCreated && Name == LC_LIST_RemoveAll ){
-		RemoveAllCreated = true;
+	else if( !mRemoveAllCreated && Name == LC_LIST_RemoveAll ){
+		mRemoveAllCreated = true;
 		return Register( ScopeObjectPtr( new RemoveAllOp( *this ) ) );
 	}
-	else if( !RemoveCreated && Name == LC_LIST_Remove ){
-		RemoveCreated = true;
+	else if( !mRemoveCreated && Name == LC_LIST_Remove ){
+		mRemoveCreated = true;
 		return Register( ScopeObjectPtr( new RemoveOp( *this ) ) );
 	}
-	else if( !LengthCreated && Name == LC_Length ){
-		LengthCreated = true;
+	else if( !mLengthCreated && Name == LC_Length ){
+		mLengthCreated = true;
 		return Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
 	}	
 	else return VariableBase::GetScopeObjectHook( Name );	

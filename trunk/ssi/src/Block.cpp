@@ -165,5 +165,13 @@ const BlockPtr Block::CastToBlock() const{
 }
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Again, a shortcut for the users.
+*/
+STRING& Block::GetOutString()
+{
+	return GetScopeObject( LC_Output )->CastToVariable()->GetActualStringData();
+}
+
 
 

@@ -34,19 +34,10 @@ protected:
 
 public:
 	void AcceptVisitor( ScopeObjectVisitor& );
-	
-	
 	VariableBasePtr Operate( VariableBasePtr );
-
-	//The following four functions are to get rid of the compiler warnings
-	/*
-	ScopePtr GetScopePtr() { return Scope::GetScopePtr(); }
-	const ScopePtr GetScopePtr() const { return Scope::GetScopePtr(); }
-
-	VariableBasePtr GetVariableBasePtr() { return VariableBase::GetVariableBasePtr(); }
-	const VariableBasePtr GetVariableBasePtr() const { return VariableBase::GetVariableBasePtr(); }
-	*/
 	
+	STRING& GetOutString();
+
 	bool HasBeenSaid() const;
 	void SetBeenSaid( bool flag = true );
 	

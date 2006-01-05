@@ -24,6 +24,7 @@ using namespace SS;
 VariablePtr SS::gpNANConst;
 VariablePtr SS::gpInfinityConst;
 VariablePtr SS::gpNegInfinityConst;
+VariablePtr SS::gpNewLineConst;
 
 
 
@@ -86,6 +87,7 @@ const SS::STRING LC_Input = TXT("in");
 const SS::STRING LC_Output = TXT("out");
 const SS::STRING LC_NextBlock = TXT("next");
 const SS::STRING LC_UniqueID = TXT("_id_");
+const SS::STRING LC_Doc = TXT("doc");
 
 //Control Statements
 const SS::STRING LC_While = TXT("while");
@@ -138,6 +140,8 @@ const SS::STRING LC_Not1   = TXT("not");
 const SS::STRING LC_Not2   = TXT("!");
 const SS::STRING LC_Negate = TXT("-");
 const SS::STRING LC_Import = TXT("use");
+const SS::STRING LC_UnImport = TXT("unuse");
+const SS::STRING LC_Return = TXT("return");
 
 //Misc.
 const SS::STRING LC_Terminal = TXT(";");
@@ -196,6 +200,8 @@ void SS::InitConstants(){
 	gpNegInfinityConst->ForceConversion( VARTYPE_NUM );
 	gpNegInfinityConst->SetConst();
 	
+	gpNewLineConst = CreateVariable<Variable>( TXT("endl"), true, true, STRING(TXT("\n")) );
+	
 
 	lconv* pLconv = localeconv();
 
@@ -239,7 +245,6 @@ void SS::InitConstants(){
 	gBinaryOperatorMap[ LC_LogicalOr ]         = EXTRA_BINOP_LogicalOr;
 	gBinaryOperatorMap[ LC_LogicalOrAlt ]      = EXTRA_BINOP_LogicalOr;
 
-	gUnaryOperatorMap[ LC_Import ]    = EXTRA_UNOP_Import;
 	gUnaryOperatorMap[ LC_Not1 ]      = EXTRA_UNOP_Not;
 	gUnaryOperatorMap[ LC_Not2 ]      = EXTRA_UNOP_Not;
 	gUnaryOperatorMap[ LC_Negate ]    = EXTRA_UNOP_Negative;
@@ -280,7 +285,6 @@ void SS::InitConstants(){
 	gBinaryOperatorReverseMap[ EXTRA_BINOP_LogicalOr ]         = LC_LogicalOr;
 	gBinaryOperatorReverseMap[ EXTRA_BINOP_LogicalOr ]         = LC_LogicalOrAlt;
 
-	gUnaryOperatorReverseMap[ EXTRA_UNOP_Import ]   = LC_Import;
 	gUnaryOperatorReverseMap[ EXTRA_UNOP_Not ]      = LC_Not1;
 	gUnaryOperatorReverseMap[ EXTRA_UNOP_Negative ] = LC_Negate;
 	gUnaryOperatorReverseMap[ EXTRA_UNOP_Var ]      = LC_Var;

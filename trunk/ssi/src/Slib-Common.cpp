@@ -47,6 +47,7 @@ void Common::RegisterPredefined()
 	Register( ScopeObjectPtr( gpNANConst ) );
 	Register( ScopeObjectPtr( gpInfinityConst ) );
 	Register( ScopeObjectPtr( gpNegInfinityConst ) );
+	Register( ScopeObjectPtr( gpNewLineConst ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

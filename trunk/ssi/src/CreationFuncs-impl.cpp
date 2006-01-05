@@ -18,6 +18,8 @@ NOTES: Implementation of various creation function templates enumerated here.
 #include "Slib-List.hpp"
 #include "Slib-Math.hpp"
 
+#include "BuiltInFunctions.hpp"
+
 
 #include "CreationFuncs.cpp"
 
@@ -44,6 +46,9 @@ Implement_CreateGeneric_NoArgs(SLib::List);
 Implement_CreateGeneric_NoArgs(SLib::Math);
 Implement_CreateGeneric_NoArgs(SLib::Time);
 Implement_CreateGeneric_NoArgs(SLib::LangOpts);
+Implement_CreateGeneric_NoArgs(ImportOperator);
+Implement_CreateGeneric_NoArgs(UnImportOperator);
+Implement_CreateGeneric_NoArgs(ReturnOperator);
 
 Implement_CreateVariable(Variable);
 

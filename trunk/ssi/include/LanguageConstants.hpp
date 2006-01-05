@@ -50,7 +50,7 @@ private:
 extern VariablePtr gpNANConst;
 extern VariablePtr gpInfinityConst;
 extern VariablePtr gpNegInfinityConst;
-//extern VariablePtr 
+extern VariablePtr gpNewLineConst;
 
 
 //Call this once to set up all the locale info and such
@@ -76,7 +76,8 @@ enum WordType
 	WORDTYPE_BRACKET,
 	WORDTYPE_PARENTHESIS,
 	WORDTYPE_CONTROL,
-	WORDTYPE_TERMINAL
+	WORDTYPE_TERMINAL,
+	WORDTYPE_DOCSTRING
 };
 
 /*
@@ -118,7 +119,6 @@ enum ExtraDesc
 
 	EXTRA_UNOP_GenericUnaryOperator,
 	EXTRA_UNOP_Not,
-	EXTRA_UNOP_Import,
 	EXTRA_UNOP_Negative,
 	EXTRA_UNOP_Var,
 	EXTRA_UNOP_Character,
@@ -170,6 +170,7 @@ extern const SS::STRING LC_Input;
 SS_API extern const SS::STRING LC_Output;
 extern const SS::STRING LC_NextBlock;
 extern const SS::STRING LC_UniqueID;
+extern const SS::STRING LC_Doc;
 
 //Control Statements
 extern const SS::STRING LC_While;
@@ -222,6 +223,8 @@ extern const SS::STRING LC_Not1;
 extern const SS::STRING LC_Not2;
 extern const SS::STRING LC_Negate;
 extern const SS::STRING LC_Import;
+extern const SS::STRING LC_UnImport;
+extern const SS::STRING LC_Return;
 
 //Misc.
 extern const SS::STRING LC_Terminal;

@@ -26,6 +26,7 @@ NOTES: Contains declarations for the Interprer class which handles the bulk
 #include "Bookmark.hpp"
 #include "ReaderSourceFile.hpp"
 
+
 #include <map>
 
 namespace SS
@@ -50,6 +51,7 @@ public:
 	
 	~Interpreter();
 	
+	void Stop();
 
 	bool IsVerbose() const;
 	void SetVerbose( bool flag = true );
@@ -65,6 +67,7 @@ public:
 
 	Bookmark GetCurrentPos();
 	ScopePtr GetCurrentScope();
+	ScopePtr GetCurrentStaticScope();
 	void SetPos( Bookmark& );
 
     BlockPtr GetFirstBlock();	
@@ -139,6 +142,8 @@ private:
 	ScopePtr mpCurrentStaticScope;
 	
 	BlockPtr mpEndBlock;
+	
+	bool mStop;
 };
 
 }

@@ -52,36 +52,7 @@ Scope::Scope( const STRING& Name,
 */
 void Scope::RegisterPredefinedVars()
 {
-	/*
-	//TThis check is very, very important.
-	//Without it there will be an infinite loop that will cause a very quick
-	//and very hard to track down stack overflow.
-	//Unnamed variables and other __name__ variables don't have this value which
-	//breaks the cycle.
-	static bool FirstRun = true;
-	static std::vector<STRING> BanList;
-
-	if( FirstRun ){
-		BanList.push_back( LC_Name );
-		BanList.push_back( LC_FullName );
-		BanList.push_back( LC_UniqueID );
-		FirstRun = false;
-	}
-	
-	unsigned int i;
-	for( i = 0; i < BanList.size(); i++ ){
-		if( mName == BanList[i] ) return;
-	}
-	
-	if( mName.empty() ) return;
-
-	bool WasConst = mConst;
-	mConst = false;
-
-	
-		
-	mConst = WasConst;
-	*/
+	mNameCreated = mFullNameCreated = mUniqueIDCreated = mDocStringCreated = false;
 }
 
 
@@ -286,8 +257,8 @@ ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 	}
 	
 	//First check the hooks, so objects can take care of any business.
-	ScopeObjectPtr pPotentialObj;
-	if( pPotentialObj = GetScopeObjectHook( Identifier ) ) return pPotentialObj;
+	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( Identifier );
+	if( pPotentialObj ) return pPotentialObj;
 	
 	ScopeListType::iterator i;
 	
@@ -423,31 +394,42 @@ Scope& Scope::GetGlobalScope()
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: 
+ NOTES: Intercept identifier lookups to spring object into existance.
 */
 ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 {
-	static bool NameCreated = false,
-				FullNameCreated = false,
-				UniqueIDCreated = false;
-				
-	if( !NameCreated && Name == LC_Name ){
-		NameCreated = true;	
+	if( !mNameCreated && Name == LC_Name )
+	{
+		mNameCreated = true;	
 		return Register( ScopeObjectPtr( new BoundStringVar( LC_Name, mName, true, true ) ) );
 	}
-	else if( !FullNameCreated && Name == LC_FullName ){
-		FullNameCreated = true;
+	else if( !mFullNameCreated && Name == LC_FullName )
+	{
+		mFullNameCreated = true;
 		return Register( ScopeObjectPtr( new FullNameVar( LC_FullName, *this, true, true ) ) );
-		
 	}
-	else if( !UniqueIDCreated && Name == LC_UniqueID ){
-		UniqueIDCreated = true;
+	else if( !mUniqueIDCreated && Name == LC_UniqueID )
+	{
+		mUniqueIDCreated = true;
 		return Register( ScopeObjectPtr( new BoundNumVar( LC_UniqueID, mUniqueID, true, false ) ) );
+	}
+	else if( !mDocStringCreated && Name == LC_Doc )
+	{
+		mDocStringCreated = true;
+		ScopeObjectPtr Tmp = Register( ScopeObjectPtr( CreateVariable<Variable>( LC_Doc, true, false, STRING() ) ) );
+		return Tmp;
 	}
 	else return ScopeObjectPtr();
 	
 }
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Just a handy shortcut for the user.
+*/
+STRING& Scope::GetDocString()
+{
+	return GetScopeObject( LC_Doc )->CastToVariable()->GetActualStringData();
+}
 
 
