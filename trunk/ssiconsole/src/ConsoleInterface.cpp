@@ -106,7 +106,12 @@ unsigned int ConsoleInterface::PresentChoice( const std::vector<SS::BlockPtr>& C
 		CON << i;
 		CON << TXT(")  ");
 
-		CON << Choices[i]->GetFullName();
+		SS::STRING tmp;
+		if( (tmp = Choices[i]->GetDocString()).empty() ){
+			CON << Choices[i]->GetFullName();
+		}
+		else CON << tmp;
+		
 		CON << TXT("\n");
 	}
 
