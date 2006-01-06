@@ -3,7 +3,7 @@
 
 <cdtproject id="org.eclipse.cdt.make.core.make">
 <extension point="org.eclipse.cdt.core.BinaryParser" id="org.eclipse.cdt.core.ELF"/>
-<extension point="org.eclipse.cdt.core.CIndexer" id="org.eclipse.cdt.core.domsourceindexer"/>
+<extension point="org.eclipse.cdt.core.CIndexer" id="org.eclipse.cdt.core.nullindexer"/>
 <data>
 <item id="scannerConfiguration">
 <autodiscovery enabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile" problemReportingEnabled="true"/>
@@ -49,7 +49,6 @@
 </profile>
 </item>
 <item id="org.eclipse.cdt.core.pathentry">
-<pathentry kind="inc" path="" include="include" system="true" base-path="ssi"/>
 <pathentry kind="src" path="" excluding="win32/stdafx.h"/>
 <pathentry kind="out" path=""/>
 <pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>

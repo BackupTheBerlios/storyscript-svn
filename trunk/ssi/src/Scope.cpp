@@ -242,55 +242,17 @@ BlockPtr Scope::GetNextBlock( BlockPtr pBlock )
 
 ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
 {
-	//Extract the first part of the identifier (maybe there just is one part).
-	STRING FirstPart;
-	STRING RemainingPart;
-
-	FirstPart = BreakOffFirstID( Identifier, RemainingPart );
-
-
-	//If the first part is empty, and the remaining part is not
-	//then it must have started with a :, and therefore be in the global scope.
-	if( FirstPart.empty() && !RemainingPart.empty() )
+	TokenizedID TokenList;
+	SplitUpID( Identifier, TokenList );
+	
+	if( TokenList[0]->empty() )
 	{
-		return GetGlobalScope().GetScopeObject( RemainingPart );
+		return GetGlobalScope().GetScopeObjectInternal( TokenList, 1 );	
 	}
-	
-	//First check the hooks, so objects can take care of any business.
-	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( Identifier );
-	if( pPotentialObj ) return pPotentialObj;
-	
-	ScopeListType::iterator i;
-	
-	if( (i = mList.find(FirstPart)) != mList.end() )
+	else
 	{
-		if( !RemainingPart.empty() ){
-			return (*i).second->CastToScope()->GetScopeObject_NoThrow( RemainingPart );
-		}
-		else return (*i).second;
+		return GetScopeObjectInternal( TokenList, 0 );
 	}
-	
-	
-	//Check the imported scopes
-	const ScopeObjectPtr NULL_SO_PTR;
-	
-		
-	unsigned int j;
-	for( j = 0; j < mImportedScopes.size(); j++ )
-	{
-		if( (pPotentialObj = mImportedScopes[j]->GetScopeObject_NoThrow( FirstPart ))
-			!= NULL_SO_PTR )
-		{
-			if( !RemainingPart.empty() )
-			{
-                return pPotentialObj->CastToScope()->GetScopeObject_NoThrow( RemainingPart );
-			}
-			else return pPotentialObj;
-		}
-	}
-	
-	//Nothing found! 
-	return NULL_SO_PTR;	
 }
 
 
@@ -310,6 +272,87 @@ ScopeObjectPtr Scope::GetScopeObject( const STRING& Identifer )
 		ThrowParserAnomaly( Temp, ANOMALY_IDNOTFOUND );
 	}
 }
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: This is where all the actual work is done.
+*/
+ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsigned long Level /*= 0*/ )
+{
+	const ScopeObjectPtr NULL_SO_PTR;
+	if( Level >= TokenList.size() ) return NULL_SO_PTR;
+	
+	
+	/*
+		This object's hook gets called in case the implementer wants
+		to spring something into existance or do some other voodoo.
+	*/
+	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( *TokenList[Level] );
+	if( pPotentialObj ) return pPotentialObj;
+	
+	
+	/*
+		Ask the map if its seen the id and pass along the rest of it if necessary.
+	*/
+	ScopeListType::iterator i;
+	
+	if( (i = mList.find(*TokenList[Level])) != mList.end() )
+	{
+		if( TokenList.size() > Level+1 ){
+			return (*i).second->CastToScope()->GetScopeObjectInternal( TokenList, Level+1 );
+		}
+		else return (*i).second;
+	}
+	
+	
+	/*
+		No hits yet, lets check the imported scopes.
+	*/	
+	unsigned int j;
+	for( j = 0; j < mImportedScopes.size(); j++ )
+	{
+		if( (pPotentialObj = mImportedScopes[j]->GetScopeObjectInternal( TokenList, Level )) != NULL_SO_PTR )
+		{
+			return pPotentialObj;
+		}
+	}
+	
+	//Nothing found!! Damn!
+	return NULL_SO_PTR;	
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Splits a compound identifier (eg. foo:bar:doc) into seperate identifers.
+*/
+void Scope::SplitUpID( const STRING& ID, TokenizedID& TokenList )
+{
+	STRING::const_iterator last_i;
+	STRING::const_iterator i;
+	for( last_i = i = ID.begin(); i != ID.end(); i++ )
+	{
+		if( 	*i == LC_ScopeResolution[0] )
+		{
+			TokenList.push_back( StringPtr( new STRING( last_i, i ) ) );
+			
+			last_i = i + 1;
+			continue;	
+		}
+	}
+	
+	//If this wasn't compound at all
+	if( TokenList.size() == 0 )
+	{
+		TokenList.push_back( StringPtr( &ID, null_deleter() ) );
+	}
+	//Grab the last one.
+	else if( last_i != i )
+	{
+		TokenList.push_back( StringPtr( new STRING( last_i, i ) ) );
+	}
+}
+
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

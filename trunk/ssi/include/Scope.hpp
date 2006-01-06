@@ -63,6 +63,12 @@ protected:
 
 private:
 	void RegisterPredefinedVars();
+	
+	typedef boost::shared_ptr<const STRING> StringPtr;
+	typedef std::vector<StringPtr> TokenizedID;
+	
+	ScopeObjectPtr GetScopeObjectInternal( const TokenizedID& TokenList, unsigned long Level = 0 );
+	void SplitUpID( const STRING& ID, TokenizedID& TokenizedID );
 
 	Scope& GetGlobalScope();
 		

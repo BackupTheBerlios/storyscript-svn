@@ -28,6 +28,9 @@ struct SS_API Bookmark
 			  ScopePtr CurrentStaticScope = ScopePtr() );
 
 	bool IsVoid() const;
+	
+	bool operator==( const Bookmark& ) const;
+	Bookmark& operator=( const Bookmark& );
 
 	SS::STRING FileName;
 	ReaderPos Position;

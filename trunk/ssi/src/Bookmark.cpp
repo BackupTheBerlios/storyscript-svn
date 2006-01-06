@@ -40,3 +40,33 @@ bool Bookmark::IsVoid() const
 	else return false;	
 }
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Equality comparison
+*/
+bool Bookmark::operator==( const Bookmark& Other ) const
+{
+	if( FileName == Other.FileName &&
+		Position == Other.Position &&
+		Line     == Other.Line &&
+		CurrentScope       == Other.CurrentScope &&
+		CurrentStaticScope == Other.CurrentStaticScope )	
+	{
+		return true;
+	}
+	else return false;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Assignment operator
+*/
+Bookmark& Bookmark::operator=( const Bookmark& Other )
+{
+	FileName = Other.FileName;
+	Position = Other.Position;
+	Line = Other.Line;
+	CurrentScope = Other.CurrentScope;
+	CurrentStaticScope = Other.CurrentStaticScope;
+	
+	return *this;	
+}
+

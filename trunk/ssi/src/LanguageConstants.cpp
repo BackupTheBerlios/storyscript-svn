@@ -252,8 +252,10 @@ void SS::InitConstants(){
 	gUnaryOperatorMap[ LC_List ]      = EXTRA_UNOP_List;
 	gUnaryOperatorMap[ LC_Character ] = EXTRA_UNOP_Character;
 	gUnaryOperatorMap[ LC_Player ]    = EXTRA_UNOP_Player;
+	gUnaryOperatorMap[ LC_ScopeResolution ] = EXTRA_UNOP_ScopeResolution;
 
 	gAmbigOperatorMap[ LC_Negate ] = EXTRA_AMBIGOP_Minus;
+	gAmbigOperatorMap[ LC_ScopeResolution ] = EXTRA_AMBIGOP_ScopeResolution;
 
 
 	//Build Reverse-Lookups - This is mainly just for outputting human readable errors.
@@ -291,8 +293,10 @@ void SS::InitConstants(){
 	gUnaryOperatorReverseMap[ EXTRA_UNOP_List ]     = LC_List;
 	gUnaryOperatorReverseMap[ EXTRA_UNOP_Player ]   = LC_Player;
 	gUnaryOperatorReverseMap[ EXTRA_UNOP_Character] = LC_Character;
+	gUnaryOperatorReverseMap[ EXTRA_UNOP_ScopeResolution ] = LC_ScopeResolution;
 
 	gAmbigOperatorReverseMap[ EXTRA_AMBIGOP_Minus ] = LC_Negate;
+	gAmbigOperatorReverseMap[ EXTRA_AMBIGOP_ScopeResolution ] = LC_ScopeResolution;
 
 
 	HasBeenCalled = true;

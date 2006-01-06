@@ -56,7 +56,7 @@ Word ReaderSource::GetNextWord()
 	{
 		Word ReturnWord = mBuffer[ mBufferPos ];
 		mBufferPos++;
-		UpdateCurrentLine();
+		//UpdateCurrentLine();
 		return ReturnWord;		
 	}
 
@@ -74,7 +74,7 @@ Word ReaderSource::GetNextWord()
 	STRING TempString;
 
 	FastForward();
-	UpdateCurrentLine();
+	//UpdateCurrentLine();
 	
 	TempChar = Get();
 
@@ -173,7 +173,7 @@ Word ReaderSource::GetNextWord()
 						
 						return PushWord( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Left ) );						
 					}
-					else if( TerminalChar = '\'' )
+					else if( TerminalChar == '\'' )
 					{
 						return PushWord( Word( TempString, WORDTYPE_DOCSTRING ) );						
 					}
@@ -238,7 +238,7 @@ Word ReaderSource::GetNextWord()
 		return PushWord( Word( TempString, WORDTYPE_FLOATLITERAL ) );
 	}
 	//IDENTIFIER OR KEYWORD, OR SPECIAL CASE
-	else if( IsAlpha(TempChar) || TempChar == '_' )
+	else if( IsAlpha(TempChar) || TempChar == '_' ) 
 	{
 		TempString += TempChar;
 
@@ -337,8 +337,7 @@ Word ReaderSource::GetNextWord()
 	{
 		TempString += TempChar;
 
-
-		//Special case for the bizarre list operators
+		//SSPECIAL CASE: for the bizarre list operators
 		if( (TempChar == '+' || TempChar == '-') &&
 				   Peek() == '[' )
 		{
@@ -405,7 +404,6 @@ Word ReaderSource::GetNextWord()
 void ReaderSource::PutBackWord()
 {
 	mBufferPos--;
-	UpdateCurrentLine();
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -440,7 +438,13 @@ void ReaderSource::GotoLine( unsigned long LineNumber )
 		return;
 	}
 	
-	while( LineNumber > mCurrentLine ) GetNextWord();
+	UpdateCurrentLine();
+	
+	while( LineNumber > mCurrentLine )
+	{
+		UpdateCurrentLine();
+		GetNextWord();
+	}
 }
 
 
@@ -458,6 +462,8 @@ ReaderPos ReaderSource::GetPos() const
 */
 unsigned long ReaderSource::GetLineNumber() const
 {
+	UpdateCurrentLine();
+	
 	/*
 		If we are at the beginning of a new line, we just report it as
 		the previous line.  Otherwise it will report the wrong line
@@ -647,13 +653,8 @@ const Word& ReaderSource::PushWord( const Word& W )
  NOTES: After mBufferPos is updated, this function is called to figure out
  		what the current line is.
 */
-void ReaderSource::UpdateCurrentLine()
+void ReaderSource::UpdateCurrentLine() const
 {
-	//FOR DEBUGGING PURPOSES
-	size_t SIZE = mLinePositions.size();
-	unsigned long First = mLinePositions[ mLinePositions.size() - 1 ];
-	unsigned long Last = mLinePositions[ 0 ];
-	
 	//Go down a line
 	while( mCurrentLine != 0 &&
 		   mBufferPos < mLinePositions[mCurrentLine] )

@@ -28,33 +28,6 @@ const unsigned long BAD_PRECEDENCE = ~0U;
 //std::vector<VariableBasePtr> Expression::mUnnamedVariables;
 
 
-////////////////////////////////////////////////////////////////////ExtendedWord
-
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Constructors
-*/
-ExtendedWord::ExtendedWord()
-{
-}
-
-ExtendedWord::ExtendedWord( const STRING& String, WordType Type,
-							ExtraDesc Extra /*= EXTRA_NULL*/     )
-: Word( String, Type, Extra )
-{}
-
-
-ExtendedWord::ExtendedWord( WordType Type, ExtraDesc Extra /*= EXTRA_NULL*/ )
-: Word( Type, Extra )
-{}
-
-ExtendedWord::ExtendedWord( const Word& BasicWord )
-: Word( BasicWord )
-{}
-
-
-
-
 //////////////////////////////////////////////////////////////////////Expression
 
 
@@ -114,8 +87,7 @@ private:
 */
 Expression::Expression()
 	: mStatic(false), mpWordList( new WordList ),
-      mLowerBounds(0), mUpperBounds(~0U),
-      mIdentifiersCached( true )
+      mLowerBounds(0), mUpperBounds(~0U)
 {
 }
 
@@ -124,8 +96,7 @@ Expression::Expression( const Expression& OtherExp,
 						unsigned int LowerBounds /*=0*/,
 						unsigned int UpperBounds /*=~0U*/ )
 	: mStatic(OtherExp.mStatic), mpWordList( OtherExp.mpWordList ),
- 	  mLowerBounds(LowerBounds), mUpperBounds(UpperBounds),
- 	  mIdentifiersCached( OtherExp.mIdentifiersCached )
+ 	  mLowerBounds(LowerBounds), mUpperBounds(UpperBounds)
 {
 	if( UpperBounds < LowerBounds )
 	{
@@ -146,7 +117,6 @@ Expression& Expression::operator=( const Expression& OtherExp )
 	mLowerBounds = OtherExp.mLowerBounds;
 	mUpperBounds = OtherExp.mUpperBounds;
 	mStatic = OtherExp.mStatic;
-	mIdentifiersCached = OtherExp.mIdentifiersCached;
 	return *this;
 }
 
@@ -189,16 +159,12 @@ void Expression::clear()
 	mUpperBounds = ~0U;
 
 	mStatic = false;	
-	
-	mIdentifiersCached = true;	
 }
 
 void Expression::push_back( const Word& SomeWord )
 {
 	RevertToLocalCopy();
 	mpWordList->push_back( SomeWord );
-	
-	mIdentifiersCached = false;
 }
 
 void Expression::pop_back()
@@ -277,7 +243,7 @@ void Expression::RevertToLocalCopy()
 */
 VariableBasePtr Expression::Evaluate() const
 {
-	return InternalEvaluate();
+	return InternalEvaluate(true);
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MONOLITHIC~FUNCTION~~~~~~
@@ -291,7 +257,7 @@ VariableBasePtr Expression::Evaluate() const
 		OUTPUT:
 		Returns the result of the expression.
 */
-VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
+VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCachePtr pCachedObjects /*= ObjectCachePtr()*/ ) const
 {
 	/*
 		Take care of any business before we get started.
@@ -304,17 +270,14 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 			ANOMALY_PANIC );
 	}
 	
-	if( TopLevel )
+	if( TopLevel ) CheckSyntax();
+	
+	if( !pCachedObjects )
 	{
-		 CheckSyntax();
-		 CacheIdentifierObjects();
-		 mIdentifiersCached = true;		 
+		pCachedObjects.reset( new ObjectCache );
+		CacheIdentifierObjects( pCachedObjects );
 	}
-	else if( !mIdentifiersCached )
-	{
-		CacheIdentifierObjects();
-		mIdentifiersCached = true;
-	}
+	
 
     StripOutlyingParenthesis();
     const unsigned long ExpressionSize = size();
@@ -328,10 +291,10 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 	
 	if( ExpressionSize == 1 )
 	{
-		const ExtendedWord& FirstWord = GetWord(0);
+		const Word& FirstWord = GetWord(0);
 		
 		if( FirstWord.Type == WORDTYPE_IDENTIFIER ) {
-			return FirstWord.mCachedObject->CastToVariableBase();
+			return (*pCachedObjects)[GetAbsoluteIndex(0)]->CastToVariableBase();
 		}
 		else if( FirstWord.Extra == EXTRA_BOOLLITERAL_True ) {
 			return CreateVariable<Variable>( UNNAMMED, false, true, true );
@@ -365,7 +328,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 		Determine the low precedence operator
 	*/
 	
-	unsigned long LowPrecedenceOpIndex = CalculateLowPrecedenceOperator();
+	unsigned long LowPrecedenceOpIndex = CalculateLowPrecedenceOperator(pCachedObjects);
 	const ExtraDesc& LowPrecedenceOp = GetWord( LowPrecedenceOpIndex ).Extra;
 	//Wow that was easy =)
 	
@@ -409,7 +372,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 	if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr ||
 		LowPrecedenceOp == EXTRA_BINOP_LogicalAnd )
 	{
-		pLeftVar =	Left.InternalEvaluate( false ); 		
+		pLeftVar =	Left.InternalEvaluate( false, pCachedObjects ); 		
 		
 		if( LowPrecedenceOp == EXTRA_BINOP_LogicalOr && pLeftVar->GetBoolData() == true ){
 			return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, true );
@@ -429,7 +392,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 		Evaluate the right side expression.
 	*/
 	if( !Right.empty() ) {
-		pRightVar = Right.InternalEvaluate( false );
+		pRightVar = Right.InternalEvaluate( false, pCachedObjects );
 			
 	}
 	//Somehow a trailing operator got flagged as the low precedence op.
@@ -445,11 +408,16 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 	*/
 	if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_IDENTIFIER )
 	{
+		//It may be necessary to use this version for synax like "(SSMath):sin .5"
+		/*
 		OperatorPtr pOp = 
 			Interpreter::Instance().GetScopeObject( GetWord( LowPrecedenceOpIndex ).String )->CastToOperator();
+		*/
+		
+		OperatorPtr pOp = (*pCachedObjects)[ GetAbsoluteIndex(LowPrecedenceOpIndex) ]->CastToOperator();
 		
 		VariableBasePtr ReturnVal = pOp->Operate( pRightVar );
-		if( !Left.empty() ) Left.InternalEvaluate(false);
+		if( !Left.empty() ) Left.InternalEvaluate( false, pCachedObjects );
 		
 		return ReturnVal;
 	}
@@ -461,7 +429,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 	else if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_UNARYOPERATOR )
 	{
 		VariableBasePtr ReturnVal = EvaluateUnaryOp( GetWord( LowPrecedenceOpIndex ).Extra, pRightVar );
-		if( !Left.empty() ) Left.InternalEvaluate(false);
+		if( !Left.empty() ) Left.InternalEvaluate( false, pCachedObjects );
 		
 		return ReturnVal;
 	}
@@ -472,7 +440,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/ ) const
 	*/
 	if( !Left.empty() ) {
 		if( !pLeftVar ){
-			pLeftVar = Left.InternalEvaluate( false );
+			pLeftVar = Left.InternalEvaluate( false, pCachedObjects );
 		}
 	}
 	//Binary operator without a left operand.
@@ -773,7 +741,7 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Calculates the the precedence order for the whole expression.
 */
-unsigned long Expression::CalculateLowPrecedenceOperator() const
+unsigned long Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache ) const
 {
 	/*
 		Its important to keep track of what the last word was,
@@ -787,25 +755,26 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		OTHER //nothing/other
 	};	
 	
-	if( !mIdentifiersCached ) CacheIdentifierObjects();
 	
-	unsigned long i;
 	unsigned long ParenthesisCount = 0;
 	unsigned long LowPrecedenceOpIndex = BAD_PRECEDENCE;
 	SimpleType LastWordType = OTHER;
 	
-	const ExtendedWord* pCurrentWord;
-	const ExtendedWord* pLowPrecWord;
+	const Word* pCurrentWord;
+	const Word* pLowPrecWord;
 	
-	static ExtendedWord NullExtendedWord;
+	static Word NullWord;
 	
-	const unsigned long ExpressionSize = size();
+	//const unsigned long ExpressionSize = size();
 	
-	for( i = 0; i < ExpressionSize; i++ )
+	//We are using absolute indexes because its faster, and this function is slowing us down.
+	unsigned long i = mLowerBounds;
+	
+	for( ; i < mUpperBounds && i < mpWordList->size(); i++ )
 	{
-		pCurrentWord = &GetWord( i );
-		if( LowPrecedenceOpIndex != BAD_PRECEDENCE ) pLowPrecWord = &GetWord( LowPrecedenceOpIndex );
-		else pLowPrecWord = &NullExtendedWord;
+		pCurrentWord = &(*mpWordList)[ i ];
+		if( LowPrecedenceOpIndex != BAD_PRECEDENCE ) pLowPrecWord = &(*mpWordList)[ LowPrecedenceOpIndex ];
+		else pLowPrecWord = &NullWord;
 		
 		
 		/*
@@ -854,19 +823,19 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 		*/
 		if( pCurrentWord->Type == WORDTYPE_IDENTIFIER )
 		{
-			if( !pCurrentWord->mCachedObject ){
+			if( ! (*pCache)[ i ] ){
 				LastWordType = OPERAND;
 				continue;
 			}
 			
-			ScopeObjectType ObjType = GetScopeObjectType( pCurrentWord->mCachedObject );
+			ScopeObjectType ObjType = GetScopeObjectType( (*pCache)[ i ] );
 			if( ObjType == SCOPEOBJ_OPERATOR || ObjType == SCOPEOBJ_BLOCK )
 			{
 				//The current word is not a function if it is at the end of the expression,
 				//followed by by a binary operator, or followed by a closing parenthesis.
-				if( i == ExpressionSize-1 ||
-					GetWord( i+1 ).Type == WORDTYPE_BINARYOPERATOR ||
-					GetWord( i+1 ).Extra == EXTRA_PARENTHESIS_Right )
+				if( i == mUpperBounds-1 ||
+					(*mpWordList)[ i+1 ].Type == WORDTYPE_BINARYOPERATOR ||
+					(*mpWordList)[ i+1 ].Extra == EXTRA_PARENTHESIS_Right )
 				{
 					LastWordType = OPERAND;
 					continue;
@@ -953,7 +922,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
 	if( LowPrecedenceOpIndex == BAD_PRECEDENCE ){
 		ThrowExpressionAnomaly( TXT("Cannot find an operator in this expression."), ANOMALY_NOOPERATOR );
 	}
-	else return LowPrecedenceOpIndex;
+	else return LowPrecedenceOpIndex - mLowerBounds;
 }
 
 
@@ -961,11 +930,11 @@ unsigned long Expression::CalculateLowPrecedenceOperator() const
  NOTES: These are the equivalent of operator[], but they return ExtendedWord's
  		insted of Words.
 */
-ExtendedWord& Expression::GetWord( unsigned long i ){
+Word& Expression::GetWord( unsigned long i ){
 	return (*mpWordList)[ GetAbsoluteIndex(i) ];
 }
 
-const ExtendedWord& Expression::GetWord( unsigned long i ) const{
+const Word& Expression::GetWord( unsigned long i ) const{
 	return (*mpWordList)[ GetAbsoluteIndex(i) ];
 }
 
@@ -976,31 +945,35 @@ const ExtendedWord& Expression::GetWord( unsigned long i ) const{
  		time spend parsing expressions is due to having to loop up identifiers
  		over and over.
 */
-void Expression::CacheIdentifierObjects() const
+void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 {
 	unsigned long i;
 	
-	const unsigned long ExpressionSize = size();
+	const unsigned long ExpressionSize = mpWordList->size();
 	
 	for( i = 0; i < ExpressionSize; i++ )
 	{
-		if( GetWord(i).Type == WORDTYPE_IDENTIFIER )
+		if( (*mpWordList)[i].Type == WORDTYPE_IDENTIFIER )
 		{
 			//If the identifier comes right after a scope resolution operator (:),
 			//don't even try to get it, because it won't be the one we want.
 			//Just returns a LooseID.				
-			if( i > 0 && GetWord( i-1 ).Extra == EXTRA_BINOP_ScopeResolution )
+			if( i > 0 && (*mpWordList)[ i-1 ].Extra == EXTRA_BINOP_ScopeResolution )
 			{
-				ScopeObjectPtr pTmpPtr( new LooseIdentifier( GetWord(i).String ) );
+				ScopeObjectPtr pTmpPtr( new LooseIdentifier( (*mpWordList)[i].String ) );
 				pTmpPtr->SetSharedPtr( pTmpPtr );
-				GetWord(i).mCachedObject = pTmpPtr;
+				
+				(*pCache)[i] = pTmpPtr;
+				
 				continue;
 			}			
 			
 			
 			try{
-				GetWord(i).mCachedObject =
-				Interpreter::Instance().GetScopeObject( GetWord(i).String );
+				ScopeObjectPtr pTmpPtr =
+				Interpreter::Instance().GetScopeObject( (*mpWordList)[i].String );
+				
+				(*pCache)[i] = pTmpPtr;
 			}
 			catch( ParserAnomaly E )
 			{
@@ -1008,10 +981,10 @@ void Expression::CacheIdentifierObjects() const
 				{
 					//We don't throw an error yet, because this may be a variable/block/character
 					//declaration.  Just create a LooseID and it will get taken care of later.
-					ScopeObjectPtr pTmpPtr( new LooseIdentifier( GetWord(i).String ) );
+					ScopeObjectPtr pTmpPtr( new LooseIdentifier( (*mpWordList)[i].String ) );
 					pTmpPtr->SetSharedPtr( pTmpPtr );
-					GetWord(i).mCachedObject = pTmpPtr;
 					
+					(*pCache)[i] = pTmpPtr;
 				}
 				else throw;				
 			}
@@ -1035,6 +1008,10 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 	else if( Op == EXTRA_UNOP_Negative ){
 		return pRight->op_neg();
 	}
+	else if( Op == EXTRA_UNOP_ScopeResolution ){
+		ScopePtr pTmp = Interpreter::Instance().GetGlobalScope();
+		return pTmp->GetScopeObject( pRight->GetStringData() )->CastToVariableBase();	
+	}	
 	//Declarations
 	else if( Op == EXTRA_UNOP_Var ||
 			 Op == EXTRA_UNOP_List ||

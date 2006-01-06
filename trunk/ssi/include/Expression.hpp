@@ -20,24 +20,6 @@ namespace SS{
 	
 
 
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
- NOTES: Word with extended attributes that are used by Expression.
-*/
-class ExtendedWord : public Word
-{
-public:
-	ExtendedWord();
-	ExtendedWord( const STRING& String, WordType Type, ExtraDesc Extra = EXTRA_NULL );
-	ExtendedWord( WordType Type, ExtraDesc Extra = EXTRA_NULL );
-	ExtendedWord( const Word& );
-	
-private:
-	friend class Expression;
-	
-	mutable ScopeObjectPtr mCachedObject;	
-};
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  Expression
  NOTES: The expression class.
@@ -72,22 +54,23 @@ public:
 
 private:
 	typedef unsigned int               OperatorPrecedence;
-	typedef std::vector<ExtendedWord>  WordList;
+	typedef std::vector<Word> WordList;
+	typedef std::map<size_t, ScopeObjectPtr> ObjectCache;
+	typedef boost::shared_ptr<ObjectCache> ObjectCachePtr;
 	
 	//These are the same as operator[] but they return ExtendedWord's
-	ExtendedWord&       GetWord( unsigned long );
-	const ExtendedWord& GetWord( unsigned long ) const;
+	Word&       GetWord( unsigned long );
+	const Word& GetWord( unsigned long ) const;
 	
-	VariableBasePtr InternalEvaluate( bool TopLevel = true ) const;
+	VariableBasePtr InternalEvaluate( bool TopLevel = true, ObjectCachePtr = ObjectCachePtr() ) const;
 	
 	VariableBasePtr EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr Right ) const;
 	VariableBasePtr EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr Left, VariableBasePtr Right ) const;
 
-	unsigned long CalculateLowPrecedenceOperator() const;
+	unsigned long CalculateLowPrecedenceOperator( ObjectCachePtr ) const;
 	OperatorPrecedence GetPrecedenceLevel( const Word& ) const;
 	
-	void CacheIdentifierObjects() const;
-	mutable bool mIdentifiersCached;
+	void CacheIdentifierObjects( ObjectCachePtr ) const;
 	
 	void CheckSyntax( bool IgnoreTrailingOps = false ) const;
 	void StripOutlyingParenthesis() const;

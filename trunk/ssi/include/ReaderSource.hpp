@@ -66,8 +66,8 @@ private:
 	WordBuffer mBuffer;
 	size_t mBufferPos;
 	
-	void UpdateCurrentLine();
-	unsigned long mCurrentLine;
+	void UpdateCurrentLine() const;
+	mutable unsigned long mCurrentLine;
 	std::vector<ReaderPos> mLinePositions;	
 };
 

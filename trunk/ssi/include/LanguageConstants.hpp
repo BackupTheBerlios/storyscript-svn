@@ -124,8 +124,10 @@ enum ExtraDesc
 	EXTRA_UNOP_Character,
 	EXTRA_UNOP_Player,
 	EXTRA_UNOP_List,
+	EXTRA_UNOP_ScopeResolution,
 
 	EXTRA_AMBIGOP_Minus,
+	EXTRA_AMBIGOP_ScopeResolution,
 
 	EXTRA_TERMINAL,
 

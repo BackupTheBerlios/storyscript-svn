@@ -156,6 +156,14 @@ ScopePtr Interpreter::GetCurrentStaticScope()
 	return mpCurrentStaticScope;
 }
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Returns a pointer to the global scope.
+*/
+ScopePtr Interpreter::GetGlobalScope()
+{
+	return mpGlobalScope;
+}
+
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Interpreter::GetCurrentPos
  NOTES: Returns a Bookmark to the current position.
@@ -407,8 +415,8 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	Pos.CurrentScope = pInstance;
 
 
-	if( pBlock->HasBeenSaid() ) 	Parse( Pos, false, true );
-	else                            Parse( Pos, false, false );
+	if( pBlock->HasBeenSaid() ) 	Parse( Pos, false, true  );
+	else                        Parse( Pos, false, false );
 
 	//Now the instance gets destroyed
 	pBlock->UnImport( pInstance );
@@ -472,6 +480,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 
 
 
+//REWRITE
 void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 						 bool OneStatement /*= false*/,
 						 bool IgnoreStatic /*= true*/ )
@@ -481,343 +490,254 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	if( Pos.IsVoid() ) Pos = GetCurrentPos();	
 	ReaderSource& MySource = GetSource( Pos );
 	
+	ExpressionPtr pExpression;
 	
-
-	Word TempWord;
-	unsigned int BracketCount = 0;
-	WordType LastWordType = WORDTYPE_UNKNOWN;
-
-	//I'm going to put this on the heap to take some of the
-	//pressure of the stack during recursion.
-	boost::shared_ptr<Expression> pWordBuffer( new Expression );
-	Expression& WordBuffer = *pWordBuffer;
-
-	//Expression WordBuffer;
-
-	//This is a shortcut, so when something is determined to be an expression,
-	//it will just throw everything up to the ';' into the buffer and let
-	//ParseExpression sort it out.
-	bool FoundExpression = false;
-
-	//This is for condition expression for if and while statements.
-	//It will be set to true when it starts reading the condition for a control
-	//statement, and when it gets to the end, it will call ParseIf/ParseWhile,
-	//rather than just calling ParseExpression.
-	bool FoundCondition = false;
-
-	//I'm gunna need these too..
-	bool FoundWhile = false;
-	bool FoundIf = false;
-
+	//This will lag behind the actual position by one so we can check for prebuilt expressions.
+	//Bookmark FakeCurrentPos = GetCurrentPos();
+	//FakeCurrentPos.Position--;
+	
+	
+	//For handling else's
 	bool AllowElse = false;
-	bool ExecuteElse = false;
-	bool FoundElse = false;
+	bool LastConditionalResult = false;
 	
-	bool FoundStatic = false;
-    	
-    while( !mStop )
-	{
-		
-		//-----------------------------------
-		//Get the next word
+	Word TempWord;
 
+	
+	while( true )
+	{
+		/*
+			When blocks call return this flag gets set and the interpreter ends parsing.
+		*/
+		if( mStop )
+		{
+			while( MySource.GetNextWord().Extra != EXTRA_BRACKET_Right ){}
+			mStop = false;	
+		}		
+		
+		/*
+			Grab the next word.
+		*/
 		TempWord = MySource.GetNextWord();
  		if( TempWord == EOF_WORD ) return;
-
-
-		//-------------------------------------
-		//Figure out what to do with the next word
-
-
-		//Special Case: This catches the "else <expression>" case in which
-		//the else should not be parsed.  
-		if( FoundElse && !ExecuteElse &&
-			TempWord.Extra != EXTRA_CONTROL_If &&
-			TempWord.Extra != EXTRA_CONTROL_While )
-		{
-			if( TempWord.Extra == EXTRA_BRACKET_Left ) MySource.PutBackWord();
-
-			FastForwardToNextStatement( MySource );
-			FoundElse = false;
-			AllowElse = false;
-			continue;
-		}
-
-
-		//'}' BRACKETS
-		if( TempWord.Type == WORDTYPE_BRACKET && TempWord.Extra == EXTRA_BRACKET_Right )
-		{
-			//check for extra } brackets
-			if( BracketCount == 0 )
-			{
-				//Assume that we are parsing a block or a control statement.
-				//So just quit from here.
-				return;
-			}
-
-			BracketCount--;
-
-			if( BracketCount == 0 )
-			{
-				WordBuffer.clear();
-                continue;
-			}
-
-		}
-		//'{' BRACKETS AND BLOCK DECLARATIONS
-		else if( TempWord.Type == WORDTYPE_BRACKET && TempWord.Extra == EXTRA_BRACKET_Left )
-		{
-			//a pretty paranoid check
-			if( BracketCount == ~0 )
-			{
-				ThrowParserAnomaly( TXT("Either you are a complete dumbass and decided to "
-						            "flood your code with brackets, or there is a problem "
-						            "with the interpreter"), ANOMALY_BADPUNCTUATION );
-			}
-			
-			if( FoundStatic ){
-				FoundStatic = false;
-				continue;
-			}
-
-			if( FoundCondition )
-			{
-				if( FoundWhile ){
-					ExecuteElse = !ParseWhile( WordBuffer, GetCurrentPos(), false );
-					AllowElse = true;
-				}
-				else if( FoundIf ){
-					ExecuteElse = !ParseIf( WordBuffer, GetCurrentPos(), false );
-					AllowElse = true;
-				}
-				else if( FoundElse && ExecuteElse ){
-					Parse( GetCurrentPos() );
-				}
-				//else conditions that will not be parsed
-				else BracketCount++;
-
-				FoundCondition = FoundIf = FoundWhile = FoundElse = false;
-
-				if( OneStatement ) return;
-				WordBuffer.clear();
-				continue;
-			}
-
-
-			BracketCount++;
-
-
-			//Block Declarations
-			if( WordBuffer.size() == 1 && WordBuffer[0].Type == WORDTYPE_IDENTIFIER )
-			{
-				Word TmpWord = MySource.GetNextWord();
-				if( TmpWord.Type == WORDTYPE_DOCSTRING )
+ 		
+ 		//We don't parse past '}'
+ 		if( TempWord.Extra == EXTRA_BRACKET_Right ) return;
+ 		
+ 		//We don't parse past '{' either in this case.
+ 		if( TempWord.Extra == EXTRA_BRACKET_Left  ) return;
+ 		
+ 		//Else only works immediatley after the control statement.
+ 		if( TempWord.Extra != EXTRA_CONTROL_Else && AllowElse ) AllowElse = false;
+ 		
+ 		//Shall we skip statics?
+ 		if( TempWord.Extra == EXTRA_CONTROL_Static )
+ 		{
+ 			if( !IgnoreStatic ) FastForwardToNextStatement( MySource );
+ 			continue; 
+ 		}	
+ 		
+ 		//If
+ 		if( TempWord.Extra == EXTRA_CONTROL_If )
+ 		{
+ 			//Get the condition
+ 			ExpressionPtr pCondition = GetNextExpression( MySource );
+ 			
+ 			TempWord = MySource.GetNextWord();
+ 			if( TempWord == EOF_WORD ) ThrowUnexpectedEOF();
+ 			else if( TempWord.Extra == EXTRA_CONTROL_Do )
+ 			{
+ 				LastConditionalResult = ParseIf( *pCondition, GetCurrentPos(), true );
+ 			}
+ 			else if( TempWord.Extra == EXTRA_BRACKET_Left )
+ 			{
+ 				LastConditionalResult = ParseIf( *pCondition, GetCurrentPos(), false );
+ 			}
+ 			else
+ 			{
+ 				ThrowParserAnomaly( TXT("Malformed \'if\' statement."), ANOMALY_BADGRAMMAR );	
+ 			}
+ 			
+ 			AllowElse = true;
+ 			
+ 			if( OneStatement ) return;
+ 			else continue;
+ 		}
+ 		
+ 		//While
+ 		if( TempWord.Extra == EXTRA_CONTROL_While )
+ 		{
+ 			 //Get the condition
+ 			ExpressionPtr pCondition = GetNextExpression( MySource );
+ 			
+ 			TempWord = MySource.GetNextWord();
+ 			if( TempWord == EOF_WORD ) ThrowUnexpectedEOF();
+ 			else if( TempWord.Extra == EXTRA_CONTROL_Do )
+ 			{
+ 				LastConditionalResult = ParseWhile( *pCondition, GetCurrentPos(), true );
+ 			}
+ 			else if( TempWord.Extra == EXTRA_BRACKET_Left )
+ 			{
+ 				LastConditionalResult = ParseWhile( *pCondition, GetCurrentPos(), false );
+ 			}
+ 			else
+ 			{
+ 				ThrowParserAnomaly( TXT("Malformed \'if\' statement."), ANOMALY_BADGRAMMAR );	
+ 			}
+ 			
+ 			AllowElse = true;
+ 			
+ 			if( OneStatement ) return;
+ 			else continue;
+ 		}
+ 		
+ 		//Else
+ 		if( TempWord.Extra == EXTRA_CONTROL_Else )
+ 		{
+ 			if( !AllowElse ){
+ 				ThrowParserAnomaly( TXT("Found an \'else\' without a matching \'if\' or \'while\'."), ANOMALY_BADGRAMMAR );
+ 			}
+ 			
+ 			if( LastConditionalResult == false )
+ 			{
+ 				TempWord = MySource.GetNextWord();
+ 				if( TempWord.Extra == EXTRA_BRACKET_Left )
+ 				{
+ 					Parse( GetCurrentPos() );
+ 				}
+ 					
+ 				//Go ahead and suck up a do/then if its there.
+ 				if( TempWord.Extra != EXTRA_CONTROL_Do ) MySource.PutBackWord();
+ 				
+ 				AllowElse = false;
+ 			}
+ 			else
+ 			{
+ 				Word NextWord = MySource.GetNextWord();
+ 				
+ 				if( NextWord.Extra == EXTRA_CONTROL_If ) AllowElse = true;
+ 				else AllowElse = false;
+ 				
+ 				MySource.PutBackWord();
+ 				FastForwardToNextStatement( MySource );
+ 			}
+ 			
+ 			continue; 				
+ 		}
+ 		
+ 		//Block declarations
+ 		if( TempWord.Type == WORDTYPE_IDENTIFIER )
+ 		{
+ 			Word NextWord = MySource.GetNextWord();
+ 			if( NextWord.Extra == EXTRA_BRACKET_Left )
+ 			{
+ 				NextWord = MySource.GetNextWord();
+				if( NextWord.Type == WORDTYPE_DOCSTRING )
 				{
 					ScopeObjectPtr pNewBlock =
-						MakeScopeObject( SCOPEOBJ_BLOCK, WordBuffer[0].String );
-					pNewBlock->CastToScope()->GetDocString() = TmpWord.String;		
+						MakeScopeObject( SCOPEOBJ_BLOCK, TempWord.String );
+					pNewBlock->CastToScope()->GetDocString() = NextWord.String;		
 				}
 				else
 				{
 					MySource.PutBackWord();
-					MakeScopeObject( SCOPEOBJ_BLOCK, WordBuffer[0].String );
+					MakeScopeObject( SCOPEOBJ_BLOCK, TempWord.String );
 				}
 				
-
-				//clear & continue
-				if( mVerboseOutput )
-				{
-					STRING tmp = TXT("Registered a new block: \'");
-					tmp += WordBuffer[0].String;
-					tmp += TXT("\'\n");
-					mpInterface->LogMessage( tmp );
-				}
-
-				FoundExpression = false;
-				WordBuffer.clear();
-				continue;			
-			}
-		}
-		//DONT PARSE INSIDE BLOCKS
-		else if( BracketCount != 0 )
-		{
-			continue;
-		}
-		//CLEAR ON TERMINALS (';')
-		else if( TempWord.Type == WORDTYPE_TERMINAL )
-		{
-			if( FoundExpression == true ||
-				//Single element expression check
-				(WordBuffer.size() == 1 &&
-				( WordBuffer[0].Type == WORDTYPE_IDENTIFIER ||
-				WordBuffer[0].IsLiteral() )))
-			{
-				
-				//Expressions doesn't know what to do with static, so I'll just take it out
-				if( WordBuffer[0].Extra == EXTRA_CONTROL_Static ){
-					WordBuffer.erase( 0 );
-					WordBuffer.SetStatic( true );
+				if( mVerboseOutput ){
+					mpInterface->LogMessage( STRING(TXT("Registered new block: \'")) + TempWord.String + STRING(TXT("\'.\n")) );
 				}
 				
+				//Now we have to skip to the end }
+				unsigned long BracketCount = 1;
+				do{
+					NextWord = MySource.GetNextWord();
+					if( NextWord.Extra == EXTRA_BRACKET_Left ) BracketCount++;
+					else if( NextWord.Extra == EXTRA_BRACKET_Right ) BracketCount--;					
+				}
+				while( BracketCount > 0 );	
 				
-				//to allow "else <expression>" syntax (as opposed to "else do <expression>")
-				if( FoundElse )
+				
+				
+				/*
+				unsigned long BracketCount;
+				NextWord = MySource.GetNextWord();
+				for( BracketCount = 1; BracketCount > 0; NextWord = MySource.GetNextWord() )
 				{
-					FoundElse = false;
-					if( !ExecuteElse )
-					{
-						if( OneStatement ) return;
-						WordBuffer.clear();
-						continue;
-					}
+					if( NextWord.Extra == EXTRA_BRACKET_Left ) BracketCount++;
+					else if( NextWord.Extra == 	EXTRA_BRACKET_Right ) BracketCount--;
 				}
-
-				if( mVerboseOutput )
-				{
-					STRING tmp = TXT("Expression Result: ");
-					tmp += WordBuffer.Evaluate()->CastToVariable()->GetStringData();
-					tmp += TXT("\n");
-					mpInterface->LogMessage( tmp );
-				}
-				else
-				{
-					WordBuffer.Evaluate();
-				}
-
-				FoundExpression = false;
-			}
-
-			if( OneStatement ) return;
-			WordBuffer.clear();
-			continue;
-		}
-		/*
-		//SKIP OVER STATIC STATEMENTS
-		else if( FoundStatic && IgnoreStatic ){
-			continue;
-		}	
-		*/
-		//CONTROL STATEMENTS
-		else if( TempWord.Type == WORDTYPE_CONTROL )
-		{
-			if( TempWord.Extra == EXTRA_CONTROL_Static ){
-				if( !IgnoreStatic ){
-					FoundStatic = true;
-					WordBuffer.SetStatic();
-				}
-				else FastForwardToNextStatement( MySource );
-				continue;				
-			}
-			
-			if( TempWord.Extra == EXTRA_CONTROL_Do )
-			{
-				if( FoundWhile ){
-					ExecuteElse = !ParseWhile( WordBuffer, GetCurrentPos(), true );
-					AllowElse = true;
-				}
-				else if( FoundIf ){
-					ExecuteElse = !ParseIf( WordBuffer, GetCurrentPos(), true );
-					AllowElse = true;
-				}
-				else if( FoundElse && ExecuteElse ){
-					Parse( GetCurrentPos(), true );
-				}
-
-                FoundCondition = FoundIf = FoundWhile = FoundElse = false;
-
-				if( OneStatement ) return;
-				WordBuffer.clear();
-				continue;
-			}
-
-
-			if( FoundIf || FoundWhile )
-			{
-                ThrowParserAnomaly( TXT("You can't have an 'if' or 'while' in the "
-									"condition of another 'if' or 'while'"), ANOMALY_BADGRAMMAR );
-			}
-
-			if( TempWord.Extra == EXTRA_CONTROL_If ){
-				//For "else if" syntax.
-				if( FoundElse )
-				{
-					FoundElse = false;
-					AllowElse = true;
-
-					if( ExecuteElse ) FoundIf = true;
-					else
-					{
-						FastForwardToNextStatement( MySource );
-						FoundIf = false;
-						continue;
-					}
-				}
-				else FoundIf = true;
-			}
-			else if( TempWord.Extra == EXTRA_CONTROL_While ){
-				//For "else while" syntax.
-				if( FoundElse )
-				{
-					FoundElse = false;
-					AllowElse = true;
-
-					if( ExecuteElse )FoundWhile = true;
-					else
-					{
-						FastForwardToNextStatement( MySource );
-						FoundWhile = false;
-						continue;
-					}					
-				}
-				else FoundWhile = true;
-			}
-			else if( TempWord.Extra == EXTRA_CONTROL_Else  ){
-				//Disallow "else else"
-				if( FoundElse )
-				{
-					ThrowParserAnomaly( TXT("Cannot have an else statement inside another else statement."), ANOMALY_BADGRAMMAR );
-				}
-
-				if( AllowElse )
-				{
-					AllowElse = false;
-					FoundElse = true;
-					
-					//NOTE: Whether or not to skip this else will be handled later
-				}
-				else{
-					ThrowParserAnomaly( TXT("Found an \'else\' without a matching \'if\' or \'while\'"), ANOMALY_BADGRAMMAR );
-				}
-			}
-			
-			FoundCondition = true;
-
-			//Don't bother copying this to WordBuffer
-			continue;
-		}// END CONTROL WORDS
-		
-		
-		//IF NOTHING ELSE, IT MUST BE PART OF AN EXPRESSION
-		else if( FoundExpression == true )
-		{
-			WordBuffer.push_back( TempWord );
-			continue;
-		}
-		else
-		{
-            FoundExpression = true;
-		}
-
-
-		//Add it on to the stack
-		WordBuffer.push_back( TempWord );
-
-		
-	}
-
+				*/
+ 				
+ 				if( OneStatement ) return;
+ 				else continue;
+ 			}
+ 			else MySource.PutBackWord();
+ 		}
+ 		
+ 		
+ 		//Otherwise we assume it's an expression and try to evaluate it.
+ 		MySource.PutBackWord(); //Let GetNextExpression take it.
+ 		GetNextExpression( MySource )->Evaluate();
+ 		TempWord = MySource.GetNextWord();
+ 		if( TempWord.Type != WORDTYPE_TERMINAL )
+ 		{
+ 			ThrowParserAnomaly( TXT("Missing \';\' at the end of this expression."), ANOMALY_BADPUNCTUATION );
+ 		}
+ 		
+ 		if( OneStatement ) return;
+ 		else continue;
+	}	
 }
 
 
+void Interpreter::ThrowUnexpectedEOF() const
+{
+	ThrowParserAnomaly( TXT("Unexpected end of file."), ANOMALY_EOF );
+}
+
+
+Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySource )
+{
+	Word TempWord;
+	
+	Bookmark CurrentPos = GetCurrentPos();
+	CachedExpressionMap::iterator i = mCachedExpressions.find( CurrentPos );
+	if( i != mCachedExpressions.end() )
+	{
+		MySource.GotoPos( i->second.NextPos );
+		return i->second.MyExp;
+	}
+	
+	ExpressionPtr NextExpression( new Expression );
+			
+	while( true )
+	{
+		TempWord = MySource.GetNextWord();
+		
+		if( TempWord.Type == WORDTYPE_IDENTIFIER ||
+			TempWord.Type == WORDTYPE_FLOATLITERAL ||
+			TempWord.Type == WORDTYPE_STRINGLITERAL ||
+			TempWord.Type == WORDTYPE_BOOLLITERAL ||
+			TempWord.Type == WORDTYPE_EMPTYLISTLITERAL ||
+			TempWord.Type == WORDTYPE_BINARYOPERATOR ||
+			TempWord.Type == WORDTYPE_UNARYOPERATOR ||
+			TempWord.Type == WORDTYPE_AMBIGUOUSOPERATOR ||
+			TempWord.Type == WORDTYPE_PARENTHESIS )
+		{
+			NextExpression->push_back( TempWord );			
+		}
+		else break;
+	}
+	
+	//The last word (the non-matching one) gets put back.
+	MySource.PutBackWord();
+	
+	//Remember to save it!!
+	mCachedExpressions[ CurrentPos ] = CachedExpression( NextExpression, MySource.GetPos()  );
+	
+	return NextExpression;
+}
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -874,8 +794,8 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 	while( Condition.Evaluate()->CastToVariable()->GetBoolData() == true )
 	{
 		Parse( Body, OneStatement );
-
 		WasParsed = true;
+		if( mStop ) break;
 	}
 
 	if( !WasParsed && OneStatement )
