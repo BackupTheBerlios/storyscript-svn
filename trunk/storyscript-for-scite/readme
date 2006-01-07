@@ -1,0 +1,5 @@
+These are patched to add storyscript syntax highlighting to Scintilla/SciTE.
+
+Download the appropriate patch and apply it to the scintilla/scite source code which can be found at: http://scintilla.sourceforge.net/SciTEDownload.html
+
+Be sure to get the correct version!
