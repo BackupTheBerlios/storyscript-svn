@@ -87,18 +87,17 @@ private:
 */
 Expression::Expression()
 	: mStatic(false), mpWordList( new WordList ),
-      mLowerBounds(0), mUpperBounds(~0U)
+      mSyntaxChecked(false)
 {
 }
 
 
-Expression::Expression( const Expression& OtherExp,
-						unsigned int LowerBounds /*=0*/,
-						unsigned int UpperBounds /*=~0U*/ )
+Expression::Expression( const Expression& OtherExp, const Bounds& OtherBounds )
 	: mStatic(OtherExp.mStatic), mpWordList( OtherExp.mpWordList ),
- 	  mLowerBounds(LowerBounds), mUpperBounds(UpperBounds)
+ 	  mBounds(OtherBounds),
+ 	  mSyntaxChecked(OtherExp.mSyntaxChecked), mpPrecedenceList(OtherExp.mpPrecedenceList)
 {
-	if( UpperBounds < LowerBounds )
+	if( mBounds.Upper < mBounds.Lower )
 	{
 		ThrowParserAnomaly( TXT("UpperBounds is less than LowerBounds in"
 							" Expression initialization.  This indicates"
@@ -114,9 +113,10 @@ Expression::Expression( const Expression& OtherExp,
 Expression& Expression::operator=( const Expression& OtherExp )
 {
 	mpWordList = OtherExp.mpWordList;
-	mLowerBounds = OtherExp.mLowerBounds;
-	mUpperBounds = OtherExp.mUpperBounds;
+	mBounds = OtherExp.mBounds;
 	mStatic = OtherExp.mStatic;
+	mpPrecedenceList = OtherExp.mpPrecedenceList;
+	mSyntaxChecked = OtherExp.mSyntaxChecked;
 	return *this;
 }
 
@@ -155,43 +155,58 @@ void Expression::clear()
 	if( mpWordList.unique() ) mpWordList->clear();
 	else mpWordList.reset( new WordList );
 
-	mLowerBounds = 0;
-	mUpperBounds = ~0U;
+	mBounds.Lower = 0;
+	mBounds.Upper = 0;
 
-	mStatic = false;	
+	mStatic = false;
+	
+	if( mSyntaxChecked ) mSyntaxChecked = false;	
 }
 
 void Expression::push_back( const Word& SomeWord )
 {
 	RevertToLocalCopy();
 	mpWordList->push_back( SomeWord );
+	mBounds.Upper++;
+	
+	if( mSyntaxChecked ) mSyntaxChecked = false;
 }
 
 void Expression::pop_back()
 {
 	RevertToLocalCopy();	
 	mpWordList->pop_back();
+	mBounds.Upper--;
+	
+	if( mSyntaxChecked ) mSyntaxChecked = false;
 }
 
 bool Expression::empty() const
 {
-	if( mpWordList->empty() || mLowerBounds == mUpperBounds ) return true;
+	if( mpWordList->empty() || mBounds.Lower == mBounds.Upper ) return true;
 	else return false;
 }
 
 unsigned long Expression::size() const
 {
+	/*
 	//Special case, because this give bounds of 0 otherwise
 	unsigned long Bounds = mUpperBounds - mLowerBounds;
 
 	if( Bounds < mpWordList->size() ) return Bounds;
 	else return (unsigned long)mpWordList->size() - mLowerBounds;
+	*/
+	
+	return (unsigned long)(mBounds.Upper - mBounds.Lower);
 }
 
 void Expression::erase( unsigned long i )
 {
 	RevertToLocalCopy();
 	mpWordList->erase( mpWordList->begin() + i );
+	mBounds.Upper--;
+	
+	if( mSyntaxChecked ) mSyntaxChecked = false;
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -201,10 +216,9 @@ void Expression::erase( unsigned long i )
 */
 unsigned long Expression::GetAbsoluteIndex( unsigned long i ) const
 {
-	unsigned long ProposedIndex = i + mLowerBounds;
+	unsigned long ProposedIndex = i + mBounds.Lower;
 	
-	if( ProposedIndex >= mUpperBounds ||
-		ProposedIndex >= mpWordList->size() ){
+	if( ProposedIndex >= mBounds.Upper  ){
 		ThrowParserAnomaly( TXT("Expression index is out of range.  This is a serious bug."),
 							ANOMALY_PANIC );
 	}
@@ -222,15 +236,17 @@ void Expression::RevertToLocalCopy()
 	{
 		boost::shared_ptr<WordList> pNewList( new WordList );
 
-		unsigned long i;
-		for( i = mLowerBounds; i < mUpperBounds && i < mpWordList->size(); i++ )
+		size_t i;
+		for( i = mBounds.Lower; i < mBounds.Upper && i < mpWordList->size(); i++ )
 		{
             pNewList->push_back( (*mpWordList)[i] );
 		}
 
 		mpWordList = pNewList;
-		mLowerBounds = 0;
-		mUpperBounds = ~0U;
+		mBounds.Lower = 0;
+		mBounds.Upper = mpWordList->size();
+		
+		mpPrecedenceList.reset();
 	}
 }
 
@@ -243,16 +259,16 @@ void Expression::RevertToLocalCopy()
 */
 VariableBasePtr Expression::Evaluate() const
 {
-	return InternalEvaluate(true);
+	return InternalEvaluate();
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MONOLITHIC~FUNCTION~~~~~~
- Expression::RealInterpret
+ Expression::InternalEvaluate
  NOTES: Where the real work is done.  This uses a divide and conqueror approach
 		to figure out the the result of the expression.
 
 		INPUTS:
-		TopLevel - True if another function is calling ParseExpression, false if its calling itself
+		
 		
 		OUTPUT:
 		Returns the result of the expression.
@@ -263,14 +279,16 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 		Take care of any business before we get started.
 	*/
 	
-	
 	if( size() == 0 ){
 		ThrowParserAnomaly( 
 			TXT("Tried to evaluate an empty expression.  Probably a bug, please report. "),
 			ANOMALY_PANIC );
 	}
 	
-	if( TopLevel ) CheckSyntax();
+	if( !mSyntaxChecked ){
+		CheckSyntax();
+		mSyntaxChecked = true;
+	}
 	
 	if( !pCachedObjects )
 	{
@@ -327,8 +345,22 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 	/*
 		Determine the low precedence operator
 	*/
+	unsigned long LowPrecedenceOpIndex;
+	PrecedenceList::iterator i;
+	if( !mpPrecedenceList || (i = mpPrecedenceList->find( mBounds )) == mpPrecedenceList->end()  )
+	{
+		LowPrecedenceOpIndex = (unsigned long)CalculateLowPrecedenceOperator(pCachedObjects);
+		
+		if( !mpPrecedenceList ) mpPrecedenceList.reset( new PrecedenceList );
+		
+		(*mpPrecedenceList)[mBounds] = LowPrecedenceOpIndex;
+	}
+	else
+	{
+		LowPrecedenceOpIndex = (*mpPrecedenceList)[mBounds];
+	}
 	
-	unsigned long LowPrecedenceOpIndex = CalculateLowPrecedenceOperator(pCachedObjects);
+	
 	const ExtraDesc& LowPrecedenceOp = GetWord( LowPrecedenceOpIndex ).Extra;
 	//Wow that was easy =)
 	
@@ -339,19 +371,19 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 		and everything right of it.
 	*/
 	
-	const Expression Left( *this, GetAbsoluteIndex(0), GetAbsoluteIndex(LowPrecedenceOpIndex) );
+	const Expression Left( *this, Bounds( GetAbsoluteIndex(0), GetAbsoluteIndex(LowPrecedenceOpIndex) ) );
 
-	unsigned long RightLower, RightUpper;
+	size_t RightLower, RightUpper;
 	if( LowPrecedenceOpIndex + 1 < ExpressionSize )	{ 
 		RightLower = GetAbsoluteIndex(LowPrecedenceOpIndex + 1);
-		RightUpper = mUpperBounds;		
+		RightUpper = mBounds.Upper;		
 	}
 	else{
 		RightLower = 0;
 		RightUpper = 0;
 	}
 
-	const Expression Right( *this, RightLower, RightUpper );
+	const Expression Right( *this, Bounds( RightLower, RightUpper ) );
 
 	if( IsStatic() ){
 		Left.SetStatic();
@@ -408,16 +440,17 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 	*/
 	if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_IDENTIFIER )
 	{
-		//It may be necessary to use this version for synax like "(SSMath):sin .5"
-		/*
-		OperatorPtr pOp = 
-			Interpreter::Instance().GetScopeObject( GetWord( LowPrecedenceOpIndex ).String )->CastToOperator();
-		*/
+		//TODO: (Known Issue) Right now syntax like: "(SSMath):sin 0.5" is not supported.
+		//I'm going to have to find a work around for this, but I don't know of one off the
+		//op of my head that won't hurt performance.
+
 		
 		OperatorPtr pOp = (*pCachedObjects)[ GetAbsoluteIndex(LowPrecedenceOpIndex) ]->CastToOperator();
 		
 		VariableBasePtr ReturnVal = pOp->Operate( pRightVar );
-		if( !Left.empty() ) Left.InternalEvaluate( false, pCachedObjects );
+		if( !Left.empty() ){
+			Left.InternalEvaluate( false, pCachedObjects );
+		}
 		
 		return ReturnVal;
 	}
@@ -429,7 +462,9 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 	else if( GetWord( LowPrecedenceOpIndex ).Type == WORDTYPE_UNARYOPERATOR )
 	{
 		VariableBasePtr ReturnVal = EvaluateUnaryOp( GetWord( LowPrecedenceOpIndex ).Extra, pRightVar );
-		if( !Left.empty() ) Left.InternalEvaluate( false, pCachedObjects );
+		if( !Left.empty() ){
+			Left.InternalEvaluate( false, pCachedObjects );
+		}
 		
 		return ReturnVal;
 	}
@@ -448,7 +483,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 		ThrowExpressionAnomaly( TXT("Binary operator found without a left operand."),
 								ANOMALY_BADGRAMMAR );
 	}
-
+	
 	
 	/*
 		Binary Operators
@@ -585,8 +620,8 @@ void Expression::StripOutlyingParenthesis() const
 		}
 		else if( i == ExpressionSize - 1 )//Outlying parenthesis, ok to strip
 		{
-			mLowerBounds++;
-			mUpperBounds = GetAbsoluteIndex( size() - 1 );
+			mBounds.Lower++;
+			mBounds.Upper = GetAbsoluteIndex( size() - 1 );
 		}
 		//else parenthesis match, but no outlying parenthesis
 	}
@@ -741,7 +776,7 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Calculates the the precedence order for the whole expression.
 */
-unsigned long Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache ) const
+size_t Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache ) const
 {
 	/*
 		Its important to keep track of what the last word was,
@@ -757,7 +792,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache 
 	
 	
 	unsigned long ParenthesisCount = 0;
-	unsigned long LowPrecedenceOpIndex = BAD_PRECEDENCE;
+	size_t LowPrecedenceOpIndex = BAD_PRECEDENCE;
 	SimpleType LastWordType = OTHER;
 	
 	const Word* pCurrentWord;
@@ -768,9 +803,9 @@ unsigned long Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache 
 	//const unsigned long ExpressionSize = size();
 	
 	//We are using absolute indexes because its faster, and this function is slowing us down.
-	unsigned long i = mLowerBounds;
+	size_t i = mBounds.Lower;
 	
-	for( ; i < mUpperBounds && i < mpWordList->size(); i++ )
+	for( ; i < mBounds.Upper && i < mpWordList->size(); i++ )
 	{
 		pCurrentWord = &(*mpWordList)[ i ];
 		if( LowPrecedenceOpIndex != BAD_PRECEDENCE ) pLowPrecWord = &(*mpWordList)[ LowPrecedenceOpIndex ];
@@ -833,7 +868,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache 
 			{
 				//The current word is not a function if it is at the end of the expression,
 				//followed by by a binary operator, or followed by a closing parenthesis.
-				if( i == mUpperBounds-1 ||
+				if( i == mBounds.Upper-1 ||
 					(*mpWordList)[ i+1 ].Type == WORDTYPE_BINARYOPERATOR ||
 					(*mpWordList)[ i+1 ].Extra == EXTRA_PARENTHESIS_Right )
 				{
@@ -922,7 +957,7 @@ unsigned long Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache 
 	if( LowPrecedenceOpIndex == BAD_PRECEDENCE ){
 		ThrowExpressionAnomaly( TXT("Cannot find an operator in this expression."), ANOMALY_NOOPERATOR );
 	}
-	else return LowPrecedenceOpIndex - mLowerBounds;
+	else return LowPrecedenceOpIndex - mBounds.Lower;
 }
 
 
@@ -947,9 +982,9 @@ const Word& Expression::GetWord( unsigned long i ) const{
 */
 void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 {
-	unsigned long i;
+	size_t i;
 	
-	const unsigned long ExpressionSize = mpWordList->size();
+	const size_t ExpressionSize = mpWordList->size();
 	
 	for( i = 0; i < ExpressionSize; i++ )
 	{

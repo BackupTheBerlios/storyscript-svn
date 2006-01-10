@@ -12,8 +12,8 @@ NOTES: Just some quick defines for keeping track of the version.
 using namespace SS;
 
 
-const SS::STRING SS::SSI_VERSION( TXT("0 (Chernobyl)") );
-const SS::STRING SS::SSI_BUILDNUM( TXT("25 (Run for your lives!)") );
+const SS::STRING SS::SSI_VERSION( TXT("1 (Hindenburg)") );
+const SS::STRING SS::SSI_BUILDNUM( TXT("0 (Safe for now.)") );
 const SS::STRING SS::SSI_PLATFORM = 
 	#if defined(PLAT_WIN32)
 		TXT("Win32");

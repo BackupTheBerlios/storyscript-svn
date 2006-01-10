@@ -26,11 +26,19 @@ namespace SS{
 */
 class Expression
 {
+private:
+	struct Bounds
+	{
+		Bounds() : Lower(0), Upper(0) {}
+		Bounds( size_t L, size_t U ) : Lower(L), Upper(U) {}
+		Bounds( const Bounds& B ) : Lower(B.Lower), Upper(B.Upper) {}
+		
+		size_t Lower, Upper;
+	};
+	
 public:
 	Expression();
-	Expression( const Expression&,
-				unsigned int LowerBounds = 0,
-			    unsigned int UpperBounds = ~0U );
+	Expression( const Expression&, const Bounds& );
 
 	Expression& operator=( const Expression& );
 	
@@ -58,21 +66,47 @@ private:
 	typedef std::map<size_t, ScopeObjectPtr> ObjectCache;
 	typedef boost::shared_ptr<ObjectCache> ObjectCachePtr;
 	
+	struct BoundsCompare
+	{
+		//How this is done is more or less arbitrary
+		bool operator()( const Bounds& B1, const Bounds& B2 ) const
+		{
+			if( B1.Lower < B2.Lower ) return true;
+			else if( B1.Lower == B2.Lower )
+			{
+				if( B1.Upper < B2.Upper ) return true;
+				else return false;		
+			}
+			else return false;			
+		}		
+	};
+	
+	
+	//Precedence cache
+	typedef std::map< Bounds, unsigned long, BoundsCompare > PrecedenceList;
+	typedef boost::shared_ptr<PrecedenceList> PrecedenceListPtr;
+	mutable PrecedenceListPtr mpPrecedenceList;
+	
+	
 	//These are the same as operator[] but they return ExtendedWord's
 	Word&       GetWord( unsigned long );
 	const Word& GetWord( unsigned long ) const;
 	
 	VariableBasePtr InternalEvaluate( bool TopLevel = true, ObjectCachePtr = ObjectCachePtr() ) const;
 	
+	
 	VariableBasePtr EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr Right ) const;
 	VariableBasePtr EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr Left, VariableBasePtr Right ) const;
 
-	unsigned long CalculateLowPrecedenceOperator( ObjectCachePtr ) const;
+	size_t CalculateLowPrecedenceOperator( ObjectCachePtr ) const;
 	OperatorPrecedence GetPrecedenceLevel( const Word& ) const;
 	
 	void CacheIdentifierObjects( ObjectCachePtr ) const;
 	
 	void CheckSyntax( bool IgnoreTrailingOps = false ) const;
+	mutable bool mSyntaxChecked;
+	
+	
 	void StripOutlyingParenthesis() const;
 	
 	
@@ -89,7 +123,8 @@ private:
 	
 	
 	//LowerBounds is inclusive, UpperBouds is exclusive
-	mutable unsigned long mLowerBounds, mUpperBounds;
+	//mutable unsigned long mLowerBounds, mUpperBounds;
+	mutable Bounds mBounds;
 	boost::shared_ptr< WordList > mpWordList;
 	
 	//static std::vector<VariableBasePtr> mUnnamedVariables;

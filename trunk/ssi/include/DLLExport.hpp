@@ -28,7 +28,6 @@ NOTES:
 #include "Unicode.hpp"
 #include "Word.hpp"
 
-
  
 namespace SS{
 
@@ -81,6 +80,17 @@ EXPIMP_TEMPLATE template class SS_API std::vector<ScopePtr>;
 //For Interpreter
 EXPIMP_TEMPLATE template class SS_API std::allocator<BlockPtr>;
 EXPIMP_TEMPLATE template class SS_API std::vector<BlockPtr>;
+
+//For ReaderSource
+EXPIMP_TEMPLATE template class SS_API std::allocator<Word>;
+EXPIMP_TEMPLATE template class SS_API std::vector<Word>;
+EXPIMP_TEMPLATE template class SS_API std::allocator<Word>;
+EXPIMP_TEMPLATE template class SS_API std::vector<Word>;
+
+EXPIMP_TEMPLATE template class SS_API std::allocator<unsigned long>;
+EXPIMP_TEMPLATE template class SS_API std::vector<unsigned long>;
+EXPIMP_TEMPLATE template class SS_API std::allocator<unsigned long>;
+EXPIMP_TEMPLATE template class SS_API std::vector<unsigned long>;
 
 
 

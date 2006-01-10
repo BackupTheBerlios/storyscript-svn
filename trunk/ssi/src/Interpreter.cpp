@@ -492,11 +492,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	
 	ExpressionPtr pExpression;
 	
-	//This will lag behind the actual position by one so we can check for prebuilt expressions.
-	//Bookmark FakeCurrentPos = GetCurrentPos();
-	//FakeCurrentPos.Position--;
-	
-	
+
 	//For handling else's
 	bool AllowElse = false;
 	bool LastConditionalResult = false;

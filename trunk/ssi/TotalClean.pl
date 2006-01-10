@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 system( "scons --clean" );
+system( "ant clean" );
 system( "make clean" );
 system( "rm bin/*" );
 system( "rm win32/Release/*" );

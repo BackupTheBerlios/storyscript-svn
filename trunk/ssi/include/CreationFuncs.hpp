@@ -16,7 +16,7 @@ NOTES: Contains functions for safely creating derivatives of ScopeObject.
 
 namespace SS{
 
-class Bookmark;
+struct Bookmark;
 
 /*
 Gotta love macros.
@@ -34,7 +34,7 @@ friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const NumT
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const StringType& );\
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const BoolType& )
 
-#define SS_FRIENDIFY_BLOCK_CREATOR(x) friend boost::shared_ptr<x> CreateBlock<x> ( SS_DECLARE_BASE_ARGS, const Bookmark& Position, unsigned int ListIndex )
+#define SS_FRIENDIFY_BLOCK_CREATOR(x) friend boost::shared_ptr<x> CreateBlock<x> ( SS_DECLARE_BASE_ARGS, const Bookmark& Position, BlockIndex ListIndex )
 
 template <typename T > extern
 boost::shared_ptr<T> CreateGeneric();

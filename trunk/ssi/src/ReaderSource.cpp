@@ -644,7 +644,7 @@ const Word& ReaderSource::PushWord( const Word& W )
 	
 	//There isn't a better place to do this, so...
 	mBufferPos++;
-	UpdateCurrentLine();
+	//UpdateCurrentLine();
 	
 	return mBuffer.back();	
 }

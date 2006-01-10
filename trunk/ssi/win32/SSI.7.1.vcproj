@@ -20,12 +20,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="libs;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
-				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="3"
+				StringPooling="TRUE"
+				MinimalRebuild="FALSE"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
-				BufferSecurityCheck="TRUE"
+				BufferSecurityCheck="FALSE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -38,8 +39,8 @@
 				AdditionalDependencies="libgcc.lib libgmp.lib libmpfr.lib"
 				ShowProgress="0"
 				OutputFile="$(OutDir)/SSI.dll"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../gmp/lib/"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="libs"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile="SSI.def"
 				GenerateDebugInformation="TRUE"
@@ -81,12 +82,13 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2"
-				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="libs;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				EnableEnhancedInstructionSet="2"
+				BufferSecurityCheck="FALSE"
+				EnableEnhancedInstructionSet="0"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -99,7 +101,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				AdditionalDependencies="libgcc.lib libgmp.lib libmpfr.lib"
 				OutputFile="$(OutDir)/SSI.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../../gmp/lib/"
+				AdditionalLibraryDirectories="libs"
 				IgnoreAllDefaultLibraries="FALSE"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile="SSI.def"
@@ -144,7 +146,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2 /Ze"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="libs;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -192,7 +194,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Ze"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="libs;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -242,7 +244,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="libs;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP;SINGLE_THREAD"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
@@ -302,7 +304,7 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\gmp;..\..\;..\include\"
+				AdditionalIncludeDirectories="libs;..\..\;..\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SSI_EXPORTS;SS_API_EXP;SINGLE_THREAD"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -371,7 +373,13 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				RelativePath="..\src\Bookmark.cpp">
 			</File>
 			<File
+				RelativePath="..\src\BuiltInFunctions.cpp">
+			</File>
+			<File
 				RelativePath="..\src\Character.cpp">
+			</File>
+			<File
+				RelativePath="..\src\CreationFuncs-impl.cpp">
 			</File>
 			<File
 				RelativePath="..\src\CreationFuncs.cpp">
@@ -494,6 +502,9 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			</File>
 			<File
 				RelativePath="..\include\Bookmark.hpp">
+			</File>
+			<File
+				RelativePath="..\include\BuiltInFunctions.hpp">
 			</File>
 			<File
 				RelativePath="..\include\Character.hpp">
@@ -620,6 +631,9 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 			</File>
 			<File
 				RelativePath="..\include\ListBase.hpp">
+			</File>
+			<File
+				RelativePath="..\include\Macros.hpp">
 			</File>
 			<File
 				RelativePath="..\include\mpfrxx.h">
@@ -763,6 +777,9 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\include\StoryScript.hpp">
+			</File>
+			<File
 				RelativePath="..\include\Types.hpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -859,9 +876,6 @@ copy &quot;$(OutDir)\SSI.lib&quot; ..\bin
 				RelativePath="..\MakeBackup.pl">
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\ChangeLog">
-		</File>
 		<File
 			RelativePath=".\ReadMe.txt">
 		</File>

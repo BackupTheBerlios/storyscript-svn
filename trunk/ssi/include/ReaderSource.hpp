@@ -12,6 +12,7 @@ NOTES: The abstract base class that is responsible for reading from the script
 
 #include "Word.hpp"
 #include "Types.hpp"
+#include "DLLExport.hpp"
 
 namespace SS{
 
@@ -25,7 +26,7 @@ typedef std::vector<Word> WordBuffer;
  		from.  This class is also responsible for the reading (tokenizing) of
  		the source.
 */
-class ReaderSource
+class SS_API ReaderSource
 {
 public:
 	ReaderSource();

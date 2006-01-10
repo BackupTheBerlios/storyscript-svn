@@ -47,9 +47,9 @@ bool Bookmark::operator==( const Bookmark& Other ) const
 {
 	if( FileName == Other.FileName &&
 		Position == Other.Position &&
-		Line     == Other.Line &&
+		Line     == Other.Line /*&&
 		CurrentScope       == Other.CurrentScope &&
-		CurrentStaticScope == Other.CurrentStaticScope )	
+		CurrentStaticScope == Other.CurrentStaticScope*/ )	
 	{
 		return true;
 	}

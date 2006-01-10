@@ -264,10 +264,12 @@ const ScopeObjectPtr ScopeObject::CastToScopeObject() const{
 //Scope
 ScopePtr ScopeObject::CastToScope(){
 	ThrowBadConversion( TXT("Scope") );
+	return ScopePtr();
 }
 
 const ScopePtr ScopeObject::CastToScope() const{
 	ThrowBadConversion( TXT("Scope") );
+	return ScopePtr();
 }
 
 //VariableBase
@@ -293,10 +295,12 @@ const VariablePtr ScopeObject::CastToVariable() const{
 //BlockPtr
 BlockPtr ScopeObject::CastToBlock(){
 	ThrowBadConversion( TXT("Block") );
+	return BlockPtr();
 }
 
 const BlockPtr ScopeObject::CastToBlock() const{
 	ThrowBadConversion( TXT("Block") );
+	return BlockPtr();
 }
 
 
@@ -304,10 +308,12 @@ const BlockPtr ScopeObject::CastToBlock() const{
 //VarListPtr
 ListPtr ScopeObject::CastToList(){
 	ThrowBadConversion( TXT("List") );
+	return ListPtr();
 }
 
 const ListPtr ScopeObject::CastToList() const{
 	ThrowBadConversion( TXT("List") );
+	return ListPtr();
 }
 
 
@@ -315,10 +321,12 @@ const ListPtr ScopeObject::CastToList() const{
 //OperatorPtr
 OperatorPtr ScopeObject::CastToOperator(){
 	ThrowBadConversion( TXT("Operator"), TXT("(Probably due to a missing operator somewhere.)") );
+	return OperatorPtr();
 }
 
 const OperatorPtr ScopeObject::CastToOperator() const{
 	ThrowBadConversion( TXT("Operator"), TXT("(Probably due to a missing operator somewhere.)") );
+	return OperatorPtr();
 }
 
 
