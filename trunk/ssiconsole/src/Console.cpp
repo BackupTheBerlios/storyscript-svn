@@ -23,6 +23,29 @@ NOTES: A console abstraction.
 const int InputBufferSize = 256;
 
 
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Conosle constructor
+*/
+Console::Console() : mUseColor(true)
+{}
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Sets the mUseColor flag.  If its on color will be used, otherwise it will
+ 		just use basic output.
+*/
+void Console::UseColor( bool Flag )
+{
+	mUseColor = Flag;	
+}
+
+
+
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  Console::Console
  NOTES: Constructor
@@ -172,6 +195,7 @@ Console& CursesConsole::operator>>( float& f )
 */
 Console& CursesConsole::SetBold( bool Flag )
 {
+	if( !mUseColor ) return *this;
 	Flag ? attron( A_BOLD ) : attroff( A_BOLD );
 	return *this;
 }
@@ -179,6 +203,7 @@ Console& CursesConsole::SetBold( bool Flag )
 
 Console& CursesConsole::SetBlink( bool Flag )
 {
+	if( !mUseColor ) return *this;
 	Flag ? attron( A_BLINK ) :
 		attroff( A_BLINK );
 	return *this;
@@ -187,6 +212,7 @@ Console& CursesConsole::SetBlink( bool Flag )
 
 Console& CursesConsole::SetUnderline( bool Flag )
 {
+	if( !mUseColor ) return *this;
 	Flag ? attron( A_UNDERLINE ) :
 		attroff( A_UNDERLINE );
 	return *this;
@@ -194,6 +220,7 @@ Console& CursesConsole::SetUnderline( bool Flag )
 
 Console& CursesConsole::SetStandout( bool Flag )
 {
+	if( !mUseColor ) return *this;
 	Flag ? attron( A_STANDOUT ) :
 		attroff( A_STANDOUT );
 	return *this;
@@ -205,16 +232,19 @@ Console& CursesConsole::SetStandout( bool Flag )
 */
 Console& CursesConsole::SetTextBGColor( ConsoleOutColor Color )
 {
+	if( !mUseColor ) return *this;
 	return SetTextColor( ColorPair( mColors[mCurrentTextPair].FG, Color ) );
 }
 
 Console& CursesConsole::SetTextFGColor( ConsoleOutColor Color )
 {
+	if( !mUseColor ) return *this;
 	return SetTextColor( ColorPair( Color, mColors[mCurrentTextPair].BG ) );
 }
 
 Console& CursesConsole::SetTextColor( ColorPair Color )
 {
+	if( !mUseColor ) return *this;
 	mCurrentTextPair = GetCursesColorPair( Color );
     attrset( COLOR_PAIR( mCurrentTextPair ) );
 
@@ -229,6 +259,7 @@ Console& CursesConsole::SetTextColor( ColorPair Color )
 */
 Console& CursesConsole::SetBackground( ColorPair Color, char FillChar )
 {
+	if( !mUseColor ) return *this;
 	mCurrentBGPair = GetCursesColorPair( Color );
 	bkgdset( COLOR_PAIR( mCurrentBGPair ) | (short)FillChar );
 
@@ -243,6 +274,7 @@ Console& CursesConsole::SetBackground( ColorPair Color, char FillChar )
 */
 Console& CursesConsole::SetBackgroundFull( ColorPair Color, char FillChar )
 {
+	if( !mUseColor ) return *this;
 	mCurrentBGPair = GetCursesColorPair( Color );
 	bkgd( COLOR_PAIR( mCurrentBGPair ) | (short)FillChar );
 
@@ -360,7 +392,9 @@ Console& StdConsole::operator<<( float f ){
  NOTES: Standard input.
 */
 Console& StdConsole::operator>>( SS::STRING& s ){
-	STD_CIN >> s;
+	SS::CHAR StringBuf[256];
+	STD_CIN.getline( StringBuf, 256 );
+	s = StringBuf;
 	return *this;
 }
 
@@ -394,6 +428,7 @@ Console& StdConsole::operator>>( float& f ){
 */
 Console& StdConsole::SetBold( bool Flag )
 {
+	if( !mUseColor ) return *this;
 	if( Flag )
 	{
 		STD_COUT << ANSIColor::bold;
@@ -411,7 +446,8 @@ Console& StdConsole::SetBold( bool Flag )
 
 Console& StdConsole::SetUnderline( bool Flag )
 {
-		if( Flag )
+	if( !mUseColor ) return *this;
+	if( Flag )
 	{
 		STD_COUT << ANSIColor::underline;
 		mUnderline = true;
@@ -428,6 +464,7 @@ Console& StdConsole::SetUnderline( bool Flag )
 
 Console& StdConsole::SetTextFGColor( ConsoleOutColor Color )
 {
+	if( !mUseColor ) return *this;
 	switch( Color )
 	{
 	case ColorBlack:
@@ -462,6 +499,7 @@ Console& StdConsole::SetTextFGColor( ConsoleOutColor Color )
 
 Console& StdConsole::SetTextColor( ColorPair CP )
 {
+	if( !mUseColor ) return *this;
 	return SetTextFGColor( CP.FG );	
 }
 

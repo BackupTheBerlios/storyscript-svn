@@ -52,6 +52,7 @@ struct ColorPair{
 class Console
 {
 public:
+	Console();
 	virtual ~Console() {}
 
 	//These ones must be defined.
@@ -81,6 +82,11 @@ public:
 
 	virtual Console& SetBackground( ColorPair, char FillChar = 0 ) { return *this; }
 	virtual Console& SetBackgroundFull( ColorPair, char FillChar = 0 ) { return *this; }
+	
+	void UseColor( bool Flag );
+	
+protected:
+	bool mUseColor;
 };
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~

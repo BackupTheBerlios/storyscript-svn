@@ -36,6 +36,11 @@ int main( int argc, char* argv[] )
 	Console* pCON = UseCurses ?
 					(Console*)new CursesConsole : (Console*)new StdConsole;
 	Console& CON = *pCON;
+
+	//Win32 doesn't really support this right now.
+#if defined(PLAT_WIN32)
+	if( !UseCurses ) CON.UseColor( false );
+#endif
 	
 	//Test if we should print help message and quit
 	if( cl.search( 2, "--help", "-h" ) )
@@ -48,6 +53,7 @@ int main( int argc, char* argv[] )
 		CON << TXT(" -h, --help              Prints the message you are looking at right now.\n");
 		CON << TXT(" -c, --curses            Use curses for output (ie. Fancy, colorful text).\n");
 		CON << TXT("                         Currently a little buggy, but works well for files.\n");
+		CON << TXT(" -n, --no-color          Don't print any color at all.\n");
 		CON << TXT(" -v, --verbose       	 Adds some extra info, mainly with error output.\n");
 		CON << TXT(" --version               Prints the version number, contact info, etc.\n");
 		
@@ -84,6 +90,12 @@ int main( int argc, char* argv[] )
 		GCCErrors = false;
 	}
 	
+	//Shall we use color?
+	bool NoColor = false;
+	if( cl.search( 2, "--no-color", "-n" ) ){
+		CON.UseColor( false );		
+	}
+	
 	//Test for block name
 	SS::STRING BlockName;
 	if( cl.search( 2, "--block", "-b" ) )
@@ -97,6 +109,8 @@ int main( int argc, char* argv[] )
 		const char* Temp = cl[ cl.size() - 1];
 		if( Temp[0] != '-' ) FileName = SS::NormalizeString( Temp );
 	}
+	
+	
 	
 
 	CON.SetBackgroundFull( ColorPair( ColorCyan, ColorBlack ), ' ' );

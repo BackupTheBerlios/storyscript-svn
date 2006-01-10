@@ -10,7 +10,8 @@ NOTES: The SSI command line interface.
 #include "Interpreter.hpp"
 #include "ParserAnomaly.hpp"
 #include "Console.hpp"
-#include "ReadlineReaderSource.hpp"
+
+
 
 
 class ConsoleInterface : public SS::Interface
@@ -32,7 +33,9 @@ public:
 
 private:
 	Console& CON;
-	SS::ReadlineReaderSource mReadlineSource;
+
+	SS::ReaderSource* mpLineReader;
+
 	void SayBlock( const SS::BlockPtr );
 
 	void PrintPosition();

@@ -1,6 +1,11 @@
 
 #include "ansicolor.h"
 
+//The unkown escape sequence warning
+#if defined(_MSC_VER)
+#pragma warning (disable : 4129)
+#endif
+
 using namespace ANSIColor;
 using namespace std;
 

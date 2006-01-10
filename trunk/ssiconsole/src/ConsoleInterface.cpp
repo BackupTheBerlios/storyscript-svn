@@ -9,6 +9,12 @@ NOTES: The SSI command line interface.
 #include "ConsoleInterface.hpp"
 #include "Console.hpp"
 
+#if !defined(_WIN32)
+#include "ReadlineReaderSource.hpp"
+#endif
+
+#include "ConsoleReaderSource.hpp"
+
 #include <Interpreter.hpp>
 #include <Block.hpp>
 #include <LanguageConstants.hpp>
@@ -26,6 +32,23 @@ NOTES: The SSI command line interface.
 ConsoleInterface::ConsoleInterface( Console& CON, bool StartupBanner /*=true*/ )
 	: CON(CON), mGCCStyleErrors(false)
 {
+	//Create backup reader source
+	
+	//if we are using curses we can't use the readline source.
+	if( dynamic_cast<CursesConsole*>(&CON) )
+	{
+		mpLineReader = new SS::ConsoleReaderSource( &CON );
+	}
+	else
+	{
+#if defined(_WIN32)
+		mpLineReader = new SS::ConsoleReaderSource( &CON );
+#else
+		mpLineReader = new SS::ReadlineReaderSource;
+#endif
+	}
+
+
 	SetDefaultColor();
 	
 	if( StartupBanner )
@@ -59,6 +82,7 @@ ConsoleInterface::ConsoleInterface( Console& CON, bool StartupBanner /*=true*/ )
 */
 ConsoleInterface::~ConsoleInterface()
 {
+	delete mpLineReader;
 }
 
 
@@ -67,8 +91,9 @@ ConsoleInterface::~ConsoleInterface()
 */
 void ConsoleInterface::StartConversation()
 {
+	SetDebugColor();
 	try{
-	mInterpreter.SetSource( mReadlineSource );
+	mInterpreter.SetSource( *mpLineReader );
 	}
 	catch( SS::ParserAnomaly E )
 	{
@@ -250,7 +275,7 @@ void ConsoleInterface::SetDefaultColor()
 {
 	CON.SetUnderline( false );
 	CON.SetBold( false );
-	CON.SetTextFGColor( ColorBlack );
+	CON.SetTextFGColor( ColorWhite );
 //	CON.SetBackgroundFull( ColorPair( ColorBlack, ColorWhite ) );
 //	CON.SetTextColor( ColorPair( ColorBlack, ColorWhite ) );
 }

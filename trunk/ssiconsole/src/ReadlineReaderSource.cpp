@@ -1,6 +1,10 @@
 #include "ReadlineReaderSource.hpp"
-#include <readline/readline.h>
+
+extern "C"{
 #include <readline/history.h>
+#include <readline/readline.h>
+}
+
 
 using namespace SS;
 

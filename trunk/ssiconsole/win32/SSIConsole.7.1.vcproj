@@ -20,11 +20,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../ssi/include;..\..\gmp;../include;..\..\"
+				AdditionalIncludeDirectories="libs;../../ssi/include;../../ssi/win32/libs;../include;..\..\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="3"
+				MinimalRebuild="FALSE"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
+				BufferSecurityCheck="TRUE"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -33,14 +35,17 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib pdcurses.lib"
-				ShowProgress="0"
+				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib libpdcurses.lib libcoldname.lib"
+				ShowProgress="2"
 				OutputFile="$(OutDir)/SSIConsole.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="libs"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/SSIConsole.pdb"
 				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -76,10 +81,11 @@ copy $(TargetPath) ..\bin\
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2"
-				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="../../ssi/include;..\..\gmp;../include;..\..\"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories="libs;../../ssi/include;../../ssi/win32/libs;../include;..\..\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -88,9 +94,11 @@ copy $(TargetPath) ..\bin\
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib pdcurses.lib"
+				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib libpdcurses.lib libcoldname.lib"
 				OutputFile="$(OutDir)/SSIConsole.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="libs"
+				IgnoreAllDefaultLibraries="FALSE"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="FALSE"
@@ -133,9 +141,10 @@ copy $(TargetPath) ..\bin\
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/O2"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories="../../ssi/include;..\..\gmp;../include;..\..\"
+				AdditionalIncludeDirectories="libs;../../ssi/include;../../ssi/win32/libs;../include;..\..\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -144,9 +153,10 @@ copy $(TargetPath) ..\bin\
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib pdcurses.lib"
+				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib libpdcurses.lib libcoldname.lib"
 				OutputFile="$(OutDir)/SSIConsole.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="libs"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="FALSE"
@@ -188,11 +198,12 @@ copy $(TargetPath) ..\bin\
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../ssi/include;..\..\gmp;../include;..\..\"
+				AdditionalIncludeDirectories="libs;../../ssi/include;../../ssi/win32/libs;../include;..\..\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -201,10 +212,11 @@ copy $(TargetPath) ..\bin\
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib pdcurses.lib"
+				AdditionalDependencies="../../ssi/Win32/$(IntDir)/ssi.lib libpdcurses.lib libcoldname.lib"
 				ShowProgress="0"
 				OutputFile="$(OutDir)/SSIConsole.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="libs"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/SSIConsole.pdb"
@@ -244,10 +256,16 @@ copy $(TargetPath) ..\bin\
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="..\ansicolor\ansicolor.cc">
+			</File>
+			<File
 				RelativePath="..\src\Console.cpp">
 			</File>
 			<File
 				RelativePath="..\src\ConsoleInterface.cpp">
+			</File>
+			<File
+				RelativePath="..\src\ConsoleReaderSource.cpp">
 			</File>
 			<File
 				RelativePath="..\src\main.cpp">
@@ -257,6 +275,9 @@ copy $(TargetPath) ..\bin\
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\ansicolor\ansicolor.h">
+			</File>
 			<File
 				RelativePath="..\include\Console.hpp">
 				<FileConfiguration
@@ -282,6 +303,15 @@ copy $(TargetPath) ..\bin\
 					<Tool
 						Name="VCCustomBuildTool"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\include\ConsoleReaderSource.hpp">
+			</File>
+			<File
+				RelativePath="..\include\GetPot.hpp">
+			</File>
+			<File
+				RelativePath="..\include\ReadlineReaderSource.hpp">
 			</File>
 		</Filter>
 		<Filter
