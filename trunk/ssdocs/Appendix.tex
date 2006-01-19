@@ -1,0 +1,40 @@
+\appendix
+
+\chapter{FAQ}
+
+\subsection{What is \SSquared?}
+\SSquared\ is a very specialized computer programming language.  If you want, you can use it to do many things, but it is mainly designed to write interactive dialogue in video games.  It is a system to write scripts for non-linear stories that branch and go off in different directions depending on the player's choices.
+
+\subsection{Why do we need \emph{another} language?}
+Because currently there is no standard format for writing interactive scripts, like there is for non-interactive scripts (i.e. courier, one-inch margins, etc).  A lot of games do it, but they all use proprietary systems.  \SSquared\ on the other hand is free (as in speech and as in beer).  It can easily be adapted to work with any type of game.  It's open-source, meaning that anyone can use it, hack it, modify it, complain about it,  or just download it and let it sit on their hard-drive.  You don't need to pay me, or even ask permission.\footnote{Although I am fond of chocolate chip cookies.  Email me for my address.}
+
+\subsection{What does the name mean?}
+\SSquared\ is short for StoryScript.''  When I started out I was calling it ScriptScript, but I changed the name to StoryScript, which just sounds better.   If you don't mind confusing it with the elite Nazi \emph{Schutzstaffel} paramilitary unit, then you can just refer to it as \emph{SS}.
+
+\subsection{How do I use \SSquared\ with my game?}
+For the time being, you must have some familiarity with C++ (the language in which \SSquared\ is written).  In the near future I plan on writing extensions for various popular scripting languages that will allow you to use it with pretty much anything.  
+
+\emph{Warning, the remainder of the answer is technical:} If you are versed in C++ and are feeling industrious, pop open Interface.hpp and you can see the base class from which you must derive the interface for your game.   From there you just have to writing a few functions to determine how choices will presented to the player and how dialogue will be displayed.  You can peek through the console interface and see how that was written, or even the Half-Life 2 interface.
+
+The third part of this manuage will contain a detail overview of the API.  If you are reading this, you may want to check for a newer version.  If there is no newer version, then I've been very very lazy and I apoligize.
+
+\subsection{Can I use \SSquared\ for something besides scripts?}
+Certainly.  It can be handy for many things like doing quick calculations, parsing settings for another program, or even doing other types of scripting for third party programs.  \emph{Technical:} you don't even have to write an interface since I already provide one that does nothing called NullInterface.  Just set that as the interface on you interpreter and do whatever you want.
+
+You may even want to rip out the expression parsing engine for use with something else.  Maybe a calculator or something.
+
+\subsection{Can you change \SSquared\ by \emph{adding some feature}, \emph{removing some feature}, \emph{changing some syntax}?}
+Maybe.  Tell me why I should, and make a good argument and there is a good chance I will get around to changing it.  Another option, is to download the source, write your own patch, and submit it for official along with you proposition.  The language is still relatively young and I am very open to suggestions.  However if I simply refuse to add your feature (I probably have a good reason) feel free to make your own derivative version of \SSquared.
+
+\subsection{Who made this crap?  How can I get a hold of him?}
+The language, interpreter, and this documentation was all created by Daniel Jones.  A lonely college student, with no friends, but plenty of a free time and books on programming.  If you want to give me money, buy me things, have my children, or you just have a suggestion email me at DanielCJones [AT] gmail [DOT] com.
+
+\subsection{Writing a script is \emph{hard}!  Will you help me write it?}
+I will certainly be willing to read it and give you advice if you email me your script.  Be aware though, even though I made this language that attempts to make writing interactive script manageable, it can still be hard work.  
+
+In my experience it is still in many ways much more difficult that writing a linear screenplay.  Not only do you have to worry about created a compelling story, but trying to guide the player through it without forcing him/her anywhere can be very tricky.  The advice I would give you is to draw diagrams of how you want your game to play out, and then base your script on that.  
+
+
+\subsection{Will you make a game out of my script?}
+I'm usually very busy with my own projects, but feel free to email me your script.  If I do get around to reading it and it totally rocks my world, there is a possibility I will help you make it.  
+

@@ -1,0 +1,208 @@
+
+
+\part{Introduction}
+
+\section{Motivation}
+
+A while ago I became very interested in storytelling techniques in video games.  Stories in games are unlike conventional stories that people have been telling each other for thousands of years, in that they are not linear.  Even games that begin and end the same way and have a seemingly straightforward story arch or not completely linear, because the player always has some control over what happens in what order.  It occurred to me that there is no standardized way of describing non-linear stories, one that can be easily adapted to any situation.  There exists many different proprietary systems for many different games, but they are all different.
+
+This is where StoryScript comes in.  StoryScript, or \SSquared\ is a interesting programming language I invented to try to explore possibilities or a simple language to describe such stories.  I wanted to create something that could printed out and given to actors, something that non-programmers could easily learn, something simple and at the same time powerful and adaptable.  I don't pretend that \SSquared\ is a perfect solution, but I at least want to get others who are interested in non-linear storytelling to start thinking about this.
+
+If you're interested in \SSquared you most likely you fall into one or more of three groups.  If you are a writer, than I recommend reading all of the Language section of the document (or as much of it as you can stomach). It will give you a complete understanding of the language and it's capabilities.  If you are an actor, level designer, artist, or someone else working with a team on a game and you just want to know how to read these strange looking scripts, than you can skip ahead and just read the tutorial for now.  You won't learn about some of the more sophisticated features, but you many not need to.  Lastly, if you are a programmer and intend to integrate the \SSquared\ interpreter into your project, then the API section (the last part of this document) I wrote just for you.
+
+Although the central purpose of \SSquared is a fairly simple one (providing a simple way to write branching dialogue and sequences) I tried to write in a lot of features, some of which may go largely unused by most projects.  I included them anyway.  Partly because it was important to me that it be a full featured language.  The motto has always been "Anything from a Shakespeare play to a Riemann-Zeta function."\footnote{I just made that up right now.}  The main reason however is that I lack anything resembling a social life.
+
+\SSquared\ is an unusual programming language.  Unusual because it is meant to be read by human beings just as much as it is by computers.  All programming languages are really meant to be readable by humans, providing a intermediary between computers and human beings, but \SSquared\ is different.  Different in that the language is designed so a lot of information can be included for the benefit of others reading your script.  It is meant to serve as the blueprint for a interactive story, in the same way that a screenplay is the blueprint for a non-interactive story.  An \SSquared\ script is designed to be read by level designers trying to figure how to layout a scene; by actors in order to play their parts; and by other artist to get an idea of how a scene should look or sound.
+
+\section{A Quick Primer for the Lazy and Unmotivated}
+
+\subsection{Prerequisites}
+
+This is a good time to start paying attention.  You are going to write your first ever \SSquared\ script.\footnote{Well, presuming you haven't already read this document.  And presuming you didn't already just figure it out on your own.  But that isn't likely.  Though I guess I could have personally tutored you.  But that isn't likely either.  You know what I mean though.}Before you start writing, you going to need a couple things.  First you need some sort of text editor.  You know you have one, every operating system that is worth a damn has one included.  
+
+A note on text editors: A \emph{text editor} is not the same thing as a \emph{word processor}.  A text editor is used to write and edit text.  A word processor is used to write and edit text, and to add fancy colors and important looking graphs to try to make up for the appalling lack of content of whatever you're trying to write.  There currently is a syntax highlighting module I wrote for SciTE (Scintilla Text Editor), and I plan on implementing syntax highlighting on other editors in the future\footnote{I take requests.}.  Any text editor will do though, just as long as it saves files in plain-text.  Notepad, edit, vim, emacs, nano, or something like that will work.
+
+You are going to need one other piece of software.  That is the actual \SSquared\ Interpreter.  An interpreter in the context of programming languages is a special program that reads a file written in a certain language, and then figures out what to do with it.  The \SSquared\ is meant to be integrated into games and work along side them, but it can also work in text-based mode.  This is a very practical way to test your script to ensure everything is working how you want.  It is also probably possibly to write a text base adventure game this way.
+
+\subsection{Your First Script}
+
+Now that all that is out of the way, let's start writing.  Step one is to open up your text editor, whatever it may be.  Now type this into a blank document.  
+
+\begin{SSCodeBox}
+\sciteg{// A very, very simple scene.} \SSCodeNumber{1} \\
+\scited{character}
+\scitea{ Miranda;} \SSCodeNumber{2} \\
+\scitea{} \\
+\scitel{Miranda: BraveAndNew}
+\scitea{\{} \SSCodeNumber{3} \\
+\sciteb{\`{}O brave new world That has such people in't!\`{}}
+\scitea{;} \SSCodeNumber{4} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+You don't need to make those numbers at the end of the lines, those are just for demonstrative purposes.  I apologize to those of you who are frantically trying to figure out how to make that character on your keyboard.  Now save that document as \textbf{test.ssconv} (or whatever).  That's the hard part.  \SSquared\ will handle the rest. But before we run this, let's talk about the structure of the language.  
+
+\SSCodeNumber{1}\ The line here is a comment. Comments are used to tell the interpreter that it is not allowed to read that part and it is intended for other humans.  The interpreter may take offense, but it will quickly get over it, and then skip past everything on the line following the two slashes.  One of the ways that \SSquared\ is different from most other programming languages is that it has several types of comments.  These get covered in depth in the Language section.
+
+\SSCodeNumber{2} \SSquared\ centers around characters, and those characters saying things.  So first we need a character.  That is what we do here.  This same basic syntax is used for declaring other things besides characters as we will soon see.  Note the semicolon (";") at the end of a line.  This tells the interpreter to stop reading and do what it just said.  It is comparable to a period in English or other "human" languages.
+
+\SSCodeNumber{3} Now we get to the juicy part.  We declaring a new block.  A block is the basic building block of \SSquared\ script.  It is similar to functions, methods, or subroutines in other languages, but is not quite to same thing.  More importantly it is similar to a line of dialogue in script or screenplay. 
+
+We declare a new block with the name \SSCode{Miranda: BraveAndNew}and it encompasses everything within the \{ \} marks.  Notice the name is the You don't have to give blocks names, but it is necessary if you want to refer to it in any way.  To create an unnamed block, just write \SSCode{Miranda: \{ ... \}}.  We really don't have to give the block a name unless we need to refer to it somewhere else, but I did here, just for instructional purposes.
+
+Be sure to pay attention to the format of the name.  It is just the character's name, and then a specific name for that block separated by a color (":") character.  The colon is tells the interpreter what something belongs to.  So \SSCode{Me: Toothbrush} refers to a toothbrush that belongs to me.  We call this the scope resolution operator.  The concept of scopes is really just about ownership, and which object are allowed to access other objects, this all gets explained in the Scopes section in the chapter on blocks.
+
+\SSCodeNumber{4} Last but not least we have what is obviously Miranda's line.  It is inside funny looking quotation marks called backticks. On most keyboard it is the same button as tilde\footnote{AKA The Little Squiggly Line.} ("~"). If you are wondering why your program doesn't work, it is probably because you used a single quote, it's okay, we forgive you.  I will explain why you use backticks for this later on.
+
+One other thing that I should point out is that \SSquared\ isn't very picky about whitespace.\footnote{\emph{Whitespace} refers to spaces, tabs, newlines, etc.}  I want to let the author decide what looks best.  All the examples in this document are formatted in what is simply my preferred style.  If you want you can rewrite the example like this:
+
+
+\begin{SSCodeBox}
+\sciteg{// A very, very simple scene.} \\
+\scited{character} \\
+\scitea{ Miranda;} \\
+\scitea{} \\
+\scitel{Miranda} \\
+\scitel{:} \\
+\scitel{BraveAndNew} \\
+\scitea{\{} \\
+\sciteb{\`{}O brave new world That has such people in't!\`{}}
+\scitea{;}
+\scitea{\}} \\
+\end{SSCodeBox}
+
+And it will still work exactly the same.  The best advice I can give you is to pick something that works well for you and anyone else who as to read it and stick with it.  The worst kind of style is an inconsistent style.
+
+Now that you understand how your script works, lets run and see if it really does work.  If you are using SciTE and you have \SSquared\ properly installed  you can just smack F5.  If you aren't using SciTE, you can run the interpreter from the command line.  If you are using Linux, you probably already know how to use a terminal.  If you are using Windows, click \emph{Start} and then \emph{Run}.  Type \emph{cmd} and press enter.  Now you have magical box called the \emph{Command Prompt} that you can tell your computer to do things in.
+
+Just for fun, try typing \SSCode{storyscript -h} and pressing enter.  If the interpreter is properly installed, that should give you a message explaining the different options you can give to the interpreter.  To run the script we made, type \SSCode{storyscript NameAndPathOfYourScript} (Where \SSCode{NameAndPathOfYourScript} is the name and path of your script, such as \SSCode{storyscript /home/daniel/test.ssconv}) and press enter.
+
+Now, hopefully whether you ran the script from a console, or from SciTE, you should see something like this:
+
+\begin{SSCodeBox}
+\scitel{Miranda} \\
+\sciteb{O brave new world That has such people in't!}
+\end{SSCodeBox}
+
+If you don't see that you either the interpreter hasn't been properly installed or you made a mistake in the script and the interpreter, like your judgmental mother in law, will tell you what your problem is.
+
+\subsection{Something Interactive}
+
+Okay, I can tell you aren't impressed. Don't quit yet, we are getting to the fun part.  If you remember from several paragraphs ago, you recall that I mentioned that \SSquared\ was designed for writing interactive non-linear stories.  Now that you know how to write and run \SSquared\ scripts, I will show you how to make something interactive.
+
+Let's write a familiar scene between a husband and wife.  First we set up the characters, and a linear conversation.
+
+\begin{SSCodeBox}
+\scited{character}
+\scitea{ Husband;} \\
+\scited{character}
+\scitea{ Wife;} \\
+\scitea{} \\
+\scitel{Wife: }
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\`{}Does this blouse make me look a little bit fat?\`{}}
+\scitea{;} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: }
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\`{}It's not the blouse, it's your hips.\`{}}
+\scitea{;} \\
+\scitea{\}}
+\end{SSCodeBox}
+Try running this.  You should get something like this:
+
+\begin{SSCodeBox}
+\scitel{Wife} \\
+\sciteb{Does this blouse make me look a little fat?} \\
+\scitea{} \\
+\scitel{Husband} \\
+\sciteb{It's not the blouse, it's your hips.}
+\end{SSCodeBox}
+
+This demonstrates an important behavior of \SSquared\ blocks. Unless you tell it otherwise, it will just say the next block that it finds, mimicking how a linear screenplay or script works.  This poor guy needs some options, lets give him some.
+
+
+\begin{SSCodeBox}
+\scited{character}
+\scitea{ Husband;} \\
+\scited{character}
+\scitea{ Wife;} \\
+\scitea{} \\
+\scitel{Wife: }
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}Does this blouse make me look a little bit fat?\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=} \\
+\scitea{\hspace*{4em}Husband: TheGood,} \\
+\scitea{\hspace*{4em}Husband: TheBad,} \\
+\scitea{\hspace*{4em}Husband: TheUgly;} \SSCodeNumber{1} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: TheGood}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}No way honey! You look fantastic!\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \SSCodeNumber{2} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: TheBad}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}A little bit fat?{\hspace*{1em}} I think that's a little} \\
+\sciteb{\hspace*{4em}bit of an understatement.\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \\
+\scitea{\}} \\
+\scitea{} \\
+\scitel{Husband: TheUgly}
+\scitea{\{} \\
+\scitea{\hspace*{4em}}
+\sciteb{\'{}Yeah, definitely.{\hspace*{1em}} Whatever you say.\'{}}
+\scitea{;} \\
+\scitea{\hspace*{4em}} \\
+\scited{\hspace*{4em}next} 
+\scitea{=}
+\scited{end}
+\scitea{;} \\
+\scitea{\}}
+\end{SSCodeBox}
+
+That wasn't so hard, was it?  We have created a (very basic) interactive script.  To do so, we make use of a built in variable called \SSCode{next}.  This variable is a list of blocks that is used to override the interpreter's default behavior of just going on the the next block in the file.  Every block has its own \SSCode{next} variable.   In fact, you can even refer to a specific block's \SSCode{next} by using the colon operator:  \SSCode{Wife:TheQuestion:next}.
+
+\SSCodeNumber{1} Here we assign a list of blocks to the \SSCode{next} variable.  Lists of things are separated by commas, just as they are in English.  You can learn more about this is the section about operators.  If you assign a single block to the \SSCode{next} variable then it will jump to the block specified when the current block is finished.  When you assign a list of blocks as opposed to just one block, the interpreter will present the player with a choice.
+
+\SSCodeNumber{2} There is one special block that you can assign to \SSCode{next}called \SSCode{end}.  As you can probably guess, this is a signal for the interpreter to end the conversation after that block. Without \SSCode{end}, after the line \SSCode{Husband:TheGood} gets said, it would say \SSCode{Husband:TheBad} and then \SSCode{Husband:TheUgly} without stopping.
+
+Go ahead and run this now.
+
+\begin{SSCodeBox}
+\scitel{Wife} \\
+\sciteb{Does this blouse make me look a little bit fat?} \\ \\
+\scited{(0) :Test\_ssconv:Husband:TheGood} \\
+\scited{(1) :Test\_ssconv:Husband:TheBad} \\
+\scited{(2) :Test\_ssconv:Husband:TheUgly} \\ \\
+\scited{>}
+\end{SSCodeBox}
+
+This is a prompt asking you to choose what line should be said next.  Go ahead and but in a number (0, 1, or 2).  The corresponding line will be said, and then the script, having nothing left to do, will exit.  You may be wondering how you can present the player with a more interesting choice than \SSCode{:Test\_ssconv:Husband:TheGood}.  Don't worry, you can, using a feature called ``doc-strings''.  You will have to read further to learn how though.
+
+From here, it is a simple matter to add a separate response for each of the Husband's answers.  I will leave that up to you.  Remember, the best way to learn a language is to experiment with it.
+
+\subsection{Closing Remarks}
+
+You now know the basics of the structure and flow of \SSquared, yet there is so much more that it is capable of.  If you are still interested please read on.  In the next chapters we will take a more methodical approach and (eventually) cover every aspect of the language.  The chapters are arranged as to cover the most important and commonly used areas of the language.  So if there is something you don't understand, read on and with luck it will be explained. I hope you enjoy learning and using \SSquared\ as much as I enjoyed inventing it.\footnote{With the exception of those 2 A.M. frantic debugging sessions, which I wouldn't wish on my worst enemies.}

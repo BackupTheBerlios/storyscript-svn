@@ -12,7 +12,7 @@
 % I really really don't know what I'm doing here
 
 
-\newcommand{\SSquared}{S$^2$}
+\newcommand{\SSquared}{$S^{2}$}
 
 %\newcommand{\SSquaredInterpreter}{S$^2_i$}
 
@@ -20,7 +20,7 @@
 % SYNTAX HIGHLIGHTING STUFF
 
 %\usepackage[a4paper,margin=2cm]{geometry}
-\usepackage[T1]{fontenc}
+%\usepackage[T1]{fontenc}
 \usepackage{color}
 %\usepackage{alltt}
 %\usepackage{times}
@@ -34,8 +34,8 @@
 \usepackage{graphicx}
 %\usepackage{psfrag}
 
-%Link Stuff
-\usepackage[pdftex,colorlinks=true]{hyperref}
+%PDF STUFF
+%\usepackage[pdftex,colorlinks=true]{hyperref}
 
 %\pdfinfo{
 %	\Title (The SS Programming Language)
@@ -50,20 +50,18 @@
 %	urlcolor=cyan,
 %}%
 
-%\usepackage{listings}
-
 % For emphasizing SS Code inside english.
-\newcommand\SSCode[1]{\begin{samepage}\texttt{#1}\end{samepage}}
+\newcommand{\SSCode}[1]{\begin{samepage}\texttt{#1}\end{samepage}}
 
 %TABLES
-\newcommand\BeginSSTable[2]{
+\newcommand{\BeginSSTable}[2]{
 	\begin{table}[#2]
 	\begin{center}
 	\begin{tabular}{#1}
 	\hline
 }
 
-\newcommand\EndSSTable[1]{
+\newcommand{\EndSSTable}[1]{
 	\hline
 	\end{tabular}
 	\caption{#1}
@@ -73,7 +71,7 @@
 
 
 %Name, Inputs, Outputs, Comments
-\newcommand\SSFunctionDesc[4]{
+\newcommand{\SSFunctionDesc}[4]{
 \subsection{#1}
 \textbf{Inputs:} #2\\
 \textbf{Effects:} #3\\
@@ -81,52 +79,36 @@
 }
 
 %Name, Evaluation, Comments
-\newcommand\SSVariableDesc[3]{
+\newcommand{\SSVariableDesc}[3]{
 \subsection{#1 (\emph{Magic Variable)}}
 \textbf{Evaluation:} #2\\
 \textbf{Comments:} #3
 }
 
 
-
-%\newenvironment{SSTable}[2]{
-%\begin{table}
-%\caption{#1}
-%begin{center}
-%\begin{tabular}{#1}
-%\hline
-%}
-%{
-%\hline
-%\end{tabular}
-%\end{center}
-%\end{table}
-%}
-	
-
 \marginsize{1.25in}{1.75in}{1.25in}{1.25in}
 
 % For numbering code segments and explaining them
-\newcommand\SSCodeNumber[1]{\ensuremath{\mathbin{\settowidth{\dimen7}{\mbox{$\bigcirc$}}%
+\newcommand{\SSCodeNumber}[1]{\ensuremath{\mathbin{\settowidth{\dimen7}{\mbox{$\bigcirc$}}%
               \makebox[0pt][l]{$\bigcirc$}\makebox[\dimen7]{#1}}}}
 
 
 \definecolor{SSCodeBoxColor}{rgb}{0.95,0.95,0.95}
 
 % Ripped from some latex tutorial.
-\newlength\Linewidth
-\def\findlength{\setlength\Linewidth\linewidth
-\addtolength\Linewidth{-4\fboxrule}
-\addtolength\Linewidth{-3\fboxsep}
-}
+%\newlength\Linewidth
+%\def\findlength{\setlength\Linewidth\linewidth
+%\addtolength\Linewidth{-4\fboxrule}
+%\addtolength\Linewidth{-3\fboxsep}
+%}
 
 
-\newcommand\SSCodeSeperator{
-	\begin{center}
-	\noindent\rule{250pt}{.5pt}% \\
-	%\rule[-.5pt]{.5pt}{10pt}\rule{249pt}{0pt}\rule{.5pt}{10pt}
-	\end{center}
-}
+%\newcommand\SSCodeSeperator{
+%	\begin{center}
+%	\noindent\rule{250pt}{.5pt}% \\
+%	%\rule[-.5pt]{.5pt}{10pt}\rule{249pt}{0pt}\rule{.5pt}{10pt}
+%	\end{center}
+%}
 
 \newenvironment{SSCodeBox}
 {
@@ -142,30 +124,6 @@
 %	\SSCodeSeperator
 \normalcolor\par\addvspace{6pt minus 3pt}
 }
-
-
-% \newenvironment{SSCodeBox}{
-%  \vspace{10pt}
-%   \raggedbottom
-%   \scriptsize{Code:}
-%  \nopagebreak
-%   \par\begingroup%
-%   \setlength{\fboxsep}{5pt}\findlength%
-%  \setbox0=\vbox\bgroup\noindent%
-%   \hsize=\Linewidth%
-%   \begin{minipage}{\Linewidth}\small}%
-%    {\end{minipage}%
-%	\egroup%
-%    \vspace{1pt}%
-%    \noindent\textcolor{black}{\fboxsep1pt\fbox%
-%     {\fboxsep5pt\colorbox{SSCodeBoxColor}{\normalcolor\box0}}}%
-%    \endgroup\par\addvspace{6pt minus 3pt}\noindent%
-%    \normalcolor\ignorespacesafterend
-%	}
-
-%\let\Examplebox\examplebox
-%\let\endExamplebox\endexamplebox
-
 
 % I have to manually define the colors
 
