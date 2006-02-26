@@ -244,7 +244,7 @@ Word ReaderSource::GetNextWord()
 
 		//Get all alphabetic characters
 		while( IsAlpha( Peek() ) || Peek() == '_' ) TempString += Get();
-
+		
 		//CONTROL WORDS
 		if( TempString == LC_While )       return PushWord( Word( WORDTYPE_CONTROL, EXTRA_CONTROL_While ) );
 		else if( TempString == LC_If )     return PushWord( Word( WORDTYPE_CONTROL, EXTRA_CONTROL_If ) );
@@ -328,7 +328,7 @@ Word ReaderSource::GetNextWord()
 				break;
 			}
 		}
-
+		
 		return PushWord( Word(TempString, WORDTYPE_IDENTIFIER) );
 	}
 

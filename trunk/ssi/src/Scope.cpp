@@ -151,6 +151,9 @@ ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  Scope::Clear
  NOTES: Unregisters all non-static objects.
+ 
+ 		This function is pretty much considered depricated.  It is a remnant of
+ 		before I had a real instacing system.
 */
 void Scope::Clear()
 {
@@ -241,7 +244,7 @@ BlockPtr Scope::GetNextBlock( BlockPtr pBlock )
 */
 
 ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
-{
+{	
 	TokenizedID TokenList;
 	SplitUpID( Identifier, TokenList );
 	

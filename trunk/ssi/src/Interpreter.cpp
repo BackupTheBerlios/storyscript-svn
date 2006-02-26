@@ -397,7 +397,8 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 
 
 	//Clear all non-static variables
-	pBlock->Clear();
+	//pBlock->Clear();
+	//Actuall, please don't.
 
 	Bookmark Pos = pBlock->GetFilePosition();
 	
@@ -406,8 +407,10 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	//scope, which all non-statics get created on
 	ScopePtr pInstance = CreateGeneric<Scope>();
 	ListPtr InInstance = CreateGeneric<List>( LC_Input, false, false );
+	VariablePtr OutInstance = CreateVariable<Variable>( LC_Output, false, false, STRING() );
 	if( In ) *InInstance = *In;
 	pInstance->Register( InInstance );
+	pInstance->Register( OutInstance );
 	
 	pBlock->Import( pInstance );
 
@@ -417,6 +420,12 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 
 	if( pBlock->HasBeenSaid() ) 	Parse( Pos, false, true  );
 	else                        Parse( Pos, false, false );
+		
+	//This a special little trick that the out variable does:
+	//There is a static 'out' and a 'out' that is created with each instance.
+	//When the block is finished the instanced 'out' gets copied to the static out.
+	//Trust me.  This makes sense.
+	*(pBlock->GetScopeObject( LC_Output )) = *OutInstance;
 
 	//Now the instance gets destroyed
 	pBlock->UnImport( pInstance );
@@ -836,14 +845,18 @@ Word Interpreter::BreakOffFirstID( Word& W )
 
 	TempWord.Type = WORDTYPE_IDENTIFIER;
 
-	while( !W.String.empty() && (IsAlpha(W.String[0]) || IsNumber(W.String[0])) )
+	while( !W.String.empty() && (IsAlpha(W.String[0]) ||
+				     W.String[0] == '_' ||
+				     IsNumber(W.String[0])) )
 	{
 		TempWord.String += W.String[0];
 		W.String.erase(0,1);
 	}
 
 	//remove the excess fat
-	while( !W.String.empty() && !(IsAlpha(W.String[0]) || IsNumber(W.String[0])) )
+	while( !W.String.empty() && !(IsAlpha(W.String[0]) ||
+				      W.String[0] == '_' ||
+				      IsNumber(W.String[0])) )
 	{
 		W.String.erase(0,1);
 	}
@@ -869,7 +882,9 @@ Word Interpreter::BreakOffLastID( Word& W )
 	TempWord.Type = WORDTYPE_IDENTIFIER;
 
 	while( !W.String.empty() && 
-		   (IsAlpha( W.String[W.String.length()-1] ) || IsNumber( W.String[W.String.length()-1] )) )
+		   (IsAlpha( W.String[W.String.length()-1] ) ||
+		    W.String[W.String.length()-1] == '_' ||
+		    IsNumber( W.String[W.String.length()-1] )) )
 	{
 		TempWord.String.insert(0, 1, W.String[W.String.length()-1]);
 		W.String.erase( W.String.length()-1, 1 );
@@ -877,7 +892,9 @@ Word Interpreter::BreakOffLastID( Word& W )
 
 	//remove the excess fat
 	while( !W.String.empty() &&
-		   !(IsAlpha( W.String[W.String.length()-1] ) || IsNumber( W.String[W.String.length()-1] )) )
+		   !(IsAlpha( W.String[W.String.length()-1] ) ||
+		     W.String[W.String.length()-1] == '_' ||
+		     IsNumber( W.String[W.String.length()-1] )) )
 	{
 		W.String.erase( W.String.length()-1, 1 );
 	}
