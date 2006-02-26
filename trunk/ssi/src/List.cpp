@@ -320,7 +320,8 @@ void List::operator=( const List& OtherList )
 
 VariableBasePtr List::operator=( const VariableBase& X )
 {
-	*this = *(X.CastToList()); //This should with lists or scalars
+	ListPtr XList = X.CastToList();
+	*this = *XList;
 	return CastToVariableBase();
 }
 
@@ -540,7 +541,9 @@ List::PushOp::PushOp( List& Parent )
 
 VariableBasePtr List::PushOp::Operate( VariableBasePtr pX )
 {
-	const ListType& XList = pX->CastToList()->GetInternalList();
+	ListPtr pXList = pX->CastToList();
+	
+	const ListType& XList = pXList->GetInternalList();
 	size_t i;
 	for( i = 0; i < XList.size(); i++ )
 	{

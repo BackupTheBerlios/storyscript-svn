@@ -716,6 +716,7 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 		PrecedenceList[EXTRA_BINOP_Assign]            = 1;
 		PrecedenceList[EXTRA_BINOP_MinusAssign]       = 2;
 		PrecedenceList[EXTRA_BINOP_PlusAssign]        = 3;
+		PrecedenceList[EXTRA_BINOP_ConcatAssign]		  = 3;
 		PrecedenceList[EXTRA_BINOP_DivideAssign]      = 4;
 		PrecedenceList[EXTRA_BINOP_TimesAssign]       = 5;
 		PrecedenceList[EXTRA_BINOP_ExponentAssign]    = 6;
@@ -738,6 +739,7 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 		
 		PrecedenceList[EXTRA_BINOP_ListSeperator]     = 13;
 		PrecedenceList[EXTRA_BINOP_Minus]             = 14;
+		PrecedenceList[EXTRA_BINOP_Concat]			  = 15;
 		PrecedenceList[EXTRA_BINOP_Plus]              = 15;
 		PrecedenceList[EXTRA_BINOP_Divide]            = 16;
 		PrecedenceList[EXTRA_BINOP_Times]             = 17;
