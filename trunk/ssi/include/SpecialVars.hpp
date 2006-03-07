@@ -52,8 +52,8 @@ public:
 	virtual VariableBasePtr op_not() const;
 	virtual VariableBasePtr op_neg() const;
 
-	VariablePtr GetVariablePtr();
-	const VariablePtr GetVariablePtr() const;
+	VariablePtr CastToVariable();
+	const VariablePtr CastToVariable() const;
 
 
 

@@ -82,7 +82,7 @@ const SS::STRING LC_Name( TXT("name") );
 const SS::STRING LC_FullName( TXT("fullname") );
 const SS::STRING LC_EndBlock = TXT("end");
 const SS::STRING LC_Static = TXT("static");
-const SS::STRING LC_BeenSaid = TXT("BeenSaid");
+const SS::STRING LC_BeenSaid = TXT("beensaid");
 const SS::STRING LC_Input = TXT("in");
 const SS::STRING LC_Output = TXT("out");
 const SS::STRING LC_NextBlock = TXT("next");

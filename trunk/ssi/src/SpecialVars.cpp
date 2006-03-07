@@ -106,11 +106,11 @@ StringType SpecialVarBase::GetStringDataFromBool() const{
  SpecialVarBase::GetVariablePtr
  NOTES: Creates a variable and returns it.
 */
-VariablePtr SpecialVarBase::GetVariablePtr(){
+VariablePtr SpecialVarBase::CastToVariable(){
 	return MakeVariable();
 }
 
-const VariablePtr SpecialVarBase::GetVariablePtr() const{
+const VariablePtr SpecialVarBase::CastToVariable() const{
 	return MakeVariable();
 }
 

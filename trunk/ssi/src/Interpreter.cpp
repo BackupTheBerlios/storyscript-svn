@@ -757,7 +757,7 @@ bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bo
 {
 	bool WasParsed = false;
 
-	if( Condition.Evaluate()->CastToVariable()->GetBoolData() == true )
+	if( Condition.Evaluate()->GetBoolData() == true )
 	{
 		Parse( Body, OneStatement );
 
@@ -796,7 +796,7 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 {
 	bool WasParsed = false;
 
-	while( Condition.Evaluate()->CastToVariable()->GetBoolData() == true )
+	while( Condition.Evaluate()->GetBoolData() == true )
 	{
 		Parse( Body, OneStatement );
 		WasParsed = true;
