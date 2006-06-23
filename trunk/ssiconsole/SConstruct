@@ -13,6 +13,7 @@ env = conf.Finish()
 src = Split("""
 	src/Console.cpp
 	src/ConsoleInterface.cpp
+	src/ConsoleReaderSource.cpp
 	src/main.cpp
 	src/ReadlineReaderSource.cpp
 	ansicolor/ansicolor.cc	

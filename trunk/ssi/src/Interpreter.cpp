@@ -425,7 +425,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	//There is a static 'out' and a 'out' that is created with each instance.
 	//When the block is finished the instanced 'out' gets copied to the static out.
 	//Trust me.  This makes sense.
-	*(pBlock->GetScopeObject( LC_Output )) = *OutInstance;
+	*(pBlock->GetScopeObject( LC_Output )->CastToVariable()) = *OutInstance->CastToVariableBase();
 
 	//Now the instance gets destroyed
 	pBlock->UnImport( pInstance );

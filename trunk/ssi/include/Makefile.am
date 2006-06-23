@@ -1,4 +1,4 @@
-noinst_HEADERS = \
+pkg_HEADERS = \
 Anomaly.hpp \
 Block.hpp \
 Bookmark.hpp \

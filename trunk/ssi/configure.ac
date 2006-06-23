@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(ssi, 1, DanielCJones@gmail.com)
+AC_INIT(storyscript, 1, DanielCJones@gmail.com)
 AC_CONFIG_SRCDIR([include/Anomaly.hpp])
 AC_CONFIG_HEADER([config.h])
 
