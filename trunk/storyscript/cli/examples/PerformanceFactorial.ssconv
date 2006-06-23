@@ -1,0 +1,77 @@
+use SSTime;
+
+main{
+
+print
+"FACTORIAL PERFORMANCE TEST\
+Tests the performance of expression parsing
+by calculating the factorial of a large number.\
+\
+";
+
+	var Num = 100;
+
+	print Num;
+	print "! (recursional) = ";
+
+	elapsed_seconds;
+	print factr Num;
+	
+	print "\
+";
+	print "Elapsed seconds: ";
+	print elapsed_seconds;
+	
+	print "\
+\
+";
+
+
+	
+	
+	print Num;
+	print "! (standard) = ";
+	
+	elapsed_seconds;
+	print fact Num;
+	
+		print "\
+";
+	print "Elapsed seconds: ";
+	print elapsed_seconds;
+	
+	
+	
+	print "\
+";
+
+	next = end;
+}
+
+
+factr{
+	var tmp = in[0];
+
+	if tmp == 1 then out = 1;
+	else
+	{
+		out = (tmp * factr( tmp - 1));
+	}
+
+	next = end;
+}
+
+
+fact{
+	var tmp = in[0];
+	
+	out = 1;
+	
+	while( tmp > 1 )
+	{
+		out *= tmp;
+		tmp -= 1;
+	}
+
+	next=end;
+}

@@ -1,0 +1,35 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE KDevPrjSession>
+<KDevPrjSession>
+ <DocsAndViews NumberOfDocuments="3" >
+  <Doc0 NumberOfViews="1" URL="file:///workspace2/ss/interpreter/ssiconsole/src/main.cpp" >
+   <View0 Type="Source" />
+  </Doc0>
+  <Doc1 NumberOfViews="1" URL="file:///workspace2/ss/interpreter/ssiconsole/src/Console.cpp" >
+   <View0 line="279" Type="Source" />
+  </Doc1>
+  <Doc2 NumberOfViews="1" URL="file:///workspace2/ss/interpreter/ssiconsole/include/Console.hpp" >
+   <View0 line="90" Type="Source" />
+  </Doc2>
+ </DocsAndViews>
+ <pluginList>
+  <kdevdebugger>
+   <breakpointList>
+    <breakpoint0 location="/workspace2/ss/interpreter/ssiconsole/src/main.cpp:117" type="1" condition="" enabled="1" />
+    <breakpoint1 location="/workspace2/ss/interpreter/ssiconsole/src/main.cpp:145" type="1" condition="" enabled="1" />
+    <breakpoint2 location="/workspace2/ss/interpreter/ssiconsole/src/main.cpp:138" type="1" condition="" enabled="1" />
+    <breakpoint3 location="/workspace2/ss/interpreter/ssiconsole/src/main.cpp:118" type="1" condition="" enabled="1" />
+    <breakpoint4 location="/workspace2/ss/interpreter/ssiconsole/src/Console.cpp:29" type="1" condition="" enabled="1" />
+   </breakpointList>
+  </kdevdebugger>
+  <kdevbookmarks>
+   <bookmarks/>
+  </kdevbookmarks>
+  <kdevvalgrind>
+   <executable path="" params="" />
+   <valgrind path="" params="" />
+   <calltree path="" params="" />
+   <kcachegrind path="" />
+  </kdevvalgrind>
+ </pluginList>
+</KDevPrjSession>

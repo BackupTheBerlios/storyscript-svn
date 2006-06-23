@@ -1,0 +1,47 @@
+/*
+	The recursional ackermann benchmark, so I can
+	compare performance with the languages in the
+	shootout (http://shootout.alioth.debian.org)
+*/
+
+use SSTime;
+
+main{ next = end;
+
+	var A = 5;
+
+	elapsed_seconds;
+	
+	print "Ack(2,";
+	print A;
+	print "): ";
+	print Ack( 3, A );
+	print endl;
+	print endl;
+	
+	print "Elapsed Seconds: ";
+	print elapsed_seconds;
+	print endl;
+}
+
+Ack{ next = end;
+
+	/*
+	print "[";
+	print in[0];
+	print ", ";
+	print in[1];
+	print "]";
+	*/
+	
+	if in[0] == 0 then out = in[1] + 1;
+	else if in[1] == 0 then out = Ack( in[0] - 1, 1 );
+	else out = Ack( in[0] - 1, Ack( in[0], in[1] - 1) );
+
+
+/*
+	in[0] == 0 and return in[1] + 1;
+	in[1] == 0 and return Ack( in[0] - 1, 1 );
+	return Ack( in[0] - 1, Ack( in[0], in[1] - 1) );
+*/	
+}

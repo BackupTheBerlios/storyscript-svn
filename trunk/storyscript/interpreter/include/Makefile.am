@@ -1,4 +1,4 @@
-pkg_HEADERS = \
+pkginclude_HEADERS = \
 Anomaly.hpp \
 Block.hpp \
 Bookmark.hpp \

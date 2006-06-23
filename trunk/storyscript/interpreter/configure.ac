@@ -2,8 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(storyscript, 1, DanielCJones@gmail.com)
-AC_CONFIG_SRCDIR([include/Anomaly.hpp])
+AC_INIT(storyscript, 0.0)
+AC_CONFIG_SRCDIR(src/Anomaly.cpp)
+AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE
@@ -34,5 +35,6 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([localeconv sqrt])
-AC_OUTPUT(Makefile src/Makefile include/Makefile)
+AC_CONFIG_FILES(./Makefile src/Makefile include/Makefile)
 
+AC_OUTPUT
