@@ -1,0 +1,37 @@
+Source code for the S^2 (StoryScript) Language Interpreter
+
+This is an very early version, so don't expect everything to work perfectly and quickly.
+
+Please report bugs and make suggestion to:
+Daniel Jones
+DanielCJones@gmail.com
+
+or, on the StoryScript berlios.de page: http://developer.berlios.de/projects/storyscript/
+
+Directory Layout:
+
+include: all the header files
+src: all the source files
+win32: build stuff and files specific to win32 build
+linux: build stuff and file specific to linux
+
+
+Build Instructions:
+
+-------------Win32-------------
+Just open up the .sln file in visual studio and build the thing.
+
+Dependencies:
+All the libraries you need are included (under win32/libs).
+
+------------Linux--------------
+SCons:
+S^2 makes use of the python based SCons build system.  You must have this installed to build the interpreter.  Once you do, its as simple as running "scons" and "scons install".  (Also "scons --clean" will remove compiled binaries similarly to "make clean".)
+
+Ant:
+There is also a ant build file provided (build.xml).  That relies on the Ant-Contrib Tasks (http://ant-contrib.sourceforge.net/).  Building with ant is as similar to scons: "ant" will build, "ant install" will install, "ant clean" will clean.  For more info, run "ant -p".
+
+
+Dependencies:
+gmp (http://www.swox.com/gmp/)
+mpfr (http://www.mpfr.org/)
