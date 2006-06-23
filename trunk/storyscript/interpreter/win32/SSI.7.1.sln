@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSI", "SSI.7.1.vcproj", "{1A681975-88F0-4AB6-B4EF-6E860144B4D1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+		Single-Threaded Debug = Single-Threaded Debug
+		Single-Threaded Release = Single-Threaded Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Debug.ActiveCfg = Debug|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Debug.Build.0 = Debug|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Release.ActiveCfg = Release|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Release.Build.0 = Release|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Single-Threaded Debug.ActiveCfg = Single-Threaded Debug|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Single-Threaded Debug.Build.0 = Single-Threaded Debug|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Single-Threaded Release.ActiveCfg = Single-Threaded Release|Win32
+		{1A681975-88F0-4AB6-B4EF-6E860144B4D1}.Single-Threaded Release.Build.0 = Single-Threaded Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

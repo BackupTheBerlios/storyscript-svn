@@ -1,0 +1,67 @@
+
+/?Dramatis Personae?/
+character Dante;
+character Alberto;
+
+Dante: Lunch{	line=
+	"We can worry about the mess later.
+	right now, we eat.  What would you like?";
+	
+	nextline=
+	Alberto: Tacos,
+	Alberto: Pizza,
+	Alberto: Pie,
+	Alberto: DontCare;
+}
+
+Alberto: Tacos{    line=
+	"I've always been a fan of tacos.";
+}
+
+Dante: Stereo{    line=
+	"Always the stereotypical Mexican, aren't you?";
+	
+	nextline=end;
+}
+
+
+Alberto: Pizza{    line=
+	"Well piza sounds good.";
+}
+
+Dante: Ahh{    line=
+	"Ahh, pizza.  The quintessential American food.";
+	
+	nextline=end;
+}
+
+
+Alberto: Pie{    line=
+	"I could go for some pie.";
+}
+
+Dante: Pie{    line=
+	"Pie? Pie?!  Here we are, two men with the
+	reputation -- well deserved reputation -- that
+	other lesser men can only dream of.  we have
+	killed, tortured, and blackmailed our way to
+	the top of a great totem pole of mexican drug
+	lords.  Here we are, two of the meanest, 
+	shortest tempered men in North America, and
+	for luch, you want pie?";
+	
+	nextline=end;
+}
+
+
+Alberto: DontCare{    line=
+	"Uh, I really don't care boss.";
+}
+
+
+Dante: Good{    line=
+	"Now that's the subservient sidekick that I love.
+	Come; we are having ice cream.";
+	
+	nextline=end;
+}
