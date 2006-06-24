@@ -65,8 +65,10 @@ int main( int argc, char* argv[] )
 	if( cl.search( "--version" ) )
 	{
 		CON << TXT("SS Console Interpreter\n");
-		CON << SS::GetInterpreterName();
-		CON << TXT("\nPlease send comments and report bugs to: DanielCJones@gmail.com.\n");
+		CON << TXT("Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)\n");
+		CON << SS::GetVersionString();
+		CON << TXT("\n");
+		//CON << TXT("\nPlease send comments and report bugs to: DanielCJones@gmail.com.\n");
 		
 		delete pCON;
 		exit(0);

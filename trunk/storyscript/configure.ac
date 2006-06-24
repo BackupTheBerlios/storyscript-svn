@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT(storyscript, 0.0)
-AC_CONFIG_SRCDIR(src/Anomaly.cpp)
+AC_CONFIG_SRCDIR(interpreter/src/Anomaly.cpp)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
 
@@ -35,6 +35,7 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([localeconv sqrt])
-AC_CONFIG_FILES(./Makefile src/Makefile include/Makefile)
+AC_CONFIG_FILES(Makefile interpreter/Makefile interpreter/src/Makefile interpreter/include/Makefile cli/Makefile cli/src/Makefile 
+cli/include/Makefile)
 
 AC_OUTPUT

@@ -55,8 +55,8 @@ ConsoleInterface::ConsoleInterface( Console& CON, bool StartupBanner /*=true*/ )
 	{
 		SetDebugColor();
 		
-		CON << TXT("SS Console Interpreter.\nVersion: ") << SS::GetInterpreterName() << TXT(" \n");
-		CON << TXT("This is Alpha Software!\nPlease report anything suspicious to: DanielCJones@gmail.com.\n");
+		CON << TXT("SS Console Interpreter.\nVersion: ") << SS::GetVersionString() << TXT(" \n");
+		CON << TXT("This is Alpha Software!  Please report anything suspicious to: DanielCJones@gmail.com.\n");
 		#if defined(_DEBUG)
 		CON << TXT("DEBUG MODE ON, ");
 		#else
@@ -67,7 +67,7 @@ ConsoleInterface::ConsoleInterface( Console& CON, bool StartupBanner /*=true*/ )
 		#else
 		CON << TXT("UNICODE MODE OFF, ");
 		#endif
-		CON << TXT("Last compile: ") << SS::GetLastCompileTime() << TXT(" \n");
+		//CON << TXT("Last compile: ") << SS::COMPILEDATA << TXT(" \n");
 		CON << TXT("-------------------------------------------------\n\n");
 
 		SetDefaultColor();

@@ -1,12 +1,12 @@
 AUTOMAKE_OPTIONS = foreign
 
+MOSTLYCLEANFILES = SVNRevision.cpp
 
+lib_LTLIBRARIES = libstoryscript.la
 
-lib_LTLIBRARIES = libssi.la
+libstoryscript_la_CPPFLAGS = -I../include
 
-libssi_la_CPPFLAGS = -I$(top_srcdir)/include
-
-libssi_la_SOURCES = \
+libstoryscript_la_SOURCES = \
 Anomaly.cpp \
 Block.cpp \
 Bookmark.cpp \
@@ -36,5 +36,9 @@ SpecialVars.cpp \
 Unicode.cpp \
 Variable.cpp \
 VersionInfo.cpp \
-Word.cpp
+Word.cpp \
+SVNRevision.cpp
 
+SVNRevision.cpp: FORCE
+	./gen-SVNRevision.cpp.sh
+FORCE:

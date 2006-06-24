@@ -11,37 +11,52 @@ NOTES: Just some quick defines for keeping track of the version.
 
 using namespace SS;
 
+/*
+For future versions, here are some notable distasters:
 
-const SS::STRING SS::SSI_VERSION( TXT("1 (Hindenburg)") );
-const SS::STRING SS::SSI_BUILDNUM( TXT("0 (Safe for now.)") );
-const SS::STRING SS::SSI_PLATFORM = 
+Lusitania
+Titanic
+Pompey
+...
+*/
+
+const SS::CHAR* SS::SSI_MAJORVERSION = TXT("SS-1 : Hindenburg");
+//const SS::STRING SS::SSI_BUILDNUM( TXT("0 (Safe for now.)") );
+
+//This is platform business is really silly how it is.
+const SS::CHAR* SS::SSI_PLATFORM = 
 	#if defined(PLAT_WIN32)
 		TXT("Win32");
 	#elif defined(PLAT_LINUX)
 		TXT("Linux");
-	#endif
-
-const SS::STRING SS::SSI_NAME = (SS::STRING)(TXT("SS-")) + (SSI_VERSION) + (SS::STRING)(TXT(" Build: ")) + SSI_BUILDNUM +
-							 (SS::STRING)(TXT("  ")) + SSI_PLATFORM;
-
-const SS::STRING SS::SSI_LASTCOMPILE = 
-	(SS::STRING)(SS_DATE) + (SS::STRING)(TXT("  ")) +
-	(SS::STRING)(SS_TIME);
+	#else
+		TXT("Unkown Platform")
+	#endif 
+	
+const SS::CHAR* SS::SSI_COMPILEDATE = 
+	__DATE__ "  " __TIME__;
 
 
-SS::STRING SS::GetInterpreterVersion(){
-	return SSI_VERSION;
+
+SS::STRING VersionString;
+
+
+
+SS_API const SS::CHAR* SS::GetVersionString()
+{
+	static bool BuildVersionString = true;
+	
+	if( BuildVersionString )
+	{
+		VersionString =
+			STRING(SSI_MAJORVERSION) + STRING(TXT("  (")) + STRING(SSI_PLATFORM) + 
+			STRING(TXT(")\nSVN Revision: ")) + STRING(SSI_SVNRevision) +
+			STRING(TXT("  ::  Compiled: ")) + STRING(SSI_COMPILEDATE);
+		
+		BuildVersionString = false;
+	}
+	
+	return VersionString.c_str();
 }
 
-SS::STRING SS::GetInterpreterName(){
-	return SSI_NAME;
-}
-
-SS::STRING SS::GetLastCompileTime(){
-	return SSI_LASTCOMPILE;
-}
-
-SS::STRING SS::GetBuildNumber(){
-	return SSI_BUILDNUM;
-}
 
