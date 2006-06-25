@@ -73,7 +73,7 @@ VariableBasePtr Block::Operate( VariableBasePtr In )
 	
 	//Instead we make a copy and return that.
 	return CreateVariable<Variable>( LC_Output, false, true,
-			 					     *GetScopeObject( LC_Output )->CastToVariable() );
+			 					     *GetScopeObjectLocal( LC_Output )->CastToVariable() );
 }
 
 
@@ -170,7 +170,7 @@ const BlockPtr Block::CastToBlock() const{
 */
 STRING& Block::GetOutString()
 {
-	return GetScopeObject( LC_Output )->CastToVariable()->GetActualStringData();
+	return GetScopeObjectLocal( LC_Output )->CastToVariable()->GetActualStringData();
 }
 
 

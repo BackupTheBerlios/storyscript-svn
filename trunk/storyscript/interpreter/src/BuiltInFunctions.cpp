@@ -57,7 +57,7 @@ VariableBasePtr ImportOperator::Operate( VariableBasePtr X )
 VariableBasePtr UnImportOperator::Operate( VariableBasePtr X )
 {
 	Interpreter::Instance().GetCurrentScope()->UnImport(
-			Interpreter::Instance().GetScopeObject( X->GetStringData() )->CastToScope() );
+			Interpreter::Instance().GetScopeObject( MakeCompoundID( X->GetStringData() ) )->CastToScope() );
 			
 	return X;
 }

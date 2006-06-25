@@ -309,7 +309,7 @@ ReaderSource& Interpreter::GetSource( const Bookmark& Pos )
 		mpCurrentScope = Pos.CurrentScope;
 	}
 	else{
-		mpCurrentScope = mpGlobalScope->GetScopeObject( 
+		mpCurrentScope = mpGlobalScope->GetScopeObjectLocal( 
 				MakeScopeNameFromFileName(pSource->GetName()) )->CastToScope();
 	}
 
@@ -362,7 +362,7 @@ void Interpreter::Close()
 void Interpreter::Parse( const STRING& BlockName )
 {
 	//Attempt to find the block
-	ScopeObjectPtr pBlockHopeful = GetScopeObject( BlockName );
+	ScopeObjectPtr pBlockHopeful = GetScopeObject( MakeCompoundID( BlockName ) );
 
 	//This will throw if it is indeed not a Block.
 	BlockPtr pBlock = pBlockHopeful->CastToBlock();
@@ -425,7 +425,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	//There is a static 'out' and a 'out' that is created with each instance.
 	//When the block is finished the instanced 'out' gets copied to the static out.
 	//Trust me.  This makes sense.
-	*(pBlock->GetScopeObject( LC_Output )->CastToVariable()) = *OutInstance->CastToVariableBase();
+	*(pBlock->GetScopeObjectLocal( LC_Output )->CastToVariable()) = *OutInstance->CastToVariableBase();
 
 	//Now the instance gets destroyed
 	pBlock->UnImport( pInstance );
@@ -449,7 +449,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 
 
 	//Now figure out what block to say next
-	ListPtr pNextLine = pBlock->GetScopeObject( LC_NextBlock )->CastToList();
+	ListPtr pNextLine = pBlock->GetScopeObjectLocal( LC_NextBlock )->CastToList();
 
 	//Create a list of a actual choices.  Throw out bad values.
 	const ListType& OrigChoices = pNextLine->GetInternalList();
@@ -458,7 +458,8 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
     unsigned int i;
 	for( i = 0; i < OrigChoices.size(); i ++ )
 	{
-		GoodChoices.push_back( GetScopeObject( OrigChoices[i]->GetStringData() )->CastToBlock() );
+		GoodChoices.push_back( GetScopeObject( 
+				MakeCompoundID( OrigChoices[i]->GetStringData() ) )->CastToBlock() );
 	}
 
     if( GoodChoices.size() != 0 )
@@ -506,7 +507,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	bool AllowElse = false;
 	bool LastConditionalResult = false;
 	
-	Word TempWord;
+	const Word* pTempWord;
 
 	
 	while( true )
@@ -523,38 +524,38 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 		/*
 			Grab the next word.
 		*/
-		TempWord = MySource.GetNextWord();
- 		if( TempWord == EOF_WORD ) return;
+		pTempWord = &MySource.GetNextWord();
+ 		if( *pTempWord == EOF_WORD ) return;
  		
  		//We don't parse past '}'
- 		if( TempWord.Extra == EXTRA_BRACKET_Right ) return;
+ 		if( pTempWord->Extra == EXTRA_BRACKET_Right ) return;
  		
  		//We don't parse past '{' either in this case.
- 		if( TempWord.Extra == EXTRA_BRACKET_Left  ) return;
+ 		if( pTempWord->Extra == EXTRA_BRACKET_Left  ) return;
  		
  		//Else only works immediatley after the control statement.
- 		if( TempWord.Extra != EXTRA_CONTROL_Else && AllowElse ) AllowElse = false;
+ 		if( pTempWord->Extra != EXTRA_CONTROL_Else && AllowElse ) AllowElse = false;
  		
  		//Shall we skip statics?
- 		if( TempWord.Extra == EXTRA_CONTROL_Static )
+ 		if( pTempWord->Extra == EXTRA_CONTROL_Static )
  		{
  			if( !IgnoreStatic ) FastForwardToNextStatement( MySource );
  			continue; 
  		}	
  		
  		//If
- 		if( TempWord.Extra == EXTRA_CONTROL_If )
+ 		if( pTempWord->Extra == EXTRA_CONTROL_If )
  		{
  			//Get the condition
  			ExpressionPtr pCondition = GetNextExpression( MySource );
  			
- 			TempWord = MySource.GetNextWord();
- 			if( TempWord == EOF_WORD ) ThrowUnexpectedEOF();
- 			else if( TempWord.Extra == EXTRA_CONTROL_Do )
+ 			pTempWord = &MySource.GetNextWord();
+ 			if( *pTempWord == EOF_WORD ) ThrowUnexpectedEOF();
+ 			else if( pTempWord->Extra == EXTRA_CONTROL_Do )
  			{
  				LastConditionalResult = ParseIf( *pCondition, GetCurrentPos(), true );
  			}
- 			else if( TempWord.Extra == EXTRA_BRACKET_Left )
+ 			else if( pTempWord->Extra == EXTRA_BRACKET_Left )
  			{
  				LastConditionalResult = ParseIf( *pCondition, GetCurrentPos(), false );
  			}
@@ -570,18 +571,18 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
  		}
  		
  		//While
- 		if( TempWord.Extra == EXTRA_CONTROL_While )
+ 		if( pTempWord->Extra == EXTRA_CONTROL_While )
  		{
  			 //Get the condition
  			ExpressionPtr pCondition = GetNextExpression( MySource );
  			
- 			TempWord = MySource.GetNextWord();
- 			if( TempWord == EOF_WORD ) ThrowUnexpectedEOF();
- 			else if( TempWord.Extra == EXTRA_CONTROL_Do )
+ 			pTempWord = &MySource.GetNextWord();
+ 			if( *pTempWord == EOF_WORD ) ThrowUnexpectedEOF();
+ 			else if( pTempWord->Extra == EXTRA_CONTROL_Do )
  			{
  				LastConditionalResult = ParseWhile( *pCondition, GetCurrentPos(), true );
  			}
- 			else if( TempWord.Extra == EXTRA_BRACKET_Left )
+ 			else if( pTempWord->Extra == EXTRA_BRACKET_Left )
  			{
  				LastConditionalResult = ParseWhile( *pCondition, GetCurrentPos(), false );
  			}
@@ -597,7 +598,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
  		}
  		
  		//Else
- 		if( TempWord.Extra == EXTRA_CONTROL_Else )
+ 		if( pTempWord->Extra == EXTRA_CONTROL_Else )
  		{
  			if( !AllowElse ){
  				ThrowParserAnomaly( TXT("Found an \'else\' without a matching \'if\' or \'while\'."), ANOMALY_BADGRAMMAR );
@@ -605,14 +606,14 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
  			
  			if( LastConditionalResult == false )
  			{
- 				TempWord = MySource.GetNextWord();
- 				if( TempWord.Extra == EXTRA_BRACKET_Left )
+ 				pTempWord = &MySource.GetNextWord();
+ 				if( pTempWord->Extra == EXTRA_BRACKET_Left )
  				{
  					Parse( GetCurrentPos() );
  				}
  					
  				//Go ahead and suck up a do/then if its there.
- 				if( TempWord.Extra != EXTRA_CONTROL_Do ) MySource.PutBackWord();
+ 				if( pTempWord->Extra != EXTRA_CONTROL_Do ) MySource.PutBackWord();
  				
  				AllowElse = false;
  			}
@@ -631,34 +632,36 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
  		}
  		
  		//Block declarations
- 		if( TempWord.Type == WORDTYPE_IDENTIFIER )
+ 		if( pTempWord->Type == WORDTYPE_IDENTIFIER )
  		{
- 			Word NextWord = MySource.GetNextWord();
- 			if( NextWord.Extra == EXTRA_BRACKET_Left )
+ 			CompoundString Id = pTempWord->String;
+ 			
+ 			pTempWord = &MySource.GetNextWord();
+ 			if( pTempWord->Extra == EXTRA_BRACKET_Left )
  			{
- 				NextWord = MySource.GetNextWord();
-				if( NextWord.Type == WORDTYPE_DOCSTRING )
+ 				pTempWord = &MySource.GetNextWord();
+				if( pTempWord->Type == WORDTYPE_DOCSTRING )
 				{
 					ScopeObjectPtr pNewBlock =
-						MakeScopeObject( SCOPEOBJ_BLOCK, TempWord.String );
-					pNewBlock->CastToScope()->GetDocString() = NextWord.String;		
+						MakeScopeObject( SCOPEOBJ_BLOCK, Id );
+					pNewBlock->CastToScope()->GetDocString() = pTempWord->String[0];		
 				}
 				else
 				{
-					MySource.PutBackWord();
-					MakeScopeObject( SCOPEOBJ_BLOCK, TempWord.String );
+					pTempWord = &MySource.PutBackWord();
+					MakeScopeObject( SCOPEOBJ_BLOCK, Id );
 				}
 				
 				if( mVerboseOutput ){
-					mpInterface->LogMessage( STRING(TXT("Registered new block: \'")) + TempWord.String + STRING(TXT("\'.\n")) );
+					mpInterface->LogMessage( STRING(TXT("Registered new block: \'")) + CollapseCompoundString(Id) + STRING(TXT("\'.\n")) );
 				}
 				
 				//Now we have to skip to the end }
 				unsigned long BracketCount = 1;
 				do{
-					NextWord = MySource.GetNextWord();
-					if( NextWord.Extra == EXTRA_BRACKET_Left ) BracketCount++;
-					else if( NextWord.Extra == EXTRA_BRACKET_Right ) BracketCount--;					
+					pTempWord = &MySource.GetNextWord();
+					if( pTempWord->Extra == EXTRA_BRACKET_Left ) BracketCount++;
+					else if( pTempWord->Extra == EXTRA_BRACKET_Right ) BracketCount--;					
 				}
 				while( BracketCount > 0 );	
 				
@@ -677,15 +680,15 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
  				if( OneStatement ) return;
  				else continue;
  			}
- 			else MySource.PutBackWord();
+ 			else pTempWord = &MySource.PutBackWord();
  		}
  		
  		
  		//Otherwise we assume it's an expression and try to evaluate it.
  		MySource.PutBackWord(); //Let GetNextExpression take it.
  		GetNextExpression( MySource )->Evaluate();
- 		TempWord = MySource.GetNextWord();
- 		if( TempWord.Type != WORDTYPE_TERMINAL )
+ 		pTempWord = &MySource.GetNextWord();
+ 		if( pTempWord->Type != WORDTYPE_TERMINAL )
  		{
  			ThrowParserAnomaly( TXT("Missing \';\' at the end of this expression."), ANOMALY_BADPUNCTUATION );
  		}
@@ -704,7 +707,7 @@ void Interpreter::ThrowUnexpectedEOF() const
 
 Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySource )
 {
-	Word TempWord;
+	const Word* pTempWord;
 	
 	Bookmark CurrentPos = GetCurrentPos();
 	CachedExpressionMap::iterator i = mCachedExpressions.find( CurrentPos );
@@ -718,19 +721,19 @@ Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySourc
 			
 	while( true )
 	{
-		TempWord = MySource.GetNextWord();
+		pTempWord = &MySource.GetNextWord();
 		
-		if( TempWord.Type == WORDTYPE_IDENTIFIER ||
-			TempWord.Type == WORDTYPE_FLOATLITERAL ||
-			TempWord.Type == WORDTYPE_STRINGLITERAL ||
-			TempWord.Type == WORDTYPE_BOOLLITERAL ||
-			TempWord.Type == WORDTYPE_EMPTYLISTLITERAL ||
-			TempWord.Type == WORDTYPE_BINARYOPERATOR ||
-			TempWord.Type == WORDTYPE_UNARYOPERATOR ||
-			TempWord.Type == WORDTYPE_AMBIGUOUSOPERATOR ||
-			TempWord.Type == WORDTYPE_PARENTHESIS )
+		if( pTempWord->Type == WORDTYPE_IDENTIFIER ||
+			pTempWord->Type == WORDTYPE_FLOATLITERAL ||
+			pTempWord->Type == WORDTYPE_STRINGLITERAL ||
+			pTempWord->Type == WORDTYPE_BOOLLITERAL ||
+			pTempWord->Type == WORDTYPE_EMPTYLISTLITERAL ||
+			pTempWord->Type == WORDTYPE_BINARYOPERATOR ||
+			pTempWord->Type == WORDTYPE_UNARYOPERATOR ||
+			pTempWord->Type == WORDTYPE_AMBIGUOUSOPERATOR ||
+			pTempWord->Type == WORDTYPE_PARENTHESIS )
 		{
-			NextExpression->push_back( TempWord );			
+			NextExpression->push_back( *pTempWord );			
 		}
 		else break;
 	}
@@ -767,19 +770,20 @@ bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bo
 	{
 		//Fast forward to the end of the statement.
 		ReaderSource& FileRef = GetSource( Body );
-		Word TempWord;
-		while( TempWord.Type != WORDTYPE_TERMINAL ) TempWord = FileRef.GetNextWord();
+		const Word* pTempWord;
+		while( pTempWord->Type != WORDTYPE_TERMINAL ) pTempWord = &FileRef.GetNextWord();
 	}
 	else
 	{
 		//Fast forward to the end of the body
 		ReaderSource& FileRef = GetSource( Body );
 		unsigned int BracketCount = 1;
+		const Word* pTempWord;
 		while( BracketCount )
 		{
-			Word tmp = FileRef.GetNextWord();
-			if     ( tmp.Extra == EXTRA_BRACKET_Left ) BracketCount++;
-			else if( tmp.Extra == EXTRA_BRACKET_Right ) BracketCount--;
+			const Word* pTempWord = &FileRef.GetNextWord();
+			if     ( pTempWord->Extra == EXTRA_BRACKET_Left ) BracketCount++;
+			else if( pTempWord->Extra == EXTRA_BRACKET_Right ) BracketCount--;
 		}
 	}
 
@@ -807,8 +811,8 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 	{
 		//Fast forward to the end of the statement.
 		ReaderSource& FileRef = GetSource( Body );
-		Word TempWord;
-		while( TempWord.Type != WORDTYPE_TERMINAL ) TempWord = FileRef.GetNextWord();
+		const Word* pTempWord;
+		while( pTempWord->Type != WORDTYPE_TERMINAL ) pTempWord = &FileRef.GetNextWord();
 	}
 	else if( !WasParsed )
 	{
@@ -816,11 +820,12 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 		//Fast forward to the end of the body
 		ReaderSource& FileRef = GetSource( Body );
 		unsigned int BracketCount = 1;
+		
 		while( BracketCount )
 		{
-			Word tmp = FileRef.GetNextWord();
-			if     ( tmp.Extra == EXTRA_BRACKET_Left ) BracketCount++;
-			else if( tmp.Extra == EXTRA_BRACKET_Right ) BracketCount--;
+			const Word* pTempWord = &FileRef.GetNextWord();
+			if     ( pTempWord->Extra == EXTRA_BRACKET_Left ) BracketCount++;
+			else if( pTempWord->Extra == EXTRA_BRACKET_Right ) BracketCount--;
 		}
 	}
 
@@ -833,6 +838,7 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
  NOTES: In a ID such as "Charlie: Hello", it will remove the "Charlie: "
 		and return "Charlie".  It does nothing if the word is not an ID at all.
 */
+/*
 Word Interpreter::BreakOffFirstID( Word& W )
 {
 	Word TempWord;
@@ -863,12 +869,14 @@ Word Interpreter::BreakOffFirstID( Word& W )
 
 	return TempWord;
 }
+*/
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Interpreter::BreakOffLastID
  NOTES: See "BreakOffFirstID" this its opposite.
 */
+/*
 Word Interpreter::BreakOffLastID( Word& W )
 {
 	Word TempWord;
@@ -901,7 +909,7 @@ Word Interpreter::BreakOffLastID( Word& W )
 
 	return TempWord;
 }
-
+*/
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -909,14 +917,13 @@ Word Interpreter::BreakOffLastID( Word& W )
         intelligent solution than just calling mpCurrentScope.Register.  This will
 		figure out where the object really belongs.
 */
-ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING& S,
+ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const CompoundString& S,
 								   bool Static /*= false*/, bool Const /*= false*/ )
  {
 	ScopeObjectPtr pNewObj;
 
-	Word TempWord( S, WORDTYPE_IDENTIFIER );
-	STRING Name = BreakOffLastID( TempWord ).String;
-	STRING& ScopeName = TempWord.String;
+	const STRING& Name = S[0];
+	CompoundString ScopeName( S.begin(), S.end() - 1 );
 
 	switch( Type )
 	{
@@ -942,13 +949,13 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING&
 		break;
 	default:
 		SS::STRING tmp = TXT("Tried to register an object with an unknown type named: \'");
-		tmp += S;
+		tmp += CollapseCompoundString(S);
 		tmp += TXT("\'.");
 		ThrowParserAnomaly( tmp, ANOMALY_UNKNOWNTYPE );
 
 	}
 
-	if( ScopeName.length() == 0 )
+	if( ScopeName.size() == 0 || ( ScopeName.size() == 1 && ScopeName[0].length() == 0 ) )
 	{
 		if( Static && mpCurrentStaticScope ){
 			mpCurrentStaticScope->Register( pNewObj );
@@ -980,7 +987,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const STRING&
         This one searches in all the correct places taking into account the current
         scope.
 */
-ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
+ScopeObjectPtr Interpreter::GetScopeObject( const CompoundString& Name )
 {
 	//Try the local scope first
 
@@ -1022,13 +1029,13 @@ ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
 	//but not if it mpCurrentScope belongs to another scope that was imported.
 	STRING ScopeName( MakeScopeNameFromFileName( mpCurrentSource->GetName() ) );
 	
-	pObject = mpGlobalScope->GetScopeObject( ScopeName )->CastToScope()->GetScopeObject_NoThrow( Name );
+	pObject = mpGlobalScope->GetScopeObject( MakeCompoundID( ScopeName ) )->CastToScope()->GetScopeObject_NoThrow( Name );
 	if( pObject ) return pObject;
 
 
 	//Nothing
 	STRING tmp = TXT("Cannot find an indentifier by the name \'");
-	tmp += Name;
+	tmp += CollapseCompoundString( Name );
 	tmp += TXT("\'.  Check your spelling.");
 	ThrowParserAnomaly( tmp, ANOMALY_IDNOTFOUND );
 }
@@ -1039,15 +1046,15 @@ ScopeObjectPtr Interpreter::GetScopeObject( const STRING& Name )
  		external software.
 */
 ScopePtr Interpreter::GetScope( const STRING& Name ){
-	return GetScopeObject( Name )->CastToScope();
+	return GetScopeObject( MakeCompoundID( Name ) )->CastToScope();
 }
 
 VariablePtr Interpreter::GetVariable( const STRING& Name ){
-	return GetScopeObject( Name )->CastToVariable();
+	return GetScopeObject( MakeCompoundID( Name ) )->CastToVariable();
 }
 
 BlockPtr Interpreter::GetBlock( const STRING& Name ){
-	return GetScopeObject( Name )->CastToBlock();
+	return GetScopeObject( MakeCompoundID( Name ) )->CastToBlock();
 }
 
 
@@ -1095,24 +1102,24 @@ void Interpreter::AssertAttachedInterface()
 */
 void Interpreter::FastForwardToNextStatement( ReaderSource& MySource )
 {
-	Word TempWord;
+	const Word* pTempWord;
 
-	for( TempWord = MySource.GetNextWord();
-		 TempWord.Type != WORDTYPE_TERMINAL;
-		 TempWord = MySource.GetNextWord() )
+	for( pTempWord = &MySource.GetNextWord();
+		 pTempWord->Type != WORDTYPE_TERMINAL;
+		 pTempWord = &MySource.GetNextWord() )
 	{
 		//Override the search for the ';' and instead break on
 		//a complete bracket set.
-		if( TempWord.Extra == EXTRA_BRACKET_Left )
+		if( pTempWord->Extra == EXTRA_BRACKET_Left )
 		{
 			unsigned long BracketCount = 1;
 
 			while( true )
 			{
-				TempWord = MySource.GetNextWord();
+				pTempWord = &MySource.GetNextWord();
 
-				if( TempWord.Extra == EXTRA_BRACKET_Left ) BracketCount++;
-				else if( TempWord.Extra == EXTRA_BRACKET_Right )
+				if( pTempWord->Extra == EXTRA_BRACKET_Left ) BracketCount++;
+				else if( pTempWord->Extra == EXTRA_BRACKET_Right )
 				{
 					if( BracketCount == 0 ){
 						ThrowParserAnomaly( TXT("Found \'}\' without a matching \'{\'."), ANOMALY_BADGRAMMAR );

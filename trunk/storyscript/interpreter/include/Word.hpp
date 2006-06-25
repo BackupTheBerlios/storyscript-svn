@@ -15,6 +15,10 @@ NOTES: The basic script token.
 
 namespace SS{
 
+
+typedef std::vector<SS::STRING> CompoundString;
+
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  Word
  NOTES: Once ScriptFile breaks up the file, it puts the 
@@ -28,6 +32,9 @@ public:
 	Word( WordType Type, ExtraDesc Extra = EXTRA_NULL );
 	Word( const Word& );
 	
+	void DivideAndAssignString( const SS::STRING& );
+	SS::STRING GetSimpleString() const;
+	
 	virtual ~Word() {}
 
 	Word& operator=( const Word& W );
@@ -39,10 +46,18 @@ public:
 	void InterpretAsBinaryOp() const;
 	void InterpretAsUnaryOp() const;
 
-	SS::STRING String;
+	CompoundString String;
 	mutable WordType Type;
 	mutable ExtraDesc Extra;
+
+	
+
 };
+
+SS::CompoundString MakeCompoundString( const SS::STRING& S );
+SS::CompoundString MakeCompoundID( const SS::STRING& S);
+
+SS::STRING CollapseCompoundString( const SS::CompoundString& );
 
 //Defined in Word.cpp:
 extern const Word EOF_WORD;

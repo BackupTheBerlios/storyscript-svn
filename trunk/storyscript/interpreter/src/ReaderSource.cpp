@@ -44,7 +44,7 @@ ReaderSource::~ReaderSource()
  		the tokenizing.  This is some sloppy-ass code, but it gets the job done.
 */
 
-Word ReaderSource::GetNextWord()
+const Word& ReaderSource::GetNextWord()
 {
 	static unsigned int BracketCount = 0;
 	static unsigned int NameOfBracketCount = 0;
@@ -54,7 +54,7 @@ Word ReaderSource::GetNextWord()
 	//If we are not at the end, just read off of the buffer.
 	if( mBufferPos != mBuffer.size() )
 	{
-		Word ReturnWord = mBuffer[ mBufferPos ];
+		const Word& ReturnWord = mBuffer[ mBufferPos ];
 		mBufferPos++;
 		//UpdateCurrentLine();
 		return ReturnWord;		
@@ -282,6 +282,7 @@ Word ReaderSource::GetNextWord()
 		//This part determines what belongs to the identifier and what doesn't
 		bool IDBeginning = false;
 		bool ExpectScopeResOp = false;
+		Word NewID = Word( TempString, WORDTYPE_IDENTIFIER );
 		
 		//Infinate loop.  This one may be dangerous.  Watch it.
 		while( true )
@@ -318,7 +319,8 @@ Word ReaderSource::GetNextWord()
 			else
 				if( TempChar == LC_ScopeResolution[0] )
 			{
-				TempString += TempChar;
+				NewID.String.push_back( TempString );
+				TempString.clear();
 				IDBeginning = true;
 				if( ExpectScopeResOp ) ExpectScopeResOp = false;
 			}
@@ -329,7 +331,7 @@ Word ReaderSource::GetNextWord()
 			}
 		}
 		
-		return PushWord( Word(TempString, WORDTYPE_IDENTIFIER) );
+		return PushWord( NewID );
 	}
 
 	//BINARY OPERATOR
@@ -399,11 +401,14 @@ Word ReaderSource::GetNextWord()
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Puts back the last word returned by GetNextWord.
+ NOTES: Puts back the last word returned by GetNextWord, and then returns the
+ 		Word prior it.
 */
-void ReaderSource::PutBackWord()
+const Word& ReaderSource::PutBackWord()
 {
 	mBufferPos--;
+	if( mBufferPos ) return mBuffer[mBufferPos-1];
+	else return NULL_WORD; 
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

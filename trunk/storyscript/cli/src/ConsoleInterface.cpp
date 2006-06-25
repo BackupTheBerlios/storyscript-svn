@@ -229,7 +229,7 @@ void ConsoleInterface::LogMessage( const SS::STRING& Msg, bool UserOutput /*=fal
 */
 void ConsoleInterface::SayBlock( const SS::BlockPtr pBlock )
 {
-	const SS::STRING& Line = pBlock->GetScopeObject( SS::LC_Output )->CastToVariable()->GetStringData();
+	const SS::STRING& Line = pBlock->GetScopeObjectLocal( SS::LC_Output )->CastToVariable()->GetStringData();
 	const SS::STRING& ParentName = pBlock->GetParent()->GetName();
 	
 	//Get and print name.

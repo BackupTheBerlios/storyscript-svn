@@ -16,6 +16,54 @@ const Word SS::EOF_WORD( WORDTYPE_EOFWORD );
 const Word SS::NULL_WORD;
 
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Smushes the CompoundString into one simple string and returns it.
+*/
+SS::STRING SS::CollapseCompoundString( const SS::CompoundString& String )
+{
+	STRING tmp;
+	size_t i = 0;
+	for( i = 0; i < String.size(); i++ )
+	{
+			tmp += String[i];
+			if( i != String.size() - 1 ) tmp += LC_ScopeResolution;
+	}
+	
+	return tmp;	
+}
+
+
+SS::CompoundString SS::MakeCompoundString( const SS::STRING& S )
+{
+	return CompoundString( 1, S );	
+}
+
+SS::CompoundString SS::MakeCompoundID( const SS::STRING& S )
+{
+	
+	if( S.length() == 0 ) return CompoundString();
+	
+	CompoundString String;
+	STRING tmp;
+	
+	size_t i;
+	for( i = 0; i < S.length(); i++ )
+	{
+		if( S[i] != LC_ScopeResolution[0] ) tmp += S[i];
+		else
+		{
+			String.push_back( tmp );
+			tmp.clear();
+		}	
+	}
+	
+	String.push_back( tmp );
+	
+	return String;
+}
+
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  Word::Word
  NOTES: Constructors
@@ -25,11 +73,12 @@ Word::Word()
 {
 }
 
-Word::Word( const SS::STRING& String,
+Word::Word( const SS::STRING& S,
 		    WordType Type,
 			ExtraDesc Extra /*=EXTRA_NULL*/ )
-	: String(String), Type(Type), Extra(Extra)
+	: Type(Type), Extra(Extra)
 {
+	String.push_back(S);
 }
 
 
@@ -128,4 +177,37 @@ void Word::InterpretAsUnaryOp() const
 }
 
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Chops up a string into individual identifiers and assignes it to the
+ 		Word's identifier.  This function expects a well formed compound
+ 		identifier.  GIGO.
+*/
+void Word::DivideAndAssignString( const SS::STRING& S )
+{
+	if( S.length() == 0 ) return;
+	String.clear();
+	STRING tmp;
+	
+	size_t i;
+	for( i = 0; i < S.length(); i++ )
+	{
+		if( S[i] != LC_ScopeResolution[0] ) tmp += S[i];
+		else
+		{
+			if( tmp.length() ){
+				String.push_back( tmp );
+				tmp.clear();
+			} 	
+		}	
+	}	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Smushes the CompoundString into one simple string and returns it.
+*/
+SS::STRING Word::GetSimpleString() const
+{
+	return CollapseCompoundString( String );
+}
 

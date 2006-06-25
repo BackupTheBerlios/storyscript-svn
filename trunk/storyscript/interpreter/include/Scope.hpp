@@ -14,6 +14,7 @@ NOTES: The base Scope class.
 #include "ScopeObject.hpp"
 #include "ParserAnomaly.hpp"
 #include "Types.hpp"
+#include "Word.hpp"
 
 
 namespace SS{
@@ -33,7 +34,7 @@ public:
 
 	virtual void AcceptVisitor( ScopeObjectVisitor& );
 
-	ScopeObjectPtr operator[]( const SS::STRING& );
+	ScopeObjectPtr operator[]( const SS::CompoundString& );
 	
 	ScopeObjectPtr Register  ( ScopeObjectPtr );
 	ScopeObjectPtr UnRegister( const SS::STRING& );
@@ -43,10 +44,10 @@ public:
 
 	bool Exists( const SS::STRING& ID );
 
-	BlockPtr GetNextBlock( BlockPtr );
-
-	virtual ScopeObjectPtr GetScopeObject_NoThrow( const SS::STRING& );
-	ScopeObjectPtr GetScopeObject( const SS::STRING& );
+	virtual ScopeObjectPtr GetScopeObject_NoThrow( const SS::CompoundString& Identifier, unsigned long Level = 0 );
+	ScopeObjectPtr GetScopeObject( const SS::CompoundString& );
+	ScopeObjectPtr GetScopeObjectLocal( const SS::STRING& );
+	ScopeObjectPtr GetScopeObjectLocal_NoThrow( const SS::STRING& );
 	
 	void Import( ScopePtr );
 	void UnImport( ScopePtr );
@@ -67,7 +68,7 @@ private:
 	typedef boost::shared_ptr<const STRING> StringPtr;
 	typedef std::vector<StringPtr> TokenizedID;
 	
-	ScopeObjectPtr GetScopeObjectInternal( const TokenizedID& TokenList, unsigned long Level = 0 );
+	//ScopeObjectPtr GetScopeObjectInternal( const CompoundString& Identifier, unsigned long Level = 0 );
 	void SplitUpID( const STRING& ID, TokenizedID& TokenizedID );
 
 	Scope& GetGlobalScope();
@@ -75,7 +76,7 @@ private:
 	ScopeListType mList;
 	std::vector< ScopePtr > mImportedScopes;
 	
-	bool mNameCreated, mFullNameCreated, mUniqueIDCreated, mDocStringCreated;
+	bool mNameCreated, mFullNameCreated, mDocStringCreated;
 };
 
 

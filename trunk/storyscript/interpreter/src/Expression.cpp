@@ -49,7 +49,7 @@ const unsigned long BAD_PRECEDENCE = ~0U;
 class LooseIdentifier : public VariableBase
 {
 public:
-	LooseIdentifier( const STRING& LooseID ) : LooseID( LooseID )
+	LooseIdentifier( const CompoundString& LooseID ) : LooseID( LooseID )
 	{}
 	
 	StringType GetStringData() const{
@@ -65,19 +65,20 @@ public:
 		return NumType();
 	}
 	
-	const STRING& GetLooseIDName(){ return LooseID; };
+	const CompoundString& GetLooseIDName(){ return LooseID; }
+	const STRING GetLooseIDNameSimple(){ return CollapseCompoundString(LooseID); }
 	
 				
 private:
 	void ThrowError() const
 	{
 		STRING Tmp = TXT("Cannot find object named \'");
-		Tmp += LooseID;
+		Tmp += CollapseCompoundString(LooseID);
 		Tmp += TXT("\'.");
 		ThrowParserAnomaly( Tmp, ANOMALY_IDNOTFOUND );
 	}
 	
-	STRING LooseID;
+	CompoundString LooseID;
 };
 
 
@@ -324,7 +325,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 				 FirstWord.Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
-			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, (*this)[0].String ) );
+			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, (*this)[0].String[0] ) );
 
 			if( FirstWord.Type == WORDTYPE_FLOATLITERAL ) {
 				pTempVar->ForceConversion( VARTYPE_NUM );
@@ -669,7 +670,7 @@ STRING Expression::DumpToString() const
 
 		case WORDTYPE_STRINGLITERAL:
 			Out += TXT("\"");
-			Out += Temp.String;
+			Out += Temp.String[0];
 			Out += TXT("\"");
 			break;
 
@@ -691,7 +692,7 @@ STRING Expression::DumpToString() const
 			break;
 
 		default:
-			Out += Temp.String;
+			Out += Temp.String[0];
 		}
 
 		Out += TXT(" ");
@@ -1047,7 +1048,7 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 	}
 	else if( Op == EXTRA_UNOP_ScopeResolution ){
 		ScopePtr pTmp = Interpreter::Instance().GetGlobalScope();
-		return pTmp->GetScopeObject( pRight->GetStringData() )->CastToVariableBase();	
+		return pTmp->GetScopeObject( MakeCompoundID( pRight->GetStringData() ) )->CastToVariableBase();	
 	}	
 	//Declarations
 	else if( Op == EXTRA_UNOP_Var ||
@@ -1271,7 +1272,7 @@ VariableBasePtr Expression::EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr pLef
 		else
 		{
 			//TODO: Maybe get the partial name instead???
-			return (pLeft->GetScopeObject( pRight->GetStringData() ))->CastToVariableBase();
+			return (pLeft->GetScopeObject( MakeCompoundID( pRight->GetStringData() ) ))->CastToVariableBase();
 		}
 	}
 	//No operator found!

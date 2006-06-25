@@ -25,6 +25,7 @@ NOTES: Contains declarations for the Interprer class which handles the bulk
 
 #include "Bookmark.hpp"
 #include "ReaderSourceFile.hpp"
+#include "Word.hpp"
 
 
 #include <map>
@@ -73,9 +74,9 @@ public:
 
     BlockPtr GetFirstBlock();	
 	
-	ScopeObjectPtr GetScopeObject( const SS::STRING& Name );
+	ScopeObjectPtr GetScopeObject( const SS::CompoundString& Name );
 	
-	ScopeObjectPtr MakeScopeObject( ScopeObjectType, const SS::STRING& Name,
+	ScopeObjectPtr MakeScopeObject( ScopeObjectType, const SS::CompoundString& Name,
 										bool Static = false, bool Const = false );
 	
 	//These are all shortcuts for outsiders

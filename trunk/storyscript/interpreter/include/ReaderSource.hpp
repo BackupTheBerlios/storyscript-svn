@@ -33,10 +33,10 @@ public:
 	virtual ~ReaderSource();
 	
 	//These are equivalent
-	Word GetNextWord();
-	Word operator()();
+	const Word& GetNextWord();
+	const Word& operator()();
 	
-	void PutBackWord();
+	const Word& PutBackWord();
 	
 	//Position is in how many words into the source.
 	void GotoPos ( ReaderPos Pos );

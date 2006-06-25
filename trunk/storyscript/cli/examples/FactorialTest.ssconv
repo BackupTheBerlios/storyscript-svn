@@ -5,38 +5,30 @@ A good test for basic conditionals, blocks, and math operations.
 */
 
 
-print "FACTORIAL TEST - A good all around test.  Tests block execution and recursion, loops, and basic math operations.\
-\
-";
+print "FACTORIAL TEST - A good all around test.  Tests block execution
+	and recursion, loops, and basic math operations." . endl . endl;
 
 
 
 main{
+	print "Testing standard factorial...";
+	if fact( 4 ) == 24 then print "OK!";
+	else print "BORKED!";
 
-print "Testing standard factorial...";
-if fact( 4 ) == 24 then print "OK!";
-else print "BORKED!";
+	print endl . "Testing recursional factorial...";
 
-print "\
-Testing recursional factorial...";
 
-//factr 4 == 24;
+	if factr( 4 ) == 24 then print "OK!";
+	else print "BORKED!";
 
-/*
-if factr( 4 ) == 24 then print "OK!";
-else print "BORKED!";
-*/
+	print endl;
 
-factr 4;
-
-next=end;
+	next=end;
 }
 
 
 fact{
 	var tmp = in[0];
-	
-	//print tmp;
 	
 	var result = 1;
 	
@@ -59,9 +51,6 @@ factr{
 	{
 		out = (tmp * factr( tmp - 1));
 	}
-	
-	print out;
-	print ".";
 	
 	next = end;
 }

@@ -17,6 +17,9 @@ NOTES: The base Scope class.
 using namespace SS;
 
 
+const ScopeObjectPtr NULL_SO_PTR;
+
+
 //~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Scope::AcceptVisitor
 // NOTES: ... 
@@ -52,7 +55,7 @@ Scope::Scope( const STRING& Name,
 */
 void Scope::RegisterPredefinedVars()
 {
-	mNameCreated = mFullNameCreated = mUniqueIDCreated = mDocStringCreated = false;
+	mNameCreated = mFullNameCreated = mDocStringCreated = false;
 }
 
 
@@ -63,7 +66,7 @@ void Scope::RegisterPredefinedVars()
 // Scope::operator[]
 // NOTES: A shared_ptr to the 
 //
-ScopeObjectPtr Scope::operator[]( const STRING& i )
+ScopeObjectPtr Scope::operator[]( const CompoundString& i )
 {
 	return GetScopeObject( i );
 }
@@ -77,10 +80,6 @@ ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 {
 	AssertNonConst();
 	
-	//This get incremented on every new object that gets registered.
-	static NumType NextID( 1 );
-
-	
 	if( Exists( pNewScopeObject->GetName() ) )
 	{
 		STRING Temp = TXT("An object called \'");
@@ -91,9 +90,7 @@ ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 
 		ThrowParserAnomaly( Temp, ANOMALY_ALREADYEXISTS );
 	}
-	
-	
-		
+			
 
 	//Unregister just in case
 	pNewScopeObject->UnRegister();
@@ -101,19 +98,10 @@ ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 	//Put it on the list!
 	mList[pNewScopeObject->GetName()] = pNewScopeObject;
 	
-	/*
-	if( !pNewScopeObject->mpUniqueID ){
-		pNewScopeObject->mpUniqueID.reset( new Variable( LC_UniqueID, NumType(SS_INITIAL_UID), true, true ) );
-	}
-	*/
 	
-
-	pNewScopeObject->mUniqueID = NextID;
 	pNewScopeObject->mpParent = this;
 	pNewScopeObject->mpThis = pNewScopeObject;
-	
-	NextID += 1;
-	
+
 	return pNewScopeObject;
 }
 
@@ -137,7 +125,6 @@ ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 		ThrowParserAnomaly( tmp, ANOMALY_PANIC );		
 	}
 	
-	i->second->mUniqueID = SS_INITIAL_UID;
 	i->second->mpParent = 0;
 	
 	ScopeObjectPtr RetVal = i->second;
@@ -189,51 +176,6 @@ bool Scope::Exists( const STRING& ID )
 }
 
 
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Scope::GetNextBlock
- NOTES: Returns the next block object in its scope after index.
-		If there is none, it will return an empty pointer.
-*/
-BlockPtr Scope::GetNextBlock( BlockPtr pBlock )
-{
-	if( pBlock->mpParent != this )
-	{
-		ThrowParserAnomaly( TXT("Some kind of strange scoping bug ocoured."
-								"Please contact the author."), ANOMALY_PANIC );
-	}
-		
-	//We will now iterate through every object looking for the next highest
-	//block.  That is, the lowest ID block that is > pBlock->mpUniqueID.
-	BlockPtr PotentialNextBlock;
-	ScopeListType::iterator i;
-	TypeCheckVisitor TypeChecker;
-	
-	for( i = mList.begin(); i != mList.end(); i++ )
-	{
-		(*i).second->AcceptVisitor( TypeChecker );
-		if( TypeChecker.ReturnType() == SCOPEOBJ_BLOCK )
-		{
-			BlockPtr tmp( (*i).second->CastToBlock() );
-			
-				// tmp's id is higher than pBlock'ss
-			if( tmp->mUniqueID > pBlock->mUniqueID &&
-				//and PotentialNextBlock is null
-				(!PotentialNextBlock || 
-				//or tmp's id is lower than PotentialNextBlock's
-				tmp->mUniqueID < PotentialNextBlock->mUniqueID ) )
-			{
-				PotentialNextBlock = tmp;
-			}
-			
-		}
-	}
-
-	//Found nothing
-	return BlockPtr();
-}
-
-
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  GetScopeObject
  NOTES: Tries to find the scope object and return a pointer to it.  Throws a
@@ -243,23 +185,53 @@ BlockPtr Scope::GetNextBlock( BlockPtr pBlock )
 		The nothrow version will return an empty pointer if it can't find the object.
 */
 
-ScopeObjectPtr Scope::GetScopeObject_NoThrow( const STRING& Identifier )
+ScopeObjectPtr Scope::GetScopeObject_NoThrow( const CompoundString& Identifier, unsigned long Level /*= 0*/  )
 {	
-	TokenizedID TokenList;
-	SplitUpID( Identifier, TokenList );
+	if( Level >= Identifier.size() ) return NULL_SO_PTR;
+
+	if( Level == 0 && Identifier[0].empty() )
+	{
+		return GetGlobalScope().GetScopeObject_NoThrow( Identifier, 1 );	
+	}
 	
-	if( TokenList[0]->empty() )
+	/*
+		This object's hook gets called in case the implementer wants
+		to spring something into existance or do some other voodoo.
+	*/
+	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( Identifier[Level] );
+	if( pPotentialObj ) return pPotentialObj;
+	
+	/*
+		Ask the map if its seen the id and pass along the rest of it if necessary.
+	*/
+	ScopeListType::iterator i;
+	
+	if( (i = mList.find(Identifier[Level])) != mList.end() )
 	{
-		return GetGlobalScope().GetScopeObjectInternal( TokenList, 1 );	
+		if( Identifier.size() > Level+1 ){
+			return (*i).second->CastToScope()->GetScopeObject_NoThrow( Identifier, Level+1 );
+		}
+		else return (*i).second;
 	}
-	else
+	
+	/*
+		No hits yet, lets check the imported scopes.
+	*/	
+	unsigned int j;
+	for( j = 0; j < mImportedScopes.size(); j++ )
 	{
-		return GetScopeObjectInternal( TokenList, 0 );
+		if( (pPotentialObj = mImportedScopes[j]->GetScopeObject_NoThrow( Identifier, Level )) != NULL_SO_PTR )
+		{
+			return pPotentialObj;
+		}
 	}
+	
+	//Nothing found!! Damn!
+	return NULL_SO_PTR;
 }
 
 
-ScopeObjectPtr Scope::GetScopeObject( const STRING& Identifer )
+ScopeObjectPtr Scope::GetScopeObject( const CompoundString& Identifer )
 {
 	ScopeObjectPtr pReturnValue;
 	if( (pReturnValue = GetScopeObject_NoThrow( Identifer )) )
@@ -270,18 +242,71 @@ ScopeObjectPtr Scope::GetScopeObject( const STRING& Identifer )
 	{
 		//Nothing found
 		STRING Temp = TXT("Cannot find any object named \'");
-		Temp += Identifer;
+		Temp += CollapseCompoundString( Identifer );
 		Temp += TXT("\'.");
 		ThrowParserAnomaly( Temp, ANOMALY_IDNOTFOUND );
 	}
 }
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Takes only a single ID (non-compound) and searches only this scope.  
+*/
+ScopeObjectPtr Scope::GetScopeObjectLocal( const STRING& Identifier )
+{
+	ScopeObjectPtr pReturnValue;
+	if( (pReturnValue = GetScopeObjectLocal_NoThrow( Identifier )) )
+	{
+		return pReturnValue;
+	}
+	else 
+	{
+		//Nothing found
+		STRING Temp = TXT("Cannot find any object named \'");
+		Temp += Identifier;
+		Temp += TXT("\'.");
+		ThrowParserAnomaly( Temp, ANOMALY_IDNOTFOUND );
+	}
+}
+
+ScopeObjectPtr Scope::GetScopeObjectLocal_NoThrow( const STRING& Identifier )
+{
+	/*
+		This object's hook gets called in case the implementer wants
+		to spring something into existance or do some other voodoo.
+	*/
+	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( Identifier );
+	if( pPotentialObj ) return pPotentialObj;
+	
+	/*
+		Ask the map if its seen the id and pass along the rest of it if necessary.
+	*/
+	ScopeListType::iterator i;
+	
+	if( (i = mList.find(Identifier)) != mList.end() ) return (*i).second;
+	
+	
+	/*
+		No hits yet, lets check the imported scopes.
+	*/	
+	unsigned int j;
+	for( j = 0; j < mImportedScopes.size(); j++ )
+	{
+		if( (pPotentialObj = mImportedScopes[j]->GetScopeObjectLocal_NoThrow( Identifier )) != NULL_SO_PTR )
+		{
+			return pPotentialObj;
+		}
+	}
+	
+	//No matches
+	return NULL_SO_PTR;
+}
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This is where all the actual work is done.
 */
-ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsigned long Level /*= 0*/ )
+/*
+ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsigned long Level  )
 {
 	const ScopeObjectPtr NULL_SO_PTR;
 	if( Level >= TokenList.size() ) return NULL_SO_PTR;
@@ -290,14 +315,14 @@ ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsi
 	/*
 		This object's hook gets called in case the implementer wants
 		to spring something into existance or do some other voodoo.
-	*/
+	* /
 	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( *TokenList[Level] );
 	if( pPotentialObj ) return pPotentialObj;
 	
 	
 	/*
 		Ask the map if its seen the id and pass along the rest of it if necessary.
-	*/
+	* /
 	ScopeListType::iterator i;
 	
 	if( (i = mList.find(*TokenList[Level])) != mList.end() )
@@ -311,7 +336,7 @@ ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsi
 	
 	/*
 		No hits yet, lets check the imported scopes.
-	*/	
+	* /	
 	unsigned int j;
 	for( j = 0; j < mImportedScopes.size(); j++ )
 	{
@@ -324,11 +349,12 @@ ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsi
 	//Nothing found!! Damn!
 	return NULL_SO_PTR;	
 }
-
+*/
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Splits a compound identifier (eg. foo:bar:doc) into seperate identifers.
 */
+/*
 void Scope::SplitUpID( const STRING& ID, TokenizedID& TokenList )
 {
 	STRING::const_iterator last_i;
@@ -355,7 +381,7 @@ void Scope::SplitUpID( const STRING& ID, TokenizedID& TokenList )
 		TokenList.push_back( StringPtr( new STRING( last_i, i ) ) );
 	}
 }
-
+*/
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -454,11 +480,6 @@ ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 		mFullNameCreated = true;
 		return Register( ScopeObjectPtr( new FullNameVar( LC_FullName, *this, true, true ) ) );
 	}
-	else if( !mUniqueIDCreated && Name == LC_UniqueID )
-	{
-		mUniqueIDCreated = true;
-		return Register( ScopeObjectPtr( new BoundNumVar( LC_UniqueID, mUniqueID, true, false ) ) );
-	}
 	else if( !mDocStringCreated && Name == LC_Doc )
 	{
 		mDocStringCreated = true;
@@ -475,7 +496,7 @@ ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 */
 STRING& Scope::GetDocString()
 {
-	return GetScopeObject( LC_Doc )->CastToVariable()->GetActualStringData();
+	return GetScopeObjectLocal( LC_Doc )->CastToVariable()->GetActualStringData();
 }
 
 

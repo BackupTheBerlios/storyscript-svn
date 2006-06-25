@@ -50,7 +50,6 @@ void ScopeObject::ZeroVars()
 	mStatic = false;
 	mConst = false;
 	mpParent = 0;
-	mUniqueID = SS_INITIAL_UID;
 }
 
 //~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -114,7 +113,7 @@ void ScopeObject::AcceptVisitor( ScopeObjectVisitor& V )
 */
 bool ScopeObject::IsRegistered() const
 {
-	return mUniqueID != SS_INITIAL_UID;
+	return mpParent != 0;
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,7 +139,7 @@ void ScopeObject::SetName( const STRING& NewName )
 	{
 		//I'm not using "this" because I'm afraid this
 		//will get deleted when the pointer is reset() in UnRegister
-		ScopeObjectPtr pTemp = (*mpParent)[GetName()];
+		ScopeObjectPtr pTemp = (*mpParent)[MakeCompoundID(GetName())];
 		Scope* pParentScope = this->mpParent;
 		
 		pParentScope->UnRegister( GetName() );

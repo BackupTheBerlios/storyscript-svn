@@ -36,9 +36,6 @@ static const ScopeIndex INIT_SCOPEINDEX = ~0U;
 //      in the scope, so this should suffice.
 	*/
 	
-//extern VariablePtr INITIAL_UID;
-#define SS_INITIAL_UID -1
-
 
 
 //This is for a special shared_ptr that I don't want deleted.
@@ -169,9 +166,6 @@ private:
 
 
 	void ZeroVars();
-
-	//These are simply to keep track of the order in which objects were registered on a scope.
-	NumType mUniqueID;
 	
 	Scope* mpParent;
 };
