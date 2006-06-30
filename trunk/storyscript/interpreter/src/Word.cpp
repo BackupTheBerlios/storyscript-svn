@@ -93,8 +93,6 @@ Word::Word( const Word& SomeWord )
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Word::operator=
- NOTES: 
 */
 Word& Word::operator=( const Word& W )
 {
@@ -106,8 +104,6 @@ Word& Word::operator=( const Word& W )
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Word::operator==
- NOTES: 
 */
 bool Word::operator==( const Word& W ) const
 {

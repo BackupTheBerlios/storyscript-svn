@@ -1,9 +1,21 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
+*/
 
-NOTES: Contains important global defines.
+
+/**
+	\file Defines.hpp
+	\brief Various typedefs and macros.
+	
+	Generally you don't want to mess with this.
+	
+	For now, see the actual header file for documentation.  It
+	is too tricky to try to doxygen the contorted mess that is
+	Defines.hpp. 
 */
 
 

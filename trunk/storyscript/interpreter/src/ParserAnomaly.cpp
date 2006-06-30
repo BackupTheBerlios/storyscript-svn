@@ -65,6 +65,15 @@ ParserAnomaly::ParserAnomaly( const STRING& Desc,
   ScriptLine(ScriptLine )
 {}
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+const char* ParserAnomaly::what() const throw()
+{
+	static std::string LowerWhat;
+    LowerWhat = NarrowizeString( ErrorDesc );
+	
+	return LowerWhat.c_str();
+}
+
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ParserAnomaly::~ParserAnomaly

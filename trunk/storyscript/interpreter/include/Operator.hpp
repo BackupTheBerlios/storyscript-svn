@@ -1,13 +1,16 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: 
- Basis for custom operators and built in operators/functions.
- Created: 24:5:2005   11:26
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
+
+/**
+	\file Operator.hpp
+	\brief Declarations for Operator.  
+*/
  
  #if !defined(SS_Operator)
  #define SS_Operator
@@ -22,13 +25,19 @@ NOTES:
  namespace SS{
  
  
- /*
- For conveniance.  Use this to declare the contructor of children operators.
- */
+/**
+	\brief A conveniance macro for declaring operator derivatives' constructors.
+	
+	\param x The name of the the new operator derivative.
+*/
 #define SS_OP_DEFAULT_CTOR(x) x( const SS::STRING& Name, bool Static = false, bool Const = false )\
 		 : Operator( Name, Static, Const ){}
 
-//Even more conveniant.
+/**
+	\brief A conveniance macro for declaring operator derivatives.
+	
+	\param x The name of the the new operator derivative.
+*/
 #define SS_DECLARE_OPERATOR(x) \
 class x : public Operator{\
 public:\
@@ -41,15 +50,23 @@ public:\
  
  
  
- /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INTERFACE~~~~
- Operator
- NOTES: An abstract base class that defined the interface for custom operators.
- 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+/**
+	\brief The base interface for object that can behave as unary operators
+	(functions).
+	
+	To make your own built in function, simply overload this and define the
+	Operate function.
+	
+	This can be done conveniently with the SS_DECLARE_OPERATOR or SS_OP_DEFAULT_CTOR
+	macros.
 */
 class SS_API Operator : public Scope
 {
 public:
+	/// Default Constructor
 	Operator();
+	/// Constructor
 	Operator( const SS::STRING& Name, bool Static = false, bool Const = false );
 	
 	void AcceptVisitor( ScopeObjectVisitor& );
@@ -57,16 +74,21 @@ public:
 	virtual OperatorPtr CastToOperator();
 	virtual const OperatorPtr CastToOperator() const;
 	
-	virtual VariableBasePtr Operate( VariableBasePtr ) = 0;
+	/**
+	\brief The function that gets called to perform the operator's operation.
+	
+	Make new fancy functions by defining/overriding this.
+	
+	\param Params The paramater list that gets passed the operator. (See List)
+	*/
+	virtual VariableBasePtr Operate( VariableBasePtr Params ) = 0;
 	
 
 private:
+	/// Used by the contructor to initialize private data.
 	void RegisterPredefinedVars();
 
-
 };
-
-
 
 
 

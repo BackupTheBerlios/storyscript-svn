@@ -17,10 +17,7 @@ using namespace SS;
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
-// Operator::Operator
-// NOTES: Constructors
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Operator::Operator()
 {
 	RegisterPredefinedVars();
@@ -34,10 +31,7 @@ Operator::Operator( const SS::STRING& Name, bool Static/* = false*/, bool Const/
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
-// Operator::GetOperatorPtr
-// NOTES: Constructors
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 OperatorPtr Operator::CastToOperator(){
 	return boost::dynamic_pointer_cast<Operator>( ScopeObjectPtr( mpThis ) );
 }
@@ -49,28 +43,16 @@ const OperatorPtr Operator::CastToOperator() const{
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
-// Operator::AcceptVisitor
-// NOTES: 
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Operator::AcceptVisitor( ScopeObjectVisitor& V ){
 	V.VisitOperator(this);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
-// Operator::RegisterPredefinedVars
-// NOTES: Registers special predefined variables.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Operator::RegisterPredefinedVars()
 {
-	/*
-	bool WasConst = IsConst();
-	mConst = false;
-
-	Register( ScopeObjectPtr( CreateGeneric<List>( LC_Input, true, false ) ) );
-
-	SetConst( WasConst );
-	*/
+	// There's nothing to see here right now.  This is declared/defined because
+	// is was being used at one point.
 }
 
 

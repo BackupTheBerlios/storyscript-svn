@@ -1,9 +1,14 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
+*/
 
-NOTES: The variable interface and implementation.
+/**
+	\file Variable.hpp
+	\Declarations for VariableBase and Variable.  
 */
 
 #if !defined(SS_Variable)
@@ -41,10 +46,14 @@ StringType NumType2StringType( const NumType& );
 
 
 
-/*~~~~~~~INTERFACE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- VariableBase
- NOTES: This is not an abstract class.  If you create an instance of it,
-		it will be interpreter at a NULL value.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+/**
+	\brief The base class for any objects that are evaluated to be a value.
+	
+	This include variables, lists, and the many magic variables. 
+
+	This is not an abstract class.  If you create an instance of it,
+	it will be interpreted as a NULL value.
 */
 class SS_API VariableBase : public Scope
 {
@@ -110,10 +119,12 @@ private:
 
 
 
-//~~~~~~~CLASS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// class Variable
-// NOTES: The dynamically typed variable.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+/**
+	\brief The storyscript dynamically typed variable.
+	
+	
+*/
 class SS_API Variable : public VariableBase
 {
 protected:	

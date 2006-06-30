@@ -1,10 +1,21 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: More or lessj ust a wrapper for either UseWideChar or UseNarrowChar.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
+
+/**
+	\file Unicode.hpp
+	\brief Code for compatibility with wide characters (ie. Unicode).
+	
+	This file is mostly just a wrapper for either UseWideChar.hpp or
+	UseNarrowChar.hpp (depending on the wheter USING_UNICODE is set or not).
+	
+	\see UseWideChar.hpp UseNarrowChar.hpp USING_UNICODE	
+*/
+
 
 #if !defined(SS_Unicode)
 #define SS_Unicode
@@ -30,6 +41,13 @@ of this file.  Otherwise, you are screwed.
 
 namespace SS{
 
+/**
+	A char-size agnostic version of strcpy.
+	
+	\param dest Destination string.
+	\param src Source string.
+	\param dest_size Size of the destination string.
+*/
 SS_API CHAR* STRCPY( CHAR* dest, const CHAR* src, unsigned int dest_size );
 
 

@@ -1,9 +1,15 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
+*/
 
-NOTES: Typedefs and such for a bunch of fundamental types.
+
+/**
+	\file Types.hpp
+	\Various typedefs and such.
 */
 
 
@@ -18,8 +24,10 @@ NOTES: Typedefs and such for a bunch of fundamental types.
 #include "Unicode.hpp"
 
 
-//For use with boost::shared_ptr's.  Sometimes I don't
-//want something to be auto-deleted.
+/**
+	Used for boost::shared_ptrs that should not be deleted
+	when they go out of scope.
+*/
 struct null_deleter
 {
     void operator()(void const *) const
@@ -75,9 +83,9 @@ struct null_deleter
 
 namespace SS{
 
-typedef mpfr_class NumType;
-typedef bool   BoolType;
-typedef SS::STRING StringType;
+typedef mpfr_class NumType; ///< Internal respresentation of storyscript's number type.
+typedef bool   BoolType; ///< Internal respresentation of storyscript's boolean type.
+typedef SS::STRING StringType; ///< Internal respresentation of storyscript's string type.
 
 typedef size_t BlockIndex;
 
@@ -119,7 +127,9 @@ typedef boost::weak_ptr<Block>        BlockPtrWeak;
 typedef boost::weak_ptr<VariableBase> VariableBasePtrWeak;
 typedef boost::weak_ptr<List>         ListPtrWeak;
 
-
+/**
+	\brief Enumeration of ScopeObject types.
+*/
 enum ScopeObjectType
 {
 	SCOPEOBJ_NULL,
@@ -133,7 +143,9 @@ enum ScopeObjectType
 	SCOPEOBJ_OPERATOR
 };
 
-
+/**
+	Internal respresentation of storyscript lists.
+*/
 #if defined(SS_USE_VECTOR_LISTS)
 typedef std::vector<VariableBasePtr> ListType;
 #elif defined(SS_USE_DEQUE_LISTS)

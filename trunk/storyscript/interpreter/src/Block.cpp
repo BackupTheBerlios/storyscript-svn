@@ -18,10 +18,10 @@ using namespace SS;
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::Block
-NOTES: Mr. Ctor 
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+Block::Block()
+{}
+
 Block::Block( const STRING& Name, bool Static, bool Const,
 			  const Bookmark& Position, unsigned int ListIndex )
 	: Operator(Name, Static, Const), mFilePosition(Position), mListIndex(ListIndex), mBeenSaid(false)
@@ -30,10 +30,7 @@ Block::Block( const STRING& Name, bool Static, bool Const,
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::RegisterPredefinedVars
-NOTES: Registers language defined variables.  Should only be called from constructors.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Block::RegisterPredefinedVars()
 {
 	bool WasConst = IsConst();
@@ -56,12 +53,7 @@ void Block::RegisterPredefinedVars()
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
-// Block::Operate
-// NOTES: Blocks can also be treated as operators (thats why they derive from
-//		  Operator).  When Operate is called, it sets the input variable to 
-//		  whatever the input is, and then it then Parses itself and returns line.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Block::Operate( VariableBasePtr In )
 {
 	//*(GetScopeObject( LC_Input )->CastToVariableBase()) = *In;
@@ -77,83 +69,37 @@ VariableBasePtr Block::Operate( VariableBasePtr In )
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::HasBeenSaid
-NOTES: Returns true if the block has been sayed once already.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool Block::HasBeenSaid() const{
 	return mBeenSaid;
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::SetBeenSaid
-NOTES: Sets a flag saying that the block has been said.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Block::SetBeenSaid( bool flag /*=true*/ ){
 	mBeenSaid = flag;
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::GetFilePosition
-NOTES: Returns the position of the file it resides in.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Bookmark Block::GetFilePosition() const
 {
 	return mFilePosition;
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::GetListIndex
-NOTES: Returns the index used with Interpreter::mBlockOrder.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 unsigned int Block::GetListIndex() const
 {
 	return mListIndex;
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Block::AddNextLine
-NOTES: Adds another nextline option.
-*/
-void Block::AddNextLine( Block* pBlock )
-{
-	//No questions asked.  Which means you better damn well 
-	//check if pBlock is null before accessing it.
-	mNextLine.push_back(pBlock);
-}
-
-
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Block::AcceptVisitor
-// NOTES: ...
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Block::AcceptVisitor( ScopeObjectVisitor& V )
 {
 	V.VisitBlock(this);
 }
 
-
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Block::Get/SetLine
-// NOTES: Returns the line that belongs to the block.
-//
-const STRING& Block::GetLine() const
-{
-	return mLine;
-}
-
-void Block::SetLine( const STRING& NewLine )
-{
-	mLine = NewLine;
-}
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Block::GetBlockPtr
- NOTES: Overloaded to return itself.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BlockPtr Block::CastToBlock(){
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Block>( ScopeObjectPtr(mpThis) );
@@ -165,9 +111,7 @@ const BlockPtr Block::CastToBlock() const{
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Again, a shortcut for the users.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 STRING& Block::GetOutString()
 {
 	return GetScopeObjectLocal( LC_Output )->CastToVariable()->GetActualStringData();

@@ -20,20 +20,14 @@ using namespace SS;
 const ScopeObjectPtr NULL_SO_PTR;
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Scope::AcceptVisitor
-// NOTES: ... 
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Scope::AcceptVisitor( ScopeObjectVisitor& V )
 {
 	V.VisitScope(this);
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Scope::Scope
- NOTES: 
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Scope::Scope()
 {
 	RegisterPredefinedVars();
@@ -48,11 +42,7 @@ Scope::Scope( const STRING& Name,
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Scope::RegisterPredefinedVars
- NOTES: Registers language defined variable.  This should only be called from the
-		constructors.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Scope::RegisterPredefinedVars()
 {
 	mNameCreated = mFullNameCreated = mDocStringCreated = false;
@@ -62,20 +52,14 @@ void Scope::RegisterPredefinedVars()
 
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Scope::operator[]
-// NOTES: A shared_ptr to the 
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::operator[]( const CompoundString& i )
 {
 	return GetScopeObject( i );
 }
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Scope::Register
-// NOTES: Adds a ScopeObject into the Scope.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 {
 	AssertNonConst();
@@ -107,10 +91,7 @@ ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Scope::UnRegister
-// NOTES: Removes a ScopeObject from the Scope list.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 {
 	AssertNonConst();
@@ -135,13 +116,7 @@ ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Scope::Clear
- NOTES: Unregisters all non-static objects.
- 
- 		This function is pretty much considered depricated.  It is a remnant of
- 		before I had a real instacing system.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Scope::Clear()
 {
 	ScopeListType::iterator i = mList.begin();;
@@ -154,10 +129,7 @@ void Scope::Clear()
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Scope::Exists
- NOTES: Checks if an identifier exists in the scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool Scope::Exists( const STRING& ID )
 {
 	//Unnamed objects are ignored by this
@@ -176,15 +148,7 @@ bool Scope::Exists( const STRING& ID )
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- GetScopeObject
- NOTES: Tries to find the scope object and return a pointer to it.  Throws a
-		ParserAnomaly if it doesn't exists.  Note that you can use long names with
-		this. (eg. Bedroom:Bobby:Hello).  (Doesn't work with whitespace?)
-
-		The nothrow version will return an empty pointer if it can't find the object.
-*/
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::GetScopeObject_NoThrow( const CompoundString& Identifier, unsigned long Level /*= 0*/  )
 {	
 	if( Level >= Identifier.size() ) return NULL_SO_PTR;
@@ -230,7 +194,7 @@ ScopeObjectPtr Scope::GetScopeObject_NoThrow( const CompoundString& Identifier, 
 	return NULL_SO_PTR;
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::GetScopeObject( const CompoundString& Identifer )
 {
 	ScopeObjectPtr pReturnValue;
@@ -248,9 +212,7 @@ ScopeObjectPtr Scope::GetScopeObject( const CompoundString& Identifer )
 	}
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Takes only a single ID (non-compound) and searches only this scope.  
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::GetScopeObjectLocal( const STRING& Identifier )
 {
 	ScopeObjectPtr pReturnValue;
@@ -267,7 +229,7 @@ ScopeObjectPtr Scope::GetScopeObjectLocal( const STRING& Identifier )
 		ThrowParserAnomaly( Temp, ANOMALY_IDNOTFOUND );
 	}
 }
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::GetScopeObjectLocal_NoThrow( const STRING& Identifier )
 {
 	/*
@@ -301,94 +263,7 @@ ScopeObjectPtr Scope::GetScopeObjectLocal_NoThrow( const STRING& Identifier )
 	return NULL_SO_PTR;
 }
 
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: This is where all the actual work is done.
-*/
-/*
-ScopeObjectPtr Scope::GetScopeObjectInternal( const TokenizedID& TokenList, unsigned long Level  )
-{
-	const ScopeObjectPtr NULL_SO_PTR;
-	if( Level >= TokenList.size() ) return NULL_SO_PTR;
-	
-	
-	/*
-		This object's hook gets called in case the implementer wants
-		to spring something into existance or do some other voodoo.
-	* /
-	ScopeObjectPtr pPotentialObj = GetScopeObjectHook( *TokenList[Level] );
-	if( pPotentialObj ) return pPotentialObj;
-	
-	
-	/*
-		Ask the map if its seen the id and pass along the rest of it if necessary.
-	* /
-	ScopeListType::iterator i;
-	
-	if( (i = mList.find(*TokenList[Level])) != mList.end() )
-	{
-		if( TokenList.size() > Level+1 ){
-			return (*i).second->CastToScope()->GetScopeObjectInternal( TokenList, Level+1 );
-		}
-		else return (*i).second;
-	}
-	
-	
-	/*
-		No hits yet, lets check the imported scopes.
-	* /	
-	unsigned int j;
-	for( j = 0; j < mImportedScopes.size(); j++ )
-	{
-		if( (pPotentialObj = mImportedScopes[j]->GetScopeObjectInternal( TokenList, Level )) != NULL_SO_PTR )
-		{
-			return pPotentialObj;
-		}
-	}
-	
-	//Nothing found!! Damn!
-	return NULL_SO_PTR;	
-}
-*/
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Splits a compound identifier (eg. foo:bar:doc) into seperate identifers.
-*/
-/*
-void Scope::SplitUpID( const STRING& ID, TokenizedID& TokenList )
-{
-	STRING::const_iterator last_i;
-	STRING::const_iterator i;
-	for( last_i = i = ID.begin(); i != ID.end(); i++ )
-	{
-		if( 	*i == LC_ScopeResolution[0] )
-		{
-			TokenList.push_back( StringPtr( new STRING( last_i, i ) ) );
-			
-			last_i = i + 1;
-			continue;	
-		}
-	}
-	
-	//If this wasn't compound at all
-	if( TokenList.size() == 0 )
-	{
-		TokenList.push_back( StringPtr( &ID, null_deleter() ) );
-	}
-	//Grab the last one.
-	else if( last_i != i )
-	{
-		TokenList.push_back( StringPtr( new STRING( last_i, i ) ) );
-	}
-}
-*/
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Scope::Import
- NOTES: Moves everything from one scope into another.  Or simulates that
-		anyway.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Scope::Import( ScopePtr pScope )
 {
 	AssertNonConst();
@@ -411,10 +286,7 @@ void Scope::Import( ScopePtr pScope )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: UnImports a scope that has been previously imported.  This will throw
-		an exception if the scope hasn't been imported.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Scope::UnImport( ScopePtr pScope )
 {
     AssertNonConst();
@@ -436,10 +308,7 @@ void Scope::UnImport( ScopePtr pScope )
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- GetScopePtr
- NOTES: Overloaded to return this rather than throwing.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopePtr Scope::CastToScope(){
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Scope>( ScopeObjectPtr(mpThis) );
@@ -452,12 +321,7 @@ const ScopePtr Scope::CastToScope() const{
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Scope::GetGlobalScope
- NOTES: Finds the global scope and returns a pointer to it. 
- 
- 		Note that this is depricated in favor of using Interpreter::Instance()
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Scope& Scope::GetGlobalScope()
 {
 	if( mpParent ) return mpParent->GetGlobalScope();
@@ -465,9 +329,7 @@ Scope& Scope::GetGlobalScope()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Intercept identifier lookups to spring object into existance.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 {
 	if( !mNameCreated && Name == LC_Name )
@@ -491,9 +353,7 @@ ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Just a handy shortcut for the user.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 STRING& Scope::GetDocString()
 {
 	return GetScopeObjectLocal( LC_Doc )->CastToVariable()->GetActualStringData();

@@ -20,17 +20,14 @@ using namespace SS;
 
 const STRING SS::UNNAMMED;
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::ScopeObject
-// NOTES: 
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObject::ScopeObject()
 {
 	//Realistically, the default constructor is probabably never called.
 	ZeroVars();
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObject::ScopeObject( const STRING& Name,
 						  bool Static /*= false*/, bool Const /*= false*/ )
 {
@@ -41,10 +38,7 @@ ScopeObject::ScopeObject( const STRING& Name,
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScopeObject::ZeroVars
- NOTES: Sets variables to default/safe positions.  Used by contructors.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::ZeroVars()
 {
 	mStatic = false;
@@ -52,84 +46,55 @@ void ScopeObject::ZeroVars()
 	mpParent = 0;
 }
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::~ScopeObject
-// NOTES: 
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObject::~ScopeObject()
 {
 
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScopeObject::IsStatic
- NOTES: Returns true if the object is static (i.e. it doesn't get deleted
-		after the block is finished executing.).
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool ScopeObject::IsStatic() const{
 	return mStatic;
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScopeObject::SetStatic
- NOTES: Sets the object to static mode.  See the above.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::SetStatic( bool Flag /*= true*/ ){
 	mStatic = Flag;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScopeObject::IsConst
- NOTES: Returns true if the object is set as constant.  False otherwise.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool ScopeObject::IsConst() const{
 	return mConst;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScopeObject::SetConst
- NOTES: Sets the constant flag.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::SetConst( bool Flag /*= true*/ ){
 	mConst = Flag;
 }
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::AcceptVisitor
-// NOTES: For the visitor system.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::AcceptVisitor( ScopeObjectVisitor& V )
 {
 	V.VisitScopeObject(this);
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-  NOTES: Returns true if the the ScopeObject belongs to a parent and false if
-		 it does not.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool ScopeObject::IsRegistered() const
 {
 	return mpParent != 0;
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ScopeObject::GetParent
- NOTES: Returns a pointer to the parent Scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopePtr ScopeObject::GetParent() const
 {
 	return ScopePtr( mpParent, null_deleter() );
 }
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::SetName
-// NOTES: Sets the name of the object.  Note that if the object is registered
-//		  it will be UnRegistered and the Registered again.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::SetName( const STRING& NewName )
 {
 	mName = NewName;
@@ -148,10 +113,7 @@ void ScopeObject::SetName( const STRING& NewName )
 }
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::GetName
-// NOTES: Retrieves the simple name of the object.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const STRING& ScopeObject::GetName() const
 {
 	return mName;
@@ -163,11 +125,7 @@ SS::CHAR* ScopeObject::GetName( SS::CHAR* Buffer, unsigned int BufferSize ) cons
 }
 
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::GetFullName
-// NOTES: Gets the name of the object including the scope it belongs to.
-//		  For instance: "ChildhoodBeach:Alice:SayHi"
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 STRING ScopeObject::GetFullName() const
 {
     if( mpParent != NULL )
@@ -193,32 +151,19 @@ SS::CHAR* ScopeObject::GetFullName( SS::CHAR* Buffer, unsigned int BufferSize ) 
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ScopeObject::SetThisPtr
- NOTES: Sets internal pointer that points to itself.  This gets done automatically
-		when an object gets registered on a scope.  If you don't register it
-		somewhere and pass it around a bunch, there will be no proper
-		garbage collection.  Better yet, you should just use Creator::CreateObject.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::SetSharedPtr( const ScopeObjectPtr& pY ){
 	mpThis = pY;
 }
 
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject::UnRegister
-// NOTES: Merely calls Scope::UnRegister.  Just a convenience thing.
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::UnRegister()
 {
 	if(mpParent) mpParent->UnRegister( GetName() );
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScopeObject::AssertNonConst
- NOTES: Throws an error if the object is const.  Call this before functions that
-		would modify the object.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::AssertNonConst() const
 {
 	if( mConst )
@@ -228,9 +173,7 @@ void ScopeObject::AssertNonConst() const
 	}
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Throws an anomaly if casting is now allowed.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::AssertCastingAllowed() const
 {
 	if( mpThis.expired() )
@@ -243,12 +186,7 @@ void ScopeObject::AssertCastingAllowed() const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ScopeObject::Get_______Ptr
- NOTES: Gotta be careful with these.  If you try to convert upward to something
-        its not, it will throw.
-*/
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 //ScopeObject
 ScopeObjectPtr ScopeObject::CastToScopeObject(){
 	AssertCastingAllowed();
@@ -329,9 +267,7 @@ const OperatorPtr ScopeObject::CastToOperator() const{
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: To easily handle all those messy bad conversion anomalies.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::ThrowBadConversion( const STRING& Type, const STRING& Addendum /*= STRING()*/ ) const
 {
 	STRING m = TXT("Cannot cast \'");

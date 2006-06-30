@@ -1,10 +1,16 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: Anything that can reside in a scope derives from this (Scope).
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
+
+/**
+	\file Word.hpp
+	\Declarations for ScopeObject.  
+*/
+
 
 #if !defined(SS_ScopeObject)
 #define SS_ScopeObject
@@ -86,87 +92,298 @@ extern SS_API const STRING UNNAMMED;
 
 
 
+
+/**
+	\page SelfCasting Self-Casting Kung-Fu
+	
+	In storyscript types are meant to be very loose and easly converted
+	between each other.  This is usually achieved by calling one of the
+	ScopeObject:CastTo____ functions.  This allows cool things.  For
+	example, you can cast a ScopeObject to a Variable.  Since the ScopeObject
+	itself of course can't be simply _cast_, instead a new Variable object
+	is created holding the name of the ScopeObject.  The casting interface
+	is all virtual functions, so the behavior of the functions can be overrided.
+	Casting a ScopeObject to a Variable is different that casting a List to a
+	Variable.
+	
+	This system is convenient and can be very powerful but it does lead to a few complications.
+	
+	When a "CastTo" function is called it sometimes simply downcasts
+	(or upcasts if possible) itself, but other times it needs to create
+	an entirely new object.  This leads to the problem of knowing whether
+	or not an object returned needs to be deleted or not.
+	
+	The most convenient sollution, the one that is used, is using reference
+	counted pointers (boost::shared_ptr's).  This solution requires objects
+	maintain a shared_ptr to itself, for when it simply casts itself.
+	However this isn't possible without	a two-stage construction.  First
+	the object is created, and then the 	it's shared_ptr is set 
+	(using ScopeObject::SetSharedPtr).
+	
+	The user doesn't have to worry about this as long as she uses the creation
+	functions (CreateGeneric, CreateVariable, CreateBlock, etc. ).  In fact, most
+	of the standard objects _must_ be created with these functions; their constructors
+	are private.
+	
+	If one makes a derived object and doesn't sets the shared_ptr, it will work fine
+	unless the object tries to cast itself, in which case it will throw an anomaly.
+	
+	\sa ScopeObject::SetSharedPtr ScopeObject::CastToScopeObject ScopeObject::CastToScope
+	\sa ScopeObject::CastToBlock ScopeObject::CastToList ScopeObject::CastToOperator
+*/
+
+
+
+
+
 //~~~~~~~CLASS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ScopeObject
-// NOTES: The base class for any accessable object in a scope.
-//
+/**
+	\brief Base class for any object that can reside in a scope.
+	
+	All variables, blocks, and anything else in-language that can have a name and
+	reside in a scope derives from this class.
+	
+	Note that ScopeObjects and derivates typically should be created with the
+	various creation functions (CreateGereric, etc).  This ensures that they
+	are properly garbage collected.
+*/
 class SS_API ScopeObject
 {
 protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(ScopeObject);
+	
+	/// Default Constructor
 	ScopeObject();
+	
+	/**
+		\brief Constructor
+		
+		\param Name The name of the object.  It should obey storyscript
+		identifier naming rules if you want to be able to actually access it.
+		\param Static !!DEPRICATED!!  Set it to whatever you want.
+		this will be removed in future versions.
+		\param Const Whether the object is constant (modifyable) or not. 
+		
+	*/
 	ScopeObject( const SS::STRING& Name, bool Static = false, bool Const = false );
 
 public:
+	/// Destructor
 	virtual ~ScopeObject();
+	
+	
+	/**
+		\brief Used to accept visitor derivates.
+		
+		\see ScopeObjectVisitor
+	*/
+	virtual void AcceptVisitor( ScopeObjectVisitor& V );
 
-	virtual void AcceptVisitor( ScopeObjectVisitor& );
-
+	/**
+		\brief Returns true if registered.
+		
+		\return True if the object is registered to a scope, false otherwise.
+	*/
 	bool IsRegistered() const;
+	
+	/**
+		\brief Returns a pointer the object's parent.
+		
+		If the object is not registered the pointer will be NULL.  Be sure
+		to check if it is!  Or at least call IsRegistered first!
+		
+		\return A pointer to object' parent.
+	*/
 	ScopePtr GetParent() const;
 
+	/**
+		\brief !!DEPRICATED!!
+		
+		Returns true if the object is static.  This function will be removed
+		in future versions. 
+	*/
 	bool IsStatic() const;
+	
+	/**
+		\brief !!DEPRICATED!!
+		
+		Turns the static flag on or off.  This function will be removed
+		in future versions.
+		
+		\param Flag What to set the static flag to. 
+	*/
 	void SetStatic( bool Flag = true );
 
+	/**
+		\brief Returns true if the object is constant.
+	*/
 	bool IsConst() const;
+	
+	/**
+		\brief Turns the const flag on or off.
+		
+		\param Flag What to set the const flag to. 
+	*/
 	void SetConst( bool Flag = true );
 
-	void          SetName(const SS::STRING&);
+	/**
+		\brief Sets the name of the object.
+		
+		Names are not checked for validity, but if you want the 
+		object to be accessable choose a name that conforms to
+		storyscript identifier naming rules.
+		
+		Note that if the object has been registered it will be
+		UnRegistered and then register itself again.
+		
+		\param S The new name for the oject.
+	*/
+	void          SetName(const SS::STRING& S);
+	
+	/**
+		\brief Returns the name of the object.
+	*/
 	const SS::STRING& GetName() const;
+	
+	/**
+		\brief Returns the full name of the object.
+		
+		For instance, ":test_ssconv:foo:bar".
+	*/
 	SS::STRING        GetFullName() const;
 	
-	//These two do the same as the above, only they they write to a string
-	//provided.  This is a workaround for memory corruption problems
-	//involved when using SSI in dll form and not using the multi-threaded DLL
-	//form of the standard libraries.  (in windows)
+	/**
+		\brief Overloaded GetName for c-style strings.
+		
+		This overload exists mainly because if a DLLs is linked with the single-threaded
+		standard library, passing objects around causes bad things.  Or something like that.		
+		
+		\param Buffer The output string.
+		\param BufferSize The size of the output buffer.
+		\return The Buffer
+	*/
 	SS::CHAR* GetName( SS::CHAR* Buffer, unsigned int BufferSize ) const;
+	
+	/**
+		\brief Overloaded GetFullName for c-style strings.
+		
+		This overload exists mainly because if a DLLs is linked with the single-threaded
+		standard library, passing objects around causes bad things.  Or something like that.		
+		
+		\param Buffer The output string.
+		\param BufferSize The size of the output buffer.
+		\return The Buffer
+	*/
 	SS::CHAR* GetFullName( SS::CHAR* Buffer, unsigned int BufferSize ) const;
 
-	void SetSharedPtr( const ScopeObjectPtr& );
+	/**
+		\brief Set the internal shared_ptr of itself.
+		
+		Read about 
+		\ref SelfCasting "Self-Casting Kung-Fu" 
+		if this sounds confusing.
+		
+		 \param This A boost::shared_ptr holding a copy of this object.  If you try to
+		 give it some other shared_ptr the four horemen of the apocolypse will appear
+		 marking the end times.
+	*/
+	void SetSharedPtr( const ScopeObjectPtr& This );
 
+	/**
+		\breif Un-register the object from its scope.
+		
+		This is the equivalent of calling Scope::UnRegister on this object.
+		
+		Nothing will happen if this is called on a unregistered object.
+	*/
 	void UnRegister();
 
+	/// Casts itself to a ScopeObject
 	ScopeObjectPtr CastToScopeObject();
+	/// Cast to a ScopeObject (Const Version)
 	const ScopeObjectPtr CastToScopeObject() const;
 	
+	/// Casts itself to a Scope
 	virtual ScopePtr CastToScope();
+	/// Casts itself to a ScopeO (Const Version)
 	virtual const ScopePtr CastToScope() const;
 
+	/// Casts itself to a VariableBase
 	virtual VariableBasePtr CastToVariableBase();
+	/// Casts itself to a VariableBase (Const Version)
 	virtual const VariableBasePtr CastToVariableBase() const;
-
+	
+	/// Casts itself to a Variable
 	virtual VariablePtr CastToVariable();
+	/// Casts itself to a Variable (Const Version)
 	virtual const VariablePtr CastToVariable() const;
 
+	/// Casts itself to a Block
 	virtual BlockPtr CastToBlock();
+	/// Casts itself to a Block (Const Version)
 	virtual const BlockPtr CastToBlock() const;
-
+	
+	/// Casts itself to a List
 	virtual ListPtr CastToList();
+	/// Casts itself to a List (Const Version)
 	virtual const ListPtr CastToList() const;
 
+	/// Casts itself to an Operator
 	virtual OperatorPtr CastToOperator();
+	/// Casts itself to an Operator (Const Version)
 	virtual const OperatorPtr CastToOperator() const;
 
-	//To allow easy and safe scope registering.
+	/// To allow easy and safe scope registering.
 	friend class Scope;
 
 protected:
+	/**
+		\brief Throws an anomaly if an object is constant.
+		
+		Derived classes should be sure to call this before any operation
+		that would modify the object.
+	*/		
 	void AssertNonConst() const;
+	
+	/**
+		\brief Throws an anomaly if the object cannot be cast.
+		
+		Usually this mean, that the internal shared_ptr hasn't been set. 
+		
+		Read about 
+		\ref SelfCasting "Self-Casting Kung-Fu" 
+		if this sounds confusing.
+	*/
 	void AssertCastingAllowed() const;
 
+	/// The object's name.
 	SS::STRING mName;
+	
+	/**
+		\brief This internal this shared_ptr.
+		
+		See \ref SelfCasting "Self-Casting Kung-Fu".
+	*/
 	ScopeObjectPtrWeak mpThis;
-
+	
+	/// !!DEPRICATED!! This will be removed in a future version.
 	bool mStatic;
+	/// The constant flag.
 	bool mConst;
 
 private:
 
+	/**
+		\brief Throws a bad conversion anomaly.
+		
+		This is called by the CastTo function when the cast is impossible.  
+	*/
 	void ThrowBadConversion( const STRING& Type, const STRING& Addendum = STRING()  ) const;
 
-
+	/// Used by the contructors to set internals to their initial values.
 	void ZeroVars();
 	
+	/// A pointer the objects parent.  (NULL if unregistered)
 	Scope* mpParent;
 };
 

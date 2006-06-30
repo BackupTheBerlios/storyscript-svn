@@ -280,7 +280,9 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 		Take care of any business before we get started.
 	*/
 	
-	if( size() == 0 ){
+	const unsigned long ExpressionSize = size();
+	
+	if( ExpressionSize == 0 ){
 		ThrowParserAnomaly( 
 			TXT("Tried to evaluate an empty expression.  Probably a bug, please report. "),
 			ANOMALY_PANIC );
@@ -299,7 +301,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 	
 
     StripOutlyingParenthesis();
-    const unsigned long ExpressionSize = size();
+    
     
     
     
@@ -600,16 +602,19 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 */
 void Expression::StripOutlyingParenthesis() const
 {
-	unsigned long ExpressionSize = size();
-	
-	int ParenthesisCount = 0; //Gets reused later down
 	if( (*this)[0].Extra == EXTRA_PARENTHESIS_Left )
 	{
+		const unsigned long ExpressionSize = size();
+	
+		int ParenthesisCount = 0; //Gets reused later down
+		
+		const Word* pTempWord;
 		unsigned int i;
 		for( i = 0; i < ExpressionSize; i++ )
 		{
-			if( (*this)[i].Extra == EXTRA_PARENTHESIS_Left ) ParenthesisCount++;
-			else if( (*this)[i].Extra == EXTRA_PARENTHESIS_Right ) ParenthesisCount--;
+			pTempWord = &(*this)[i];
+			if( pTempWord->Extra == EXTRA_PARENTHESIS_Left ) ParenthesisCount++;
+			else if( pTempWord->Extra == EXTRA_PARENTHESIS_Right ) ParenthesisCount--;
 
 			//Found a matching ")"
 			if( ParenthesisCount == 0 ) break;

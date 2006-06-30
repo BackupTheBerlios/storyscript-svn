@@ -1,10 +1,16 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
+*/
 
-NOTES: These are a bunch of defines and typedefs that get included when unicode
-	mode is turned off.
+/**
+	\file UseNarrowChar.hpp
+	Typdefs and defines for when narrow char's are being used.
+	
+	\see Unicode.hpp UseWideChar.hpp
 */
 
 #if !defined(SS_UseNarrowChar)
@@ -15,9 +21,13 @@ NOTES: These are a bunch of defines and typedefs that get included when unicode
 
 namespace SS{
 
-	
+/// The standard character type.
 typedef char CHAR;
+
+/// Typedef for STL Strings.
 typedef std::string STRING;
+
+/// Typedef for 
 typedef std::fstream FSTREAM;
 typedef std::ifstream IFSTREAM;
 typedef std::ofstream OFSTREAM;
