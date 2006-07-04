@@ -116,7 +116,9 @@ int main( int argc, char* argv[] )
 	
 
 	CON.SetBackgroundFull( ColorPair( ColorCyan, ColorBlack ), ' ' );
-	ConsoleInterface Test( CON, !Quiet );
+	
+	SS::Interpreter* pI = new SS::Interpreter;
+	ConsoleInterface Test( CON, *pI, !Quiet );
 	
 	if( GCCErrors ) Test.SetGCCStyleErrors();
 	
@@ -151,6 +153,7 @@ int main( int argc, char* argv[] )
 
 		
 	delete pCON;
+	delete pI;
 	
 	return 0;
 }

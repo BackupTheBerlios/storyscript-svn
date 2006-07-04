@@ -11,12 +11,14 @@ NOTES: Contains functions for safely creating derivatives of ScopeObject.
 
 #include "Macros.hpp"
 #include "Types.hpp"
+//#include "Interpreter.hpp"
 //#include "ScopeObject.hpp"
 //#include "Bookmark.hpp"
 
 namespace SS{
 
 struct Bookmark;
+class Interpreter;
 
 /*
 Gotta love macros.
@@ -34,10 +36,14 @@ friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const NumT
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const StringType& );\
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const BoolType& )
 
-#define SS_FRIENDIFY_BLOCK_CREATOR(x) friend boost::shared_ptr<x> CreateBlock<x> ( SS_DECLARE_BASE_ARGS, const Bookmark& Position, BlockIndex ListIndex )
+#define SS_FRIENDIFY_BLOCK_CREATOR(x) friend boost::shared_ptr<x> CreateBlock<x> ( SS_DECLARE_BASE_ARGS, Interpreter& I, const Bookmark& Position, BlockIndex ListIndex )
 
 template <typename T > extern
 boost::shared_ptr<T> CreateGeneric();
+
+// For "BuiltInFunctions".
+template <typename T > extern
+boost::shared_ptr<T> CreateGeneric( Interpreter& );
 
 template <typename T > extern
 boost::shared_ptr<T> CreateGeneric( SS_DECLARE_BASE_ARGS );
@@ -55,7 +61,7 @@ template <typename T > extern
 boost::shared_ptr<T> CreateVariable( SS_DECLARE_BASE_ARGS, const BoolType& );
 
 template <typename T > extern
-boost::shared_ptr<T> CreateBlock( SS_DECLARE_BASE_ARGS, const Bookmark& Position, BlockIndex Index );
+boost::shared_ptr<T> CreateBlock( SS_DECLARE_BASE_ARGS, Interpreter& I, const Bookmark& Position, BlockIndex Index );
 
 }//end namespace SS
 #endif

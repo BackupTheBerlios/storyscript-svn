@@ -28,6 +28,8 @@ using namespace SS;
 #define Implement_CreateGeneric(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ( SS_DECLARE_BASE_ARGS );\
 template boost::shared_ptr<x> SS::CreateGeneric<x> ()
 
+#define Implement_CreateGeneric_BuiltIn(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ( Interpreter& );
+
 #define Implement_CreateGeneric_NoArgs(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ()
 
 #define Implement_CreateVariable(x) template boost::shared_ptr<x> SS::CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const Variable& );\
@@ -35,7 +37,7 @@ template boost::shared_ptr<x> SS::CreateVariable<x> ( SS_DECLARE_BASE_ARGS, cons
 template boost::shared_ptr<x> SS::CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const StringType& );\
 template boost::shared_ptr<x> SS::CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const BoolType& )
 
-#define Implement_CreateBlock(x) template boost::shared_ptr<x> SS::CreateBlock<x> ( SS_DECLARE_BASE_ARGS, const Bookmark& Position, unsigned int ListIndex )
+#define Implement_CreateBlock(x) template boost::shared_ptr<x> SS::CreateBlock<x> ( SS_DECLARE_BASE_ARGS, Interpreter& I, const Bookmark& Position, unsigned int ListIndex )
 
 Implement_CreateGeneric(ScopeObject);
 Implement_CreateGeneric(Scope);
@@ -46,9 +48,10 @@ Implement_CreateGeneric_NoArgs(SLib::List);
 Implement_CreateGeneric_NoArgs(SLib::Math);
 Implement_CreateGeneric_NoArgs(SLib::Time);
 Implement_CreateGeneric_NoArgs(SLib::LangOpts);
-Implement_CreateGeneric_NoArgs(ImportOperator);
-Implement_CreateGeneric_NoArgs(UnImportOperator);
-Implement_CreateGeneric_NoArgs(ReturnOperator);
+Implement_CreateGeneric_BuiltIn(PrintOperator);
+Implement_CreateGeneric_BuiltIn(ImportOperator);
+Implement_CreateGeneric_BuiltIn(UnImportOperator);
+Implement_CreateGeneric_BuiltIn(ReturnOperator);
 
 Implement_CreateVariable(Variable);
 

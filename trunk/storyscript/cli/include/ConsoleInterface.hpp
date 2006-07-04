@@ -17,7 +17,7 @@ NOTES: The SSI command line interface.
 class ConsoleInterface : public SS::Interface
 {
 public:
-	ConsoleInterface( Console& CON, bool StartupBanner = true );
+	ConsoleInterface( Console& CON, SS::Interpreter& I, bool StartupBanner = true );
 	~ConsoleInterface();
 	
 	void StartConversation();

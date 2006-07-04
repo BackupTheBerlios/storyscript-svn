@@ -1,9 +1,9 @@
 /*
 Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: Block defs.  Blocks are the cornerstone of this language.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
 #include "Block.hpp"
@@ -23,8 +23,8 @@ Block::Block()
 {}
 
 Block::Block( const STRING& Name, bool Static, bool Const,
-			  const Bookmark& Position, unsigned int ListIndex )
-	: Operator(Name, Static, Const), mFilePosition(Position), mListIndex(ListIndex), mBeenSaid(false)
+			  Interpreter& I, const Bookmark& Position, unsigned int ListIndex )
+	: Operator(Name, Static, Const), mFilePosition(Position), mListIndex(ListIndex), mBeenSaid(false), mpI(&I)
 {
 	RegisterPredefinedVars();
 }
@@ -58,7 +58,7 @@ VariableBasePtr Block::Operate( VariableBasePtr In )
 {
 	//*(GetScopeObject( LC_Input )->CastToVariableBase()) = *In;
 	
-	Interpreter::Instance().Parse( this->CastToBlock(), false, In );
+	mpI->Parse( this->CastToBlock(), false, In );
 	
 	//Nope, this is not good.  This would allow modifcation of the blocks out var.
 	//return GetScopeObject( LC_Output )->CastToVariableBase();	

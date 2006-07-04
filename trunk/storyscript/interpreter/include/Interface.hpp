@@ -26,7 +26,7 @@ game.  The game just has to derive from this.
 */
 class SS_API Interface{
 public:
-	Interface();
+	Interface( Interpreter& I );
 	virtual ~Interface();
 
     
@@ -51,7 +51,8 @@ protected:
 
 	//void CheckInterpreter();
 
- 	Interpreter& mInterpreter;
+ 	Interpreter& mI;	
+ 
 };
 
 

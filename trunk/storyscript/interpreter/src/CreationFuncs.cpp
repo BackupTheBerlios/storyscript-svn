@@ -21,6 +21,16 @@ boost::shared_ptr<T> SS::CreateGeneric()
 	return pNewObj;
 }
 
+
+template< typename T >
+boost::shared_ptr<T> SS::CreateGeneric( Interpreter& I )
+{
+	boost::shared_ptr<T> pNewObj( new T( I ) );
+	pNewObj->SetSharedPtr( pNewObj );
+	
+	return pNewObj;
+}
+
 template< typename T >
 boost::shared_ptr<T> SS::CreateGeneric( SS_DECLARE_BASE_ARGS )
 {
@@ -37,10 +47,11 @@ boost::shared_ptr<T> SS::CreateGeneric( SS_DECLARE_BASE_ARGS )
 */
 template< typename T >
 boost::shared_ptr<T> SS::CreateBlock(  SS_DECLARE_BASE_ARGS,
+									Interpreter& I,
 									const Bookmark& Position,
 									unsigned int ListIndex )
 {
-	boost::shared_ptr<T> pNewBlock( new T( SS_BASE_ARGS, Position, ListIndex ) );
+	boost::shared_ptr<T> pNewBlock( new T( SS_BASE_ARGS, I, Position, ListIndex ) );
 	pNewBlock->SetSharedPtr( pNewBlock );
 	
 	return pNewBlock;

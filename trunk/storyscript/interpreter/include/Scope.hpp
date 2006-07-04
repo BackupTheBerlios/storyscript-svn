@@ -8,7 +8,7 @@ directory named "license".
 
 /**
 	\file Scope.hpp
-	\Declarations for Scope.  
+	\brief Declarations for Scope.  
 */
 
 

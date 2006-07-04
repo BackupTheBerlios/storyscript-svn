@@ -48,7 +48,8 @@ class Interface;
 class SS_API Interpreter
 {
 public:
-	static Interpreter& Instance();
+	Interpreter();
+	//static Interpreter& Instance();
 	
 	~Interpreter();
 	
@@ -97,8 +98,6 @@ public:
 	friend class Interface;
 
 private:
-	Interpreter();
-
 	void AssertFileOpen();	
 	void AssertAttachedInterface();
 	

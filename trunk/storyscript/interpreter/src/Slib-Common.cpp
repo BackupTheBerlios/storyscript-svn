@@ -43,7 +43,6 @@ Common::Common()
 */
 void Common::RegisterPredefined()
 {
-	Register( ScopeObjectPtr( new print( TXT("print"), true, true ) ) );
 	Register( ScopeObjectPtr( gpNANConst ) );
 	Register( ScopeObjectPtr( gpInfinityConst ) );
 	Register( ScopeObjectPtr( gpNegInfinityConst ) );
@@ -81,15 +80,6 @@ void SS::SLib::LangOpts::RegisterPredefined()
 		new BoundFlagVar( TXT("verbose"), MyLangOpts.Verbose, true, false ) ) );
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- print::Operate
- NOTES: Prints a message to the console.
-*/
-VariableBasePtr print::Operate( VariableBasePtr X )
-{
-	Interpreter::Instance().GetInterface().LogMessage( X->GetStringData(), true );
-	return X;
-}
 
 
 

@@ -21,10 +21,10 @@ using namespace SS;
  Interface::Interface
  NOTES: Constructors
 */
-Interface::Interface()
-	: mInterpreter( Interpreter::Instance() )
+Interface::Interface( Interpreter& I )
+	: mI( I )
 {
-	mInterpreter.SetInterface( *this );
+	mI.SetInterface( *this );
 }
 
 
@@ -43,11 +43,11 @@ Interface::~Interface()
  NOTES: Returns a reference to the interpreter.  For direct access.
 */
 Interpreter& Interface::GetInterpreter(){
-	return mInterpreter;
+	return mI;
 }
 
 const Interpreter& Interface::GetInterpreter() const{
-	return mInterpreter;
+	return mI;
 }
 
 
@@ -78,20 +78,20 @@ void Interface::StartConversation( const STRING& FileName, const STRING& BlockNa
 	try{
 		//CheckInterpreter();
 
-		if( FileName.length() != 0 ) mInterpreter.Open( FileName );
+		if( FileName.length() != 0 ) mI.Open( FileName );
 		else
 		{
 			ThrowParserAnomaly( TXT("No file specified.  Exiting."), ANOMALY_PANIC );
 		}
 
-		if( BlockName.length() != 0 ) mInterpreter.Parse( BlockName );
-		else mInterpreter.Parse( mInterpreter.GetFirstBlock() );
+		if( BlockName.length() != 0 ) mI.Parse( BlockName );
+		else mI.Parse( mI.GetFirstBlock() );
 	}
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOBLOCKS )
 		{
-			if( mInterpreter.Instance().IsVerbose() ){
+			if( mI.IsVerbose() ){
 				LogMessage( TXT("\nNo blocks to execute.  Exiting...\n") );
 			}
 			return;

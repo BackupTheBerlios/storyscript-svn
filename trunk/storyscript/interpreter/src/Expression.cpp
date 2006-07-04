@@ -86,17 +86,28 @@ private:
  Expression::Expression
  NOTES: constructors
 */
+Expression::Expression( Interpreter& I )
+	: mStatic(false), mpWordList( new WordList ),
+      mSyntaxChecked(false), mI(I)
+{
+	
+}
+
+
+/*
 Expression::Expression()
 	: mStatic(false), mpWordList( new WordList ),
       mSyntaxChecked(false)
 {
 }
+*/
 
 
 Expression::Expression( const Expression& OtherExp, const Bounds& OtherBounds )
 	: mStatic(OtherExp.mStatic), mpWordList( OtherExp.mpWordList ),
  	  mBounds(OtherBounds),
- 	  mSyntaxChecked(OtherExp.mSyntaxChecked), mpPrecedenceList(OtherExp.mpPrecedenceList)
+ 	  mSyntaxChecked(OtherExp.mSyntaxChecked), mpPrecedenceList(OtherExp.mpPrecedenceList),
+ 	  mI(OtherExp.mI)
 {
 	if( mBounds.Upper < mBounds.Lower )
 	{
@@ -280,7 +291,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 		Take care of any business before we get started.
 	*/
 	
-	const unsigned long ExpressionSize = size();
+	unsigned long ExpressionSize = size();
 	
 	if( ExpressionSize == 0 ){
 		ThrowParserAnomaly( 
@@ -300,7 +311,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 	}
 	
 
-    StripOutlyingParenthesis();
+    if( StripOutlyingParenthesis() ) ExpressionSize = size();
     
     
     
@@ -600,7 +611,7 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 		Won't complain if there are no outlying parenthesis.
 		Will complain if there is a parenthesis mismatch.
 */
-void Expression::StripOutlyingParenthesis() const
+bool Expression::StripOutlyingParenthesis() const
 {
 	if( (*this)[0].Extra == EXTRA_PARENTHESIS_Left )
 	{
@@ -623,13 +634,16 @@ void Expression::StripOutlyingParenthesis() const
 		if( i == ExpressionSize )//Parenthesis mismatch
 		{ 
 			ThrowParserAnomaly( TXT("Parenthesis mismatch."), ANOMALY_BADGRAMMAR );
+			
+			return false; // Just to placate the compiler.
 		}
 		else if( i == ExpressionSize - 1 )//Outlying parenthesis, ok to strip
 		{
 			mBounds.Lower++;
 			mBounds.Upper = GetAbsoluteIndex( size() - 1 );
+			return true;
 		}
-		//else parenthesis match, but no outlying parenthesis
+		else return false;
 	}
 }
 
@@ -1014,7 +1028,7 @@ void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 			
 			try{
 				ScopeObjectPtr pTmpPtr =
-				Interpreter::Instance().GetScopeObject( (*mpWordList)[i].String );
+				mI.GetScopeObject( (*mpWordList)[i].String );
 				
 				(*pCache)[i] = pTmpPtr;
 			}
@@ -1052,7 +1066,7 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 		return pRight->op_neg();
 	}
 	else if( Op == EXTRA_UNOP_ScopeResolution ){
-		ScopePtr pTmp = Interpreter::Instance().GetGlobalScope();
+		ScopePtr pTmp = mI.GetGlobalScope();
 		return pTmp->GetScopeObject( MakeCompoundID( pRight->GetStringData() ) )->CastToVariableBase();	
 	}	
 	//Declarations
@@ -1067,13 +1081,13 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 			if( Op == EXTRA_UNOP_Var )
 			{
 				return
-					Interpreter::Instance().MakeScopeObject( 
+					mI.MakeScopeObject( 
 					SCOPEOBJ_VARIABLE, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 			}
 			else if( Op == EXTRA_UNOP_List )
 			{
 				return
-					Interpreter::Instance().MakeScopeObject( 
+					mI.MakeScopeObject( 
 					SCOPEOBJ_LIST, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 			}
 			else if( Op == EXTRA_UNOP_Player )
@@ -1081,13 +1095,13 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 				//HACK: This says player, but currently it just creates a standard character.
 				//		At this point there is no spereation between players and characters.
 				return
-					Interpreter::Instance().MakeScopeObject( 
+					mI.MakeScopeObject( 
 					SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 			}
 			else if( Op == EXTRA_UNOP_Character )
 			{
 				return
-					Interpreter::Instance().MakeScopeObject( 
+					mI.MakeScopeObject( 
 					SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 			}
 			else

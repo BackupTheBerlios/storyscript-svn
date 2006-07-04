@@ -19,6 +19,7 @@ NOTES: Contains declarations for the Expression class which is responsible for
 namespace SS{
 	
 
+class Interpreter;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  Expression
@@ -36,16 +37,16 @@ private:
 		size_t Lower, Upper;
 	};
 	
-public:
 	Expression();
-	Expression( const Expression&, const Bounds& );
+	
+public:
+	Expression( Interpreter& I );
 
 	Expression& operator=( const Expression& );
 	
 	bool IsStatic() const;
 	void SetStatic( bool flag = true ) const;
 
-	//These mimic the functions in std::vector
 	Word& operator[]( unsigned long );
 	const Word& operator[]( unsigned long ) const;
 	
@@ -61,6 +62,7 @@ public:
 	VariableBasePtr Evaluate() const;
 
 private:
+	Expression( const Expression&, const Bounds& );
 	typedef unsigned int               OperatorPrecedence;
 	typedef std::vector<Word> WordList;
 	typedef std::map<size_t, ScopeObjectPtr> ObjectCache;
@@ -107,7 +109,7 @@ private:
 	mutable bool mSyntaxChecked;
 	
 	
-	void StripOutlyingParenthesis() const;
+	bool StripOutlyingParenthesis() const;
 	
 	
 	void ThrowExpressionAnomaly( const SS::STRING& Desc, AnomalyCode Code ) const;
@@ -119,7 +121,7 @@ private:
 	
 	
 	
-
+	Interpreter& mI;
 	
 	
 	//LowerBounds is inclusive, UpperBouds is exclusive

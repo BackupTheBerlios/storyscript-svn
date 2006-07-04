@@ -29,8 +29,8 @@ NOTES: The SSI command line interface.
  ConsoleInterface::ConsoleInterface
  NOTES: constructor
 */
-ConsoleInterface::ConsoleInterface( Console& CON, bool StartupBanner /*=true*/ )
-	: CON(CON), mGCCStyleErrors(false)
+ConsoleInterface::ConsoleInterface( Console& CON, SS::Interpreter& I, bool StartupBanner /*=true*/ )
+	: Interface(I), CON(CON), mGCCStyleErrors(false)
 {
 	//Create backup reader source
 	
@@ -73,7 +73,7 @@ ConsoleInterface::ConsoleInterface( Console& CON, bool StartupBanner /*=true*/ )
 		SetDefaultColor();
 	}
 
-	mInterpreter.SetVerbose(false);	
+	mI.SetVerbose(false);	
 }
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +93,7 @@ void ConsoleInterface::StartConversation()
 {
 	SetDebugColor();
 	try{
-	mInterpreter.SetSource( *mpLineReader );
+	mI.SetSource( *mpLineReader );
 	}
 	catch( SS::ParserAnomaly E )
 	{
@@ -249,7 +249,7 @@ void ConsoleInterface::SayBlock( const SS::BlockPtr pBlock )
 */
 void ConsoleInterface::PrintPosition()
 {
-	SS::Bookmark Mark = mInterpreter.GetCurrentPos();
+	SS::Bookmark Mark = mI.GetCurrentPos();
 
 	CON << Mark.FileName;
 	CON << TXT("; ");

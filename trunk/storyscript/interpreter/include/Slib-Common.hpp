@@ -13,6 +13,9 @@ NOTES: S-Lib functions/mvars that are miscilaneous and used often.
 #include "Operator.hpp"
 
 namespace SS{
+	
+class Interpreter;
+	
 namespace SLib{
 	
 
@@ -46,18 +49,7 @@ private:
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
- print
- NOTES: Prints something to the console.
-*/
-class print : public Operator
-{
-public:
-	print( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ){}
 
-	VariableBasePtr Operate( VariableBasePtr );
-};
 
 
 

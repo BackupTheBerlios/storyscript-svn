@@ -54,11 +54,13 @@ boost::shared_ptr<Interpreter> Interpreter::mpInstance;
 // Interpreter::Instance
 // NOTES: Retrieves the single instance of Interpreter.
 //
+/*
 Interpreter& Interpreter::Instance(){
 	if( !mpInstance ) mpInstance.reset( new Interpreter );
 	
 	return *(mpInstance.get());	
 }
+*/
 
 
 //~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -116,7 +118,7 @@ Interface& Interpreter::GetInterface()
 void Interpreter::RegisterSpecials()
 {
 	//The last two values are just bullshit.
-	mpEndBlock = CreateBlock<Block>( LC_EndBlock, true, true, Bookmark(), 0 ); 
+	mpEndBlock = CreateBlock<Block>( LC_EndBlock, true, true, *this, Bookmark(), 0 ); 
 	mpGlobalScope->Register( ScopeObjectPtr( mpEndBlock ) );
 
 	//SLib-Common gets special treatment.  It gets auto-imported.
@@ -134,9 +136,10 @@ void Interpreter::RegisterSpecials()
 	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::LangOpts>() ) );
 	
 	//Register build in functions
-	mpGlobalScope->Register( CreateGeneric<ImportOperator>() );
-	mpGlobalScope->Register( CreateGeneric<UnImportOperator>() );
-	mpGlobalScope->Register( CreateGeneric<ReturnOperator>() );
+	mpGlobalScope->Register( CreateGeneric<PrintOperator>   ( *this ) );
+	mpGlobalScope->Register( CreateGeneric<ImportOperator>  ( *this ) );
+	mpGlobalScope->Register( CreateGeneric<UnImportOperator>( *this ) );
+	mpGlobalScope->Register( CreateGeneric<ReturnOperator>  ( *this ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -717,7 +720,7 @@ Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySourc
 		return i->second.MyExp;
 	}
 	
-	ExpressionPtr NextExpression( new Expression );
+	ExpressionPtr NextExpression( new Expression( *this ) );
 			
 	while( true )
 	{
@@ -929,7 +932,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
 	{
 	case SCOPEOBJ_BLOCK:
 		{
-		BlockPtr pTempBlock( CreateBlock<Block>( Name, Static, Const,
+		BlockPtr pTempBlock( CreateBlock<Block>( Name, Static, Const, *this,
 								 GetCurrentPos(), (BlockIndex)mBlockOrder.size() ) );
 		mBlockOrder.push_back( pTempBlock );
 		pNewObj = (ScopeObjectPtr)pTempBlock ;
@@ -1157,10 +1160,10 @@ void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
 		mpInterface->LogMessage( STRING(TXT("Importing \'")) + FileName + STRING(TXT("\'.\n")) );
 	}
 	
-	Bookmark OldPos = Interpreter::Instance().GetCurrentPos();
+	Bookmark OldPos = GetCurrentPos();
 					
 	Bookmark ImportedFile( FileName, 0, 0 );
-	ReaderSource& MySource = Interpreter::Instance().GetSource( ImportedFile ); 
+	ReaderSource& MySource = GetSource( ImportedFile ); 
 	
 	ScopePtr pTmpObj = GetScope( MakeScopeNameFromFileName( MySource.GetName() ) );
 

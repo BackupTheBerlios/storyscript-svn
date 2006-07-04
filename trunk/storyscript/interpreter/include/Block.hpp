@@ -25,6 +25,8 @@ directory named "license".
 namespace SS{
 
 
+class Interpreter;
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 /**
 	\brief The block object.
@@ -50,7 +52,7 @@ protected:
 		next block an be auto-called
 	*/
 	Block( const SS::STRING& Name, bool Static, bool Const,
-		const Bookmark& Position, BlockIndex ListIndex );
+		Interpreter& I, const Bookmark& Position, BlockIndex ListIndex );
 
 public:
 	void AcceptVisitor( ScopeObjectVisitor& );
@@ -112,6 +114,8 @@ private:
 	
 	/// The block order.  (See GetListIndex.)
 	BlockIndex mListIndex;
+	
+	Interpreter* mpI;
 
 	//SS::STRING mSpeechFileName;
 };
