@@ -12,6 +12,8 @@ NOTES: Definitions for the List class; a dynamicaly sized list.
 #include "CreationFuncs.hpp"
 #include <boost/lexical_cast.hpp>
 
+#include <mpfr.h>
+
 using namespace SS;
 
 
@@ -70,8 +72,10 @@ const ListPtr List::CastToList() const{
 */
 void List::Resize( const NumType& NewSize )
 {
+	
+	unsigned int iNewSize = mpfr_get_ui( NewSize.get(), GMP_RNDN );
 
-	if( NewSize.get_ui() > mList.max_size() )
+	if( iNewSize > mList.max_size() )
 	{
 		STRING tmp = TXT("Cannot resize list \'");
 		tmp += this->GetFullName();
@@ -80,12 +84,12 @@ void List::Resize( const NumType& NewSize )
 		tmp += TXT("\'.  That's just too damn big.");
 		ThrowParserAnomaly( tmp, ANOMALY_LISTTOOBIG );
 	}
-	else if( NewSize < (NumType)0 )	{
+	else if( iNewSize < 0 )	{
 		ThrowParserAnomaly( TXT("Cannot create a list of negative size."),
 							ANOMALY_LISTTOOBIG );
 	}
 
-	mList.resize( NewSize.get_ui() );
+	mList.resize( iNewSize );
 }
 
 
@@ -205,7 +209,8 @@ ListPtr List::MakeFlatList() const
 */
 unsigned int List::DetermineRealIndex( const VariableBase& Index )
 {
-	long TrueIndex = (Index.CastToVariable()->GetNumData().get_si());
+	long TrueIndex = 
+	mpfr_get_si( Index.CastToVariable()->GetNumData().get(), GMP_RNDN );
 	
 	//Special Case for Empty Lists
 	//if( mList.size() == 0 && (TrueIndex == 0 || TrueIndex == -1) ) return 0;

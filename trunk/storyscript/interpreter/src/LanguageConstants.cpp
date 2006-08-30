@@ -186,17 +186,17 @@ void SS::InitConstants(){
 	
 	//Set up the in-language ones
 	gpNANConst = CreateVariable<Variable>( TXT("_NAN_"), true, false, 0 );
-	mpfr_set_nan( gpNANConst->GetActualNumData().get_mpfr_t() );
+	mpfr_set_nan( gpNANConst->GetActualNumData().get() );
 	gpNANConst->ForceConversion( VARTYPE_NUM );
 	gpNANConst->SetConst();
 		
 	gpInfinityConst = CreateVariable<Variable>( TXT("_INF_"), true, false, 0 );
-	mpfr_set_inf( gpInfinityConst->GetActualNumData().get_mpfr_t(), 1 );
+	mpfr_set_inf( gpInfinityConst->GetActualNumData().get(), 1 );
 	gpInfinityConst->ForceConversion( VARTYPE_NUM );
 	gpInfinityConst->SetConst();
 	
 	gpNegInfinityConst = CreateVariable<Variable>( TXT("_NEGINF_"), true, false, 0 );
-	mpfr_set_inf( gpNegInfinityConst->GetActualNumData().get_mpfr_t(), -1 );
+	mpfr_set_inf( gpNegInfinityConst->GetActualNumData().get(), -1 );
 	gpNegInfinityConst->ForceConversion( VARTYPE_NUM );
 	gpNegInfinityConst->SetConst();
 	

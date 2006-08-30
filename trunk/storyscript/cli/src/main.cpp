@@ -93,7 +93,7 @@ int main( int argc, char* argv[] )
 	}
 	
 	//Shall we use color?
-	bool NoColor = false;
+	//bool NoColor = false;
 	if( cl.search( 2, "--no-color", "-n" ) ){
 		CON.UseColor( false );		
 	}

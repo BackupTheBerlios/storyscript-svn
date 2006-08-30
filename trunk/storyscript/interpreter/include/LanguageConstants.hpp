@@ -28,7 +28,7 @@ public:
 	static LangOpts& Instance();
 	
 	unsigned long DefaultPrecision;
-	unsigned long RoundingMode;
+	mpfr_rnd_t RoundingMode;
 	unsigned long MaxDigitOutput;
 	unsigned long NumberBase;
 	bool UseStrictLists;

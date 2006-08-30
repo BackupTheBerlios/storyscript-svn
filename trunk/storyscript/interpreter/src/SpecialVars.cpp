@@ -349,7 +349,7 @@ BoundULongVar::BoundULongVar( const STRING& Name, unsigned long& ULong,
 */
 VariableBasePtr BoundULongVar::operator=( const VariableBase& X )
 {
-	mNum = X.GetNumData().get_ui();
+	mNum = mpfr_get_ui( X.GetNumData().get(), GMP_RNDN );
 	return CastToVariableBase();	
 }
 
@@ -364,7 +364,9 @@ VarType BoundULongVar::GetVariableType() const{
  NOTES: Get__Data -- Return useable data.
 */
 NumType BoundULongVar::GetNumData() const{
-	return NumType( mNum );
+	NumType New;
+	New.set( mNum );
+	return New;
 }
 
 BoolType BoundULongVar::GetBoolData() const{
@@ -374,6 +376,133 @@ BoolType BoundULongVar::GetBoolData() const{
 StringType BoundULongVar::GetStringData() const{
 	return GetStringDataFromNum();
 }
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Constructor
+*/
+BoundUShortVar::BoundUShortVar( const STRING& Name, unsigned short& UShort,
+						bool Static /*= false*/, bool Const /*= false*/ )
+: SpecialVarBase( Name, Static, Const ), mNum( UShort )
+{
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Overloaded assignment operator.
+*/
+VariableBasePtr BoundUShortVar::operator=( const VariableBase& X )
+{
+	mNum = (unsigned short)mpfr_get_ui( X.GetNumData().get(), GMP_RNDN );
+	return CastToVariableBase();	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Return prefered type (number).
+*/
+VarType BoundUShortVar::GetVariableType() const{
+	return VARTYPE_NUM;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Get__Data -- Return useable data.
+*/
+NumType BoundUShortVar::GetNumData() const{
+	NumType New;
+	New.set( (unsigned long)mNum );
+	return New;
+}
+
+BoolType BoundUShortVar::GetBoolData() const{
+	return GetBoolDataFromNum();
+}
+
+StringType BoundUShortVar::GetStringData() const{
+	return GetStringDataFromNum();
+}
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Constructor
+*/
+BoundRoundModeVar::BoundRoundModeVar( const STRING& Name, mpfr_rnd_t& RoundMode,
+						bool Static /*= false*/, bool Const /*= false*/ )
+: SpecialVarBase( Name, Static, Const ), mRoundMode( RoundMode )
+{
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Overloaded assignment operator.
+*/
+VariableBasePtr BoundRoundModeVar::operator=( const VariableBase& X )
+{
+	unsigned long tmp = (unsigned short)mpfr_get_ui( X.GetNumData().get(), GMP_RNDN );
+	
+	switch( tmp ){
+		case 0:
+			mRoundMode = GMP_RNDN;
+			break;
+		case 1:
+			mRoundMode = GMP_RNDZ;
+			break;
+		case 2:
+			mRoundMode = GMP_RNDU;
+			break;
+		case 3:
+			mRoundMode = GMP_RNDD;
+			break;
+		case 4:
+			mRoundMode = GMP_RND_MAX;
+			break;
+		default:
+			mRoundMode = GMP_RNDN;
+	}
+	
+	return CastToVariableBase();	
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Return prefered type (number).
+*/
+VarType BoundRoundModeVar::GetVariableType() const{
+	return VARTYPE_NUM;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+ NOTES: Get__Data -- Return useable data.
+*/
+NumType BoundRoundModeVar::GetNumData() const{
+	
+	NumType New;
+	
+	switch( mRoundMode ){
+		case GMP_RNDN:
+			New.set( 0 );
+		case GMP_RNDZ:
+			New.set( 1 );
+		case GMP_RNDU:
+			New.set( 2 );
+		case GMP_RNDD:
+			New.set( 3 );
+		case GMP_RND_MAX:
+			New.set( 4 );
+		default:
+			New.set( 0 );
+	}
+	
+	return New;
+}
+
+BoolType BoundRoundModeVar::GetBoolData() const{
+	return GetBoolDataFromNum();
+}
+
+StringType BoundRoundModeVar::GetStringData() const{
+	return GetStringDataFromNum();
+}
+
+
 
 
 
@@ -488,7 +617,7 @@ VariableBasePtr PrecisionVar::operator=(const VariableBase& X )
 	static const NumType MaxPrecision( MPFR_PREC_MAX );
     
 
-	if( X.GetNumData() < MinPrecision )
+	if( mpfr_less_p( X.GetNumData().get(), MinPrecision.get() ) )
 	{
 		STRING tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
@@ -498,7 +627,7 @@ VariableBasePtr PrecisionVar::operator=(const VariableBase& X )
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}
 	
-	if( X.GetNumData() > MaxPrecision )
+	if( mpfr_greater_p( X.GetNumData().get(), MaxPrecision.get() ) )
 	{
 		STRING tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
@@ -508,10 +637,8 @@ VariableBasePtr PrecisionVar::operator=(const VariableBase& X )
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}
 
-	mpfr_prec_t NewPrec = X.GetNumData().get_ui();
-
-
-	mParent.GetActualNumData().set_prec( NewPrec );
+	mpfr_prec_t NewPrec = mpfr_get_ui( X.GetNumData().get(), GMP_RNDN );
+	mpfr_set_prec( mParent.GetActualNumData().get(), NewPrec );
 
 	return CastToVariableBase();
 }
@@ -532,7 +659,9 @@ VarType PrecisionVar::GetVariableType() const{
 */
 NumType PrecisionVar::GetNumData() const
 {
-    return NumType( mParent.GetActualNumData().get_prec() );
+	NumType Out;
+	mpfr_set_ui( Out.get(), mpfr_get_prec(mParent.GetActualNumData().get()), GMP_RNDN );
+	return Out;
 }
 
 BoolType PrecisionVar::GetBoolData() const

@@ -388,15 +388,17 @@ const Word& ReaderSource::GetNextWord()
 			ThrowParserAnomaly( TmpError, ANOMALY_UNKNOWNOP );
 		}
 	}
-	else //Not even sure if this is possible //It is.
-	{
-		STRING Temp = TXT("Cannot figure out what kind of word this is.\n  TempChar: ");
-		Temp += TempChar;
-		Temp += TXT("\nTempString:");
-		Temp += TempString;
-		Temp += TXT("\n");
-		ThrowParserAnomaly( Temp, ANOMALY_UNKNOWNWORD );
-	}	
+
+
+	//Oops.  It shouldn't make it this far down.
+
+	STRING Temp = TXT("Cannot figure out what kind of word this is.\n  TempChar: ");
+	Temp += TempChar;
+	Temp += TXT("\nTempString:");
+	Temp += TempString;
+	Temp += TXT("\n");
+	ThrowParserAnomaly( Temp, ANOMALY_UNKNOWNWORD );
+	return mBuffer[0]; //To placate the compiler.
 }
 
 

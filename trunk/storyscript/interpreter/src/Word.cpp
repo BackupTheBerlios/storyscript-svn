@@ -88,7 +88,7 @@ Word::Word( WordType Type, ExtraDesc Extra /*=EXTRA_NULL*/ )
 }
 
 Word::Word( const Word& SomeWord )
-	: Type(SomeWord.Type), Extra(SomeWord.Extra), String(SomeWord.String)
+	: String(SomeWord.String), Type(SomeWord.Type), Extra(SomeWord.Extra)
 {
 }
 

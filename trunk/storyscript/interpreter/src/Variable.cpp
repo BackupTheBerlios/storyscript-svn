@@ -15,8 +15,70 @@ NOTES: The variable interface and implementation.
 //#include "BaseFuncs.hpp"
 #include "List.hpp"
 #include "CreationFuncs.hpp"
+#include <cstring>
+
+//Just for a quick test.  Please remove this later.
+#include <iostream>
 
 using namespace SS;
+
+
+
+//Defs for the mpfr_t mini-wrapper
+mpfr_t_wrap::mpfr_t_wrap()
+{
+	mpfr_init(N);	
+}
+
+mpfr_t_wrap::mpfr_t_wrap( int prec )
+{
+	mpfr_init2( N, prec );
+}
+
+mpfr_t_wrap::mpfr_t_wrap( const mpfr_t_wrap& X )
+{
+	mpfr_init(N);
+	mpfr_set( N, X.get(), LangOpts::Instance().RoundingMode );	
+}
+
+mpfr_t_wrap& mpfr_t_wrap::operator=( const mpfr_t_wrap& X )
+{
+	mpfr_set( N, X.get(), LangOpts::Instance().RoundingMode );
+	return *this;
+}
+
+mpfr_t_wrap::~mpfr_t_wrap()
+{
+	mpfr_clear(N);	
+}
+
+mpfr_t& mpfr_t_wrap::get() const
+{
+	return N;	
+}
+
+mpfr_t_wrap& mpfr_t_wrap::set( int x )
+{
+	return set( (signed long)x );
+}
+
+mpfr_t_wrap& mpfr_t_wrap::set( signed long x )
+{
+	mpfr_set_si( N, x, LangOpts::Instance().RoundingMode );
+	return *this;
+}
+
+mpfr_t_wrap& mpfr_t_wrap::set( unsigned long x )
+{
+	mpfr_set_ui( N, x, LangOpts::Instance().RoundingMode );
+	return *this;	
+}
+
+mpfr_t_wrap& mpfr_t_wrap::set( double x )
+{
+	mpfr_set_d( N, x, LangOpts::Instance().RoundingMode );
+	return *this;	
+}
 
 
 /*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,54 +87,102 @@ using namespace SS;
 		take the trouble to make my only class when this is the only thing
 		that needs changing.
 */
-StringType SS::NumType2StringType( const NumType& Foo ){
-	
-	//Special case because zeros don't seem to want to work.
-	//if( Foo == 0 ) return StringType(TXT("0"));
-	
-	if( mpfr_nan_p( Foo.get_mpfr_t() ) != 0 ) return TXT("");
-	if( mpfr_inf_p( Foo.get_mpfr_t() ) ) return TXT("%Inf%");
-	//if( Foo == gpNegInfinityConst->GetNumData() ) return TXT("%-Inf%");	
+void SS::NumType2StringType( const NumType& In, StringType& Out )
+{
+	//Special Cases
+	if( mpfr_nan_p( In.get() ) ){ Out = TXT(""); return; }
+	if( mpfr_inf_p( In.get() ) ){ Out = TXT("%Inf%"); return; }
 
 	mp_exp_t Exponent = 0;
-	SS::STRING FooStr = NormalizeString( Foo.get_str( &Exponent,
-													  LangOpts::Instance().NumberBase,
-													  LangOpts::Instance().MaxDigitOutput ) );
+	
+	char* TmpString = 	
+	mpfr_get_str( 0,
+				  &Exponent,
+				  LangOpts::Instance().NumberBase,
+				  LangOpts::Instance().MaxDigitOutput,
+				  In.get(),  
+				  LangOpts::Instance().RoundingMode );
+	
+	if( TmpString == 0 )  ThrowParserAnomaly(
+		 TXT("Something went horribly wrong during a "
+		 "routine Num -> String conversion."), ANOMALY_PANIC ); 
+	
+	size_t TmpSize = strlen( TmpString );
+	
+	int Neg;
+	TmpString[0] == '-' ? Neg = 1 : Neg = 0;
+	
+	//This is to prevent copying over any trailing zeros
+	int Last = -1, i;
+	for( i = 0; (size_t)i < TmpSize; i++ ) if( TmpString[i] != '0' ) Last = i;
+	
+	Out = TXT("");
+	
+	//Special case for zeros.
+	if( Last == -1 ) { Out =  TXT("0"); return; }
 
-	if( Exponent < 0 )
+
+	if( Exponent <= 0 )
 	{
-		STRING Prefix = TXT("0.");
-		for( ; Exponent < 0; Exponent++ ) Prefix += TXT("0");
-
-        if( FooStr[0] == '-' )
-		{
-			FooStr.insert( 1, Prefix );
-		}
-		else
-		{
-            FooStr.insert( 0, Prefix );
-		}
-	}
-	else if( Exponent < (long)FooStr.length() - 1 && FooStr[0] == '-' ){
-		FooStr.insert( FooStr.begin() + Exponent + 1, LC_DecimalPoint[0] );
+		if( Neg ) Out += '-';
+		Out += TXT("0.");
+		
+		for( Exponent++; Exponent < 0; Exponent++ ) Out += '0';	
+		
+		for( i = 0 + Neg; i <= Last; i++ ) Out += TmpString[i];
 	}
 	else
-	if( Exponent < (long)FooStr.length() ){
-		FooStr.insert( FooStr.begin() + Exponent, LC_DecimalPoint[0] );
-	}
-
-	//MPFR seems to want full precision, including all trailing zeros.
-	//I don't want that.
-	int i;
-	for( i = (int)FooStr.length()-1; i >= 0; i-- )
+	if ( Exponent > 0 )
 	{
-		if( FooStr[i] == '0' ) FooStr.erase( FooStr.begin() + i );
-		else break;
+		 
+		Exponent += Neg;
+		
+		if( (size_t)Exponent < TmpSize )
+		{
+			//Copy the first part over
+			for( i = 0; i < Exponent; i++ ) Out += TmpString[i];
+			
+			if( i <= Last )
+			{
+				//Add a decimal point
+				Out += LC_DecimalPoint;
+				
+				//Copy the second part over
+				for( i = Exponent; i <= Last; i++ ) Out += TmpString[i];			
+			}
+		}
+		else Out += TmpString;
 	}
+	
+	//Remove trailing zeros
+	//while( Out[Out.Length() - 1] == '0' ) 
+	
+	mpfr_free_str( TmpString );
+}
 
-	if( FooStr[ FooStr.length()-1 ] == LC_DecimalPoint[0] ) FooStr.erase( FooStr.length() - 1 );
+StringType SS::NumType2StringType( const NumType& In )
+{
+	StringType Out;
+	NumType2StringType( In, Out );
+	return Out;
+}
 
-	return FooStr;
+
+void SS::StringType2NumType( const StringType& In, NumType& Out )
+{
+	//We are trusting in mpfr to do The Right Thing.
+	//We may want to check for a -1 (error) return value in the future.
+	mpfr_set_str( Out.get(),
+	              NarrowizeString(In).c_str(),
+	              LangOpts::Instance().NumberBase,
+	              LangOpts::Instance().RoundingMode );
+}
+
+NumType SS::StringType2NumType( const StringType& In )
+{
+	NumType Out;
+	StringType2NumType( In, Out );
+	return Out;
 }
 	
 
@@ -197,7 +307,8 @@ const ListPtr VariableBase::CastToList() const
 		Everything else will just return 0/0.0/false
 */
 NumType VariableBase::GetNumData() const{
-	return NumType(0);
+	NumType N;
+	return N;
 }
 
 BoolType VariableBase::GetBoolData() const{
@@ -211,7 +322,7 @@ StringType VariableBase::GetStringData() const{
 
 
 NumType& VariableBase::GetNumData( NumType& Out ) const{
-	Out = GetNumData();
+	mpfr_set( Out.get(), GetNumData().get(), LangOpts::Instance().RoundingMode );
 	return Out;
 }
 
@@ -345,16 +456,18 @@ VariableBasePtr VariableBase::op_neg() const{
 Variable::Variable( const SS::STRING& Name,
 					bool Static, bool Const,
 					const Variable& X )
-	: mCurrentType( X.mCurrentType ),
-	  mNumPart( X.mNumPart ),
-	  mStringPart( X.mStringPart ),
+	: VariableBase( Name, Static, Const ), 
+	  mCurrentType( X.mCurrentType ),
 	  mBoolPart( X.mBoolPart ),
-	  VariableBase( Name, Static, Const )
-{}
+	  mStringPart( X.mStringPart )
+	  
+{
+	mpfr_set( mNumPart.get(), X.mNumPart.get(), LangOpts::Instance().RoundingMode );
+}
 
 Variable::Variable()
 : mCurrentType( DEFAULT_VARTYPE ),
-  mNumPart(0, LangOpts::Instance().DefaultPrecision)
+  mNumPart( LangOpts::Instance().DefaultPrecision )
 {
 	RegisterPredefinedVars();
 }
@@ -364,9 +477,9 @@ Variable::Variable( const STRING& Name,
 					const NumType& X )
 : VariableBase(Name, Static, Const),
   mCurrentType( VARTYPE_NUM ),
-  mNumPart( X ),
   mBoolPart(false)
 {
+	mpfr_set( mNumPart.get(), X.get(), LangOpts::Instance().RoundingMode );
 	RegisterPredefinedVars();
 }
 
@@ -375,9 +488,9 @@ Variable::Variable( const STRING& Name,
 					const StringType& X )
 : VariableBase(Name, Static, Const),
   mCurrentType( VARTYPE_STRING ),
-  mStringPart( X ),
+  mNumPart( LangOpts::Instance().DefaultPrecision ),
   mBoolPart(false),
-  mNumPart(0, LangOpts::Instance().DefaultPrecision)
+  mStringPart( X )
 {
 	RegisterPredefinedVars();
 }
@@ -387,8 +500,8 @@ Variable::Variable( const STRING& Name,
 					const BoolType& X )
 : VariableBase(Name, Static, Const),
   mCurrentType( VARTYPE_BOOL ),
-  mBoolPart( X ),
-  mNumPart(0, LangOpts::Instance().DefaultPrecision)
+  mNumPart( LangOpts::Instance().DefaultPrecision ),
+  mBoolPart( X )
 {
 	RegisterPredefinedVars();
 }
@@ -476,8 +589,14 @@ VariableBasePtr Variable::operator+(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() + X.GetNumData() ) );
+		{
+			VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
+			mpfr_add( tmp->mNumPart.get(), this->GetNumData().get(), X.GetNumData().get(), LangOpts::Instance().RoundingMode );
+			tmp->mCurrentType = VARTYPE_NUM;
+			
+			return tmp;
+		}
+		
 		case VARTYPE_BOOL:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
@@ -510,9 +629,13 @@ VariableBasePtr Variable::operator-(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() - X.GetNumData() ) );
-			break;
+		{
+			VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
+			mpfr_sub( tmp->mNumPart.get(), this->GetNumData().get(), X.GetNumData().get(), LangOpts::Instance().RoundingMode );
+			tmp->mCurrentType = VARTYPE_NUM;
+			
+			return tmp;
+		}
 		case VARTYPE_BOOL:
 			//TODO: Maybe think of something better than using && for boolean subtraction
 			return VariableBasePtr(
@@ -572,9 +695,13 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 		{
 		case VARTYPE_STRING:
 		case VARTYPE_NUM:
-			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * X.GetNumData() ) );
-			break;
+		{
+			VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
+			mpfr_mul( tmp->mNumPart.get(), this->GetNumData().get(), X.GetNumData().get(), LangOpts::Instance().RoundingMode );
+			tmp->mCurrentType = VARTYPE_NUM;
+			
+			return tmp;
+		}
 		case VARTYPE_BOOL:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
@@ -602,12 +729,11 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 */
 VariableBasePtr Variable::operator_pow( const VariableBase& X ) const
 {
-	NumType NewN;
-
-	mpfr_pow( NewN.get_mpfr_t(), this->GetNumData().get_mpfr_t(),
-			  X.GetNumData().get_mpfr_t(), GMP_RNDN );
-
-	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, NewN ) );
+	VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
+	mpfr_pow( tmp->mNumPart.get(), GetNumData().get(), X.GetNumData().get(), LangOpts::Instance().RoundingMode );
+	tmp->mCurrentType = VARTYPE_NUM;
+	
+	return tmp;
 }
 
 
@@ -636,9 +762,13 @@ VariableBasePtr Variable::operator/(const VariableBase& X) const
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
-			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() / X.GetNumData() ) );
-			break;
+		{
+			VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
+			mpfr_div( tmp->mNumPart.get(), this->GetNumData().get(), X.GetNumData().get(),LangOpts::Instance().RoundingMode );
+			tmp->mCurrentType = VARTYPE_NUM;
+			
+			return tmp;
+		}
 		case VARTYPE_BOOL:
 			//TODO: This is illogical (says Spock).
 			return VariableBasePtr(
@@ -666,7 +796,7 @@ VariableBasePtr Variable::operator=( const VariableBase& X )
 	//Zero everything first.  Remember that if it is not zeroed it will
 	//be assumed that the value held is the correct one.
 	this->mStringPart.clear();
-	this->mNumPart = 0;
+	mpfr_set_nan( mNumPart.get() );
 	this->mBoolPart = false;
 
 	switch( X.GetVariableType() ){
@@ -675,7 +805,7 @@ VariableBasePtr Variable::operator=( const VariableBase& X )
 			this->mCurrentType = VARTYPE_STRING;
 			break;
 		case VARTYPE_NUM:
-			this->mNumPart = X.GetNumData();
+			mpfr_set( mNumPart.get(), X.GetNumData().get(), LangOpts::Instance().RoundingMode );
 			this->mCurrentType = VARTYPE_NUM;
 			break;
 		case VARTYPE_BOOL:
@@ -725,8 +855,8 @@ VariableBasePtr Variable::operator==( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() == X.GetNumData() ) );
-			break;
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				
 		case VARTYPE_STRING:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() == X.GetStringData() ) );
@@ -762,7 +892,7 @@ VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() != X.GetNumData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, !mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
@@ -799,8 +929,8 @@ VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() >= X.GetNumData() ) );
-			break;
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_greaterequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+
 		case VARTYPE_STRING:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >=
@@ -837,8 +967,8 @@ VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() <= X.GetNumData() ) );
-			break;
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_lessequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+
 		case VARTYPE_STRING:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <=
@@ -874,8 +1004,8 @@ VariableBasePtr Variable::operator>( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() > X.GetNumData() ) );
-			break;
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_greater_p( GetNumData().get(), X.GetNumData().get() ) ) );
+
 		case VARTYPE_STRING:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >
@@ -910,8 +1040,8 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() < X.GetNumData() ) );
-			break;
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_less_p( GetNumData().get(), X.GetNumData().get() ) ) );
+
 		case VARTYPE_STRING:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <
@@ -972,19 +1102,19 @@ VariableBasePtr Variable::op_neg() const
 {
 	switch( mCurrentType )
 	{
-	case VARTYPE_NUM:
-		return VariableBasePtr(
-						CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetNumData() * (NumType)-1 ) );
-	
-	
-	
 	case VARTYPE_BOOL:
 		return this->op_not();
-	
+		
 	case VARTYPE_STRING:
+	case VARTYPE_NUM:
 	default:
-		return VariableBasePtr(
-						CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, -(this->GetNumData()) ) );
+	{
+		VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
+		mpfr_neg( tmp->mNumPart.get(), this->GetNumData().get(), LangOpts::Instance().RoundingMode );
+		tmp->mCurrentType = VARTYPE_NUM;
+		
+		return tmp;
+	}
 	}
 }
 
@@ -1023,32 +1153,16 @@ void Variable::ForceConversion( VarType Type )
 */
 NumType Variable::GetNumData() const
 {
-	if( mNumPart != NumType(0) ) return mNumPart;
+	if( ! mpfr_nan_p(mNumPart.get()) ) return mNumPart;
 
-	switch( mCurrentType )
+	if( mCurrentType == VARTYPE_BOOL )
 	{
-	case VARTYPE_BOOL:
-		if( mBoolPart ) mNumPart = 1; //I'm not sure if this a good idea, or what.
+		if( mBoolPart ) mNumPart.set( 1 ); //I'm not sure if this a good idea, or what.
 		else mNumPart = gpNANConst->mNumPart;
-		break;
-	case VARTYPE_STRING:
-		//This is a little expensive, but we need to make sure the string is indeed a number.
-		STRING GoodString;
-		unsigned int i;
-		for( i = 0; i < mStringPart.length(); ++i )
-		{
-			if(  !(('0' <= mStringPart[i] && mStringPart[i] <= '9') || mStringPart[i] == LC_DecimalPoint[0] )  )
-			{
-				STRING tmp = TXT("Cannot convert string \'");
-				tmp += mStringPart;
-				tmp += TXT("\' to a number.");
-                ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );                
-			}
-		}
-
-		mNumPart.set_prec( LangOpts::Instance().DefaultPrecision ); //I'm not sure if this has a point.
-		mNumPart = NarrowizeString( mStringPart );
-		
+	}
+	else if( mCurrentType == VARTYPE_STRING )
+	{
+		StringType2NumType( mStringPart, mNumPart );
 	}
 
 	return mNumPart;
@@ -1063,13 +1177,14 @@ BoolType Variable::GetBoolData() const
 {
 	if( mBoolPart != false ) return mBoolPart;
 
-	switch( mCurrentType )
+
+	if( mCurrentType == VARTYPE_NUM )
 	{
-	case VARTYPE_NUM:
-		if( mpfr_nan_p( mNumPart.get_mpfr_t() ) != 0 ) mBoolPart = false;
-		else mBoolPart = true;
-		break;
-	case VARTYPE_STRING:
+		if( mpfr_nan_p( mNumPart.get() ) ) mBoolPart = false;
+		else                              mBoolPart = true;
+	}
+	else if( mCurrentType == VARTYPE_STRING )
+	{
 		mBoolPart = mStringPart.empty() ? false : true;
 	}
 
@@ -1085,12 +1200,12 @@ StringType Variable::GetStringData() const
 {
 	if( !mStringPart.empty() ) return mStringPart;
 
-	switch( mCurrentType )
+	if( mCurrentType == VARTYPE_NUM )
 	{
-	case VARTYPE_NUM:
-		mStringPart = NumType2StringType( mNumPart );
-		break;
-	case VARTYPE_BOOL:
+		NumType2StringType( mNumPart, mStringPart );
+	}
+	else if( mCurrentType == VARTYPE_BOOL )
+	{
 		mStringPart = mBoolPart ? TXT("true") : TXT("false");
 	}
 

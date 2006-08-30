@@ -78,11 +78,11 @@ public:
 	/// A description of the error.
 	STRING ErrorDesc;
 	
-	/// The source file in which the exception occoured.
-	STRING SourceFile;
-	
 	/// The function in which the exception occoured.
 	STRING SourceFunction;
+	
+	/// The source file in which the exception occoured.
+	STRING SourceFile;
 	
 	/// The line in the the source file in which the exception occoured.
 	unsigned int SourceLine;

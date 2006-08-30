@@ -19,6 +19,12 @@ NOTES: An implementation of the Visitor Pattern for quickly adding
 using namespace SS;
 
 
+
+
+ScopeObjectVisitor::~ScopeObjectVisitor() {}
+
+
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  GetScopeObjectType
  NOTES: A wrapper for the TypeCheckVisitor

@@ -94,7 +94,7 @@ private:
 	{
 		public:
 		InternalListFunc( const STRING& Name, List& Parent )
-		: mParentList( Parent ), Operator( Name, true, true )
+		: Operator( Name, true, true ), mParentList( Parent )
 		{}
 		
 		protected:

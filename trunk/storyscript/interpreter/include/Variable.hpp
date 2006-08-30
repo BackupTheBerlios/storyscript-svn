@@ -39,8 +39,14 @@ The latest binaries of both are included for convenience
 namespace SS
 {
 	
-//To convert from numbers to strings
-StringType NumType2StringType( const NumType& );
+//Conversion functions are external.  It is sometimes for efficient for
+//other functions to call these directly rather than creating a whole variable
+//just to do conversion.  Users typically won't need these.
+StringType NumType2StringType( const NumType& In );
+void       NumType2StringType( const NumType& In, StringType& Out );
+NumType    StringType2NumType( const StringType& In );
+void       StringType2NumType( const StringType& In, NumType& Out );
+
 
 	
 
@@ -65,6 +71,9 @@ protected:
 public:
 
 	virtual ~VariableBase();
+	
+	//Conversions for the user
+	//void Set
 
 	void AcceptVisitor( ScopeObjectVisitor& );
 

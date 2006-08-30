@@ -784,7 +784,7 @@ bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bo
 		const Word* pTempWord;
 		while( BracketCount )
 		{
-			const Word* pTempWord = &FileRef.GetNextWord();
+			pTempWord = &FileRef.GetNextWord();
 			if     ( pTempWord->Extra == EXTRA_BRACKET_Left ) BracketCount++;
 			else if( pTempWord->Extra == EXTRA_BRACKET_Right ) BracketCount--;
 		}

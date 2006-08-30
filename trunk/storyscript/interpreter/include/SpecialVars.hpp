@@ -164,6 +164,49 @@ private:
 	unsigned long& mNum;
 };
 
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Binds a unsigned short to an SS variable.
+*/
+class BoundUShortVar : public SpecialVarBase
+{
+public:
+	BoundUShortVar( const STRING& Name, unsigned short& UShort,
+				bool Static = false, bool Const = false );
+
+	virtual VariableBasePtr operator=( const VariableBase& );
+	
+	VarType GetVariableType() const;
+	
+	NumType    GetNumData() const;
+	BoolType   GetBoolData()   const;
+	StringType GetStringData() const;
+
+private:
+	unsigned short& mNum;
+};
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+ NOTES: Binds a unsigned short to an SS variable.
+*/
+class BoundRoundModeVar : public SpecialVarBase
+{
+public:
+	BoundRoundModeVar( const STRING& Name, mpfr_rnd_t& RoundMode,
+				bool Static = false, bool Const = false );
+
+	virtual VariableBasePtr operator=( const VariableBase& );
+	
+	VarType GetVariableType() const;
+	
+	NumType    GetNumData() const;
+	BoolType   GetBoolData()   const;
+	StringType GetStringData() const;
+
+private:
+	mpfr_rnd_t& mRoundMode;
+};
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  FullNameVar
  NOTES: Returns the full name of an object.

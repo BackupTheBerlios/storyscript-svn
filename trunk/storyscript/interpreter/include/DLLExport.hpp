@@ -13,12 +13,12 @@ NOTES:
  used to export stuff from other libraries.
 */
 
-//Keep this include at the top
-#include "Defines.hpp"
 
-#if !defined(SS_DLLExport) && defined(PLAT_WIN32)
+#if !defined(SS_DLLExport) && defined(BUILDING_DLL)
 #define SS_DLLExport
 
+
+#include "Defines.hpp"
 #include "Types.hpp"
 #include <vector>
 #include <map>
@@ -32,7 +32,7 @@ NOTES:
 namespace SS{
 
 
-
+#if defined(_MSC_VER)
 //This is slightly unsafe but it will get rid of many unnecessary errors caused by exporting
 //STL classes.  It is unnecessary because I don't need to export private memebers.
 #pragma warning (disable : 4251)
@@ -40,6 +40,7 @@ namespace SS{
 //This one is the warning that the "extern" before the template is non-standard.
 //But msdn told me that I can ignore this, so I will.
 #pragma warning (disable : 4231)
+#endif
 
 //Strings
 
@@ -105,10 +106,14 @@ class SS_API boost::detail::shared_count;
 EXPIMP_TEMPLATE template class SS_API boost::shared_ptr<Scope>;
 
 }
- 
+
+
+//Reenable some stuff
+#if defined(_MSC_VER)
+#pragma warning (default : 4231)
+#endif 
  
 #endif
 
-//Reenable some stuff
-#pragma warning (default : 4231)
+
  

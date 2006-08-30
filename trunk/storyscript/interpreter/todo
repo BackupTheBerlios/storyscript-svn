@@ -1,16 +1,27 @@
-Bugs
+TODO
+This are things I plan on implementing when I have time.  For a more up to date
+listing sneak into my house at night and take a look at the whiteboard in my
+basement.
 
--Identifiers starting with : are not handled properly.  Make : a ambigous op.  That should fix it.
--There are issues with PerformanceFactorialTest.  The result for high values are not correct.
+
+Bugs
 -Dumping expressions to strings doesn't work near as well as it should.
 
 
 Optimizations
-
--Be more aggressive about redundantly looking up identifiers in expression parsing.
--Expressions should be cached, so they don't have to be built up every time they are parsed.  I'm not yet sure how to go about doing this.
+-Identifer lookups still take a significant amount of time.  They can be sped up a lot if all
+simple identifer string reside in a string pool and instead of passing around identifiers in
+words we pass around indexes to the string pool.
 
 
 Features
+-A predefined magic variable in every block that tells what level of recursion its on.
+-Finish doxygen API documentation. (!!)
+-Variable should have variables and Set___ function for common types, to make it a little
+easier on the user.  (These should probably be declared as virtuals in VarialbeBase.)
 
--A predefined variable in every block that tells what level of recursion its on.-A default precision predef-var. (MAYBE)
+Refactoring
+-Remove the now depricated mConst and mStatic flags from ScopeObject, as well a erradicating
+any evidence of their existance (eg. constructors).
+-A proper call stack would be handy.  Currently we are high-jacking the C++ call stack.
+This work fine, but it limits the debuging capability.

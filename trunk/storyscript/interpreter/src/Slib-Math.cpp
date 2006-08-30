@@ -13,8 +13,8 @@ NOTES: S-Lib functions/mvars that are used for more advanced math operations.
 //Used by mean
 #include "List.hpp"
 
-#include "mpfrxx.h"
-#include "mpfr.h"
+//#include "mpfrxx.h"
+#include <mpfr.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -72,7 +72,7 @@ void Math::RegisterPredefined()
 VariableBasePtr SS::SLib::sqrt::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_sqrt( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_sqrt( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 	
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );	
 }
@@ -84,7 +84,7 @@ VariableBasePtr SS::SLib::sqrt::Operate( VariableBasePtr X )
 VariableBasePtr SS::SLib::abs::Operate( VariableBasePtr X )
 {
     NumType Tmp;
-	mpfr_abs( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_abs( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -97,13 +97,16 @@ VariableBasePtr SS::SLib::mean::Operate( VariableBasePtr X )
 {
     ListPtr pLst = X->CastToList();
 
-	NumType Tmp = 0;
+	NumType Tmp;
 	unsigned int i;
 	for( i = 0; i < pLst->GetInternalList().size(); i++ ){
-		Tmp += (pLst->GetInternalList()[i])->GetNumData();
+		mpfr_add( Tmp.get(), Tmp.get(), (pLst->GetInternalList()[i])->GetNumData().get(), GMP_RNDN );
 	}
+	
+	NumType BigI;
+	mpfr_set_ui( BigI.get(), i, GMP_RNDN );
 
-	Tmp /= NumType( i );
+	mpfr_div( Tmp.get(), Tmp.get(), BigI.get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -116,7 +119,7 @@ VariableBasePtr SS::SLib::mean::Operate( VariableBasePtr X )
 VariableBasePtr SS::SLib::sin::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_sin( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_sin( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -129,7 +132,7 @@ VariableBasePtr SS::SLib::sin::Operate( VariableBasePtr X )
 VariableBasePtr SS::SLib::cos::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_cos( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_cos( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -142,7 +145,7 @@ VariableBasePtr SS::SLib::cos::Operate( VariableBasePtr X )
 VariableBasePtr SS::SLib::tan::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_tan( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_tan( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -156,7 +159,7 @@ NOTES: arc-sine
 VariableBasePtr SS::SLib::asin::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_asin( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_asin( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -169,7 +172,7 @@ NOTES: arc-cosine
 VariableBasePtr SS::SLib::acos::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_acos( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_acos( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -182,7 +185,7 @@ NOTES: arc-tangent
 VariableBasePtr SS::SLib::atan::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_atan( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t(), GMP_RNDN );
+	mpfr_atan( Tmp.get(), X->GetNumData().get(), GMP_RNDN );
 
 	return CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp );
 }
@@ -233,7 +236,7 @@ VariableBasePtr SS::SLib::min::Operate( VariableBasePtr X )
 VariableBasePtr Int::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_round( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
+	mpfr_round( Tmp.get(), X->GetNumData().get() );
 	
 	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
@@ -244,7 +247,7 @@ VariableBasePtr Int::Operate( VariableBasePtr X )
 VariableBasePtr Floor::Operate( VariableBasePtr X )
 {
 	NumType Tmp;
-	mpfr_floor( Tmp.get_mpfr_t(), X->GetNumData().get_mpfr_t() );
+	mpfr_floor( Tmp.get(), X->GetNumData().get() );
 	
 	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, Tmp ) );
 }
@@ -270,7 +273,7 @@ VariableBasePtr MathConstPrec::operator=( const VariableBase& X )
 	static const NumType MaxPrecision( MPFR_PREC_MAX );
     
 
-	if( X.GetNumData() < MinPrecision )
+	if( mpfr_less_p( X.GetNumData().get(), MinPrecision.get() ) )
 	{
 		STRING tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
@@ -280,7 +283,7 @@ VariableBasePtr MathConstPrec::operator=( const VariableBase& X )
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}
 	
-	if( X.GetNumData() > MaxPrecision )
+	if( mpfr_greater_p( X.GetNumData().get(), MaxPrecision.get() ) )
 	{
 		STRING tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
@@ -290,8 +293,8 @@ VariableBasePtr MathConstPrec::operator=( const VariableBase& X )
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}
 
-	mpfr_prec_t NewPrec = X.GetNumData().get_ui();
-	mParent.mBufferValue.set_prec( NewPrec );
+	mpfr_prec_t NewPrec = mpfr_get_ui( X.GetNumData().get(), GMP_RNDN );
+	mpfr_set_prec( mParent.mBufferValue.get(), NewPrec );
 	
 	//regenerate the constant
 	mParent.Generate();
@@ -313,7 +316,9 @@ VarType MathConstPrec::GetVariableType() const
 */
 NumType MathConstPrec::GetNumData() const
 {
-	return NumType( mParent.mBufferValue.get_prec() );
+	NumType Out;
+	mpfr_set_ui( Out.get(), mpfr_get_prec(mParent.mBufferValue.get()), GMP_RNDN );
+	return Out;
 }
 
 BoolType MathConstPrec::GetBoolData() const
@@ -388,7 +393,7 @@ Pi::Pi( SS_DECLARE_BASE_ARGS )
 */
 void Pi::Generate() const
 {
-	mpfr_const_pi( mBufferValue.get_mpfr_t(), GMP_RNDN );	
+	mpfr_const_pi( mBufferValue.get(), GMP_RNDN );	
 }
 
 
@@ -405,5 +410,5 @@ Euler::Euler( SS_DECLARE_BASE_ARGS )
 */
 void Euler::Generate() const
 {
-	mpfr_const_euler( mBufferValue.get_mpfr_t(), GMP_RNDN );	
+	mpfr_const_euler( mBufferValue.get(), GMP_RNDN );	
 }

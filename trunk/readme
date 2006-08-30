@@ -1,18 +1,50 @@
 If you are reading this, you've managed to find the super ultra-secret storyscript svn repository.  Congradulations!
 
 Now onto business:
-"ssi" contains the source for the actual interpreter.  It compiles as a shared library (or windows dll).  In order to compile it you need to a few things installed:
--Boost Libraries, Available at http://boost.org/
--GNU MP BigNum Library, Available at http://www.swox.com/gmp/
--MPFR Library (the version included with GMP will NOT work.  Its just too damn old), Available at http://www.mpfr.org/
--SCons is needed to do the actual building, Available at http://www.scons.org/
 
-"ssiconsole" contains a command line interface for the interpreter.  The only other thing you need for this (besides ssi, of course) is a curses library. On linux, etc that means ncurses (http://www.gnu.org/software/ncurses/ncurses.html), or windows probably pdcurses (http://pdcurses.sourceforge.net/).
+DIRECTORIES
 
-"ssdocs" contains the (very incomplete) documentation for StoryScript language.  What can I say?  It's a work in progress.
+The directory "storyscript" contains the actual interpreter.  Under that there is "interpreter" and "cli".  The former being the actual interpreter and the latter being the "command line interface" (cli).
+
+"ssdocs" contains the latex documentation for StoryScript language.  You can compile this with a latex distribution into html, or pdf, or whatever you like.
 
 
-If you are having trouble finding Windows builds of any of the dependencies, email you and I can hook you up.
+DEPENDANCIES
+
+The interpreter depends a few outside libraries, including:
+
+-Boost Libraries (http://boost.org/)
+
+-GNU MP BigNum Library (http://www.swox.com/gmp/)
+
+-MPFR Library (http://www.mpfr.org/)
+
+The CLI depends on:
+
+-ncurses (http://www.gnu.org/software/ncurses/ncurses.html), or in windows probably pdcurses (http://pdcurses.sourceforge.net/).
+
+The documentation (ssdocs), required some type of latex distribution to build.  (See here: http://www.latex-project.org/ftp.html)
+
+The API is documented using doxygen (http://www.stack.nl/~dimitri/doxygen/).  Run 'doxygen' in the storyscript/interpreter directory to generate it.
+
+
+BUILDING/INSTALLING
+
+Currently the prefered method to build storyscript is with gnu autoconf/make.  
+
+There are scons and ant makefiles provided but I can't guarentee that they are up to date.  In fact, they most likely aren't.  The same goes for the Visual Studio project files.
+
+To build under windows I would recomend utilizing MinGW (http://www.mingw.org/) to build storyscript.  I try to provide MSVC project files, but most of my actual devlopment is done in linux and thos project files are natoriously outdated.  This will hopefully be remedied in the near future.
+
+
+HACKING
+
+Due to the incomplete documentation, it is a little tricky to start hacking storyscript right now.  You can have a peek at the todo lists (interpreter/todo and cli/todo) to get some idea of things I plan on doing.  Other than that, check out what there is for documentation and contact be if you get stuck or want to tell me a great idea you have for storyscript.
+
+
+CONTACT
+
+If you have any problems, please email me.  Storyscript is a pretty obscure piece of software at the moment, so I enjoy answering questions about it.
 
 Yours Truely,
 Daniel Jones 

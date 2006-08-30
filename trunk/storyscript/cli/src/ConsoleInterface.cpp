@@ -256,7 +256,7 @@ void ConsoleInterface::PrintPosition()
 	CON << Mark.Line << TXT("(");
 
 	//This is so it will output (end) instead of (4294967295)
-	if( Mark.Position == ~0 )	{
+	if( Mark.Position == ~0U )	{
 		CON << TXT("end");
 	}
 	else{

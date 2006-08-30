@@ -26,6 +26,8 @@ namespace SS{
 class ScopeObjectVisitor
 {
 public:
+	virtual ~ScopeObjectVisitor();
+
 	virtual void VisitScopeObject (ScopeObject*) = 0;
 	virtual void VisitScope       (Scope*) = 0;
 	virtual void VisitVariableBase(VariableBase*) = 0;

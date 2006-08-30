@@ -20,6 +20,7 @@ directory named "license".
 #include "Defines.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <mpfr.h>
 #include <vector>
 #include "Unicode.hpp"
 
@@ -70,7 +71,7 @@ struct null_deleter
 
 //#include "gmp.h"
 //#include "gmpxx.h"
-#include "mpfrxx.h"
+//#include "mpfr.h"
 
 //Export this shit
 //EXPIMP_TEMPLATE class SS_API __gmp_expr<__gmpfr_value, __gmpfr_value>;
@@ -83,7 +84,30 @@ struct null_deleter
 
 namespace SS{
 
-typedef mpfr_class NumType; ///< Internal respresentation of storyscript's number type.
+
+//This way I don't have to worry about init/cleanup
+class mpfr_t_wrap
+{
+public:
+	mpfr_t_wrap();
+	explicit mpfr_t_wrap( int prec );
+	mpfr_t_wrap( const mpfr_t_wrap& X );
+	mpfr_t_wrap& operator=( const mpfr_t_wrap& );
+	~mpfr_t_wrap();
+
+	mpfr_t& get() const;
+	
+	mpfr_t_wrap& set( int );
+	mpfr_t_wrap& set( signed long );
+	mpfr_t_wrap& set( unsigned long );
+	mpfr_t_wrap& set( double );
+	
+	
+private:
+	mutable mpfr_t N;
+};
+
+typedef mpfr_t_wrap NumType; ///< Internal respresentation of storyscript's number type.
 typedef bool   BoolType; ///< Internal respresentation of storyscript's boolean type.
 typedef SS::STRING StringType; ///< Internal respresentation of storyscript's string type.
 

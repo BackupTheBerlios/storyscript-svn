@@ -24,7 +24,8 @@ Block::Block()
 
 Block::Block( const STRING& Name, bool Static, bool Const,
 			  Interpreter& I, const Bookmark& Position, unsigned int ListIndex )
-	: Operator(Name, Static, Const), mFilePosition(Position), mListIndex(ListIndex), mBeenSaid(false), mpI(&I)
+	: Operator(Name, Static, Const), mBeenSaid(false),
+	  mFilePosition(Position), mListIndex(ListIndex), mpI(&I)
 {
 	RegisterPredefinedVars();
 }

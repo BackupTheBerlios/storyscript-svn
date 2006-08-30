@@ -44,8 +44,8 @@ ParserAnomaly::ParserAnomaly( const STRING& Desc,
 : ErrorDesc( Desc ),
   ErrorCode( Code ),
   SourceFile( SourceFile ),
-  SourceLine( SourceLine ),
-  SourceFunction( FuncName )
+  SourceFunction( FuncName ),
+  SourceLine( SourceLine )
 {}
 
 
@@ -59,8 +59,8 @@ ParserAnomaly::ParserAnomaly( const STRING& Desc,
 : ErrorDesc( Desc ),
   ErrorCode( Code ),
   SourceFile( SourceFile ),
-  SourceLine( SourceLine ),
   SourceFunction( FuncName ),
+  SourceLine( SourceLine ),
   ScriptFile( ScriptFile ),
   ScriptLine(ScriptLine )
 {}

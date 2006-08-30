@@ -69,7 +69,7 @@ void SS::SLib::LangOpts::RegisterPredefined()
 	Register( ScopeObjectPtr( 
 		new BoundULongVar( TXT("default_precision"), MyLangOpts.DefaultPrecision, true, false ) ) );
 	Register( ScopeObjectPtr( 
-		new BoundULongVar( TXT("rounding_mode"), MyLangOpts.RoundingMode, true, false ) ) );
+		new BoundRoundModeVar( TXT("rounding_mode"), MyLangOpts.RoundingMode, true, false ) ) );
 	Register( ScopeObjectPtr( 
 		new BoundULongVar( TXT("max_digit_output"), MyLangOpts.MaxDigitOutput, true, false ) ) );
 	Register( ScopeObjectPtr( 

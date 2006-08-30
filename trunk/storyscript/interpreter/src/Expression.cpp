@@ -87,8 +87,7 @@ private:
  NOTES: constructors
 */
 Expression::Expression( Interpreter& I )
-	: mStatic(false), mpWordList( new WordList ),
-      mSyntaxChecked(false), mI(I)
+	: mSyntaxChecked(false), mI(I), mpWordList( new WordList ), mStatic(false)
 {
 	
 }
@@ -104,10 +103,12 @@ Expression::Expression()
 
 
 Expression::Expression( const Expression& OtherExp, const Bounds& OtherBounds )
-	: mStatic(OtherExp.mStatic), mpWordList( OtherExp.mpWordList ),
+	: mpPrecedenceList(OtherExp.mpPrecedenceList),
+	  mSyntaxChecked(OtherExp.mSyntaxChecked),
+ 	  mI(OtherExp.mI),
  	  mBounds(OtherBounds),
- 	  mSyntaxChecked(OtherExp.mSyntaxChecked), mpPrecedenceList(OtherExp.mpPrecedenceList),
- 	  mI(OtherExp.mI)
+ 	  mpWordList( OtherExp.mpWordList ),
+ 	  mStatic(OtherExp.mStatic)
 {
 	if( mBounds.Upper < mBounds.Lower )
 	{
@@ -513,6 +514,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 	*/
 	ThrowExpressionAnomaly( TXT("Catastrophicly, horrificly, terrifyingly bad bug in the "
 								"expression evaluater.  Report this, please!"), ANOMALY_PANIC );
+	return VariableBasePtr(); //To placate the compiler.
 }
 
 
@@ -613,6 +615,53 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 */
 bool Expression::StripOutlyingParenthesis() const
 {
+	if( (*this)[0].Extra != EXTRA_PARENTHESIS_Left ) return false;
+	
+	const unsigned long ExpressionSize = size();
+	const Word* pTempWord = 0;
+	
+	unsigned int i, B, E, P;
+	bool InBeginning = true;
+	
+	for( i = B = E = P = 0; i < ExpressionSize; i++ )
+	{
+		pTempWord = &(*this)[i];	 
+		
+		if( pTempWord->Extra == EXTRA_PARENTHESIS_Left )
+		{
+			if( InBeginning ) B++;
+			else              P++;
+		}
+		else if( pTempWord->Extra == EXTRA_PARENTHESIS_Right )
+		{
+			if( P == 0 && i + B < ExpressionSize ) B--;
+			else if( P > 0 )                       P--;
+			else                                   E++;	
+		}
+		else InBeginning = false;
+	}
+	
+	if( E != B || P != 0 )
+	{
+		ThrowParserAnomaly( TXT("Parenthesis mismatch."), ANOMALY_BADGRAMMAR );	
+		return false; // Just to placate compilers.
+	}
+	
+	if( B > 0 )
+	{
+		mBounds.Lower += B;
+		mBounds.Upper -= B;
+		return true;
+	}
+	else return false;
+	
+	
+	
+	
+	//////////////////////////////////
+	
+	/*
+	
 	if( (*this)[0].Extra == EXTRA_PARENTHESIS_Left )
 	{
 		const unsigned long ExpressionSize = size();
@@ -645,6 +694,8 @@ bool Expression::StripOutlyingParenthesis() const
 		}
 		else return false;
 	}
+	
+	*/
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -978,6 +1029,7 @@ size_t Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache ) const
 	
 	if( LowPrecedenceOpIndex == BAD_PRECEDENCE ){
 		ThrowExpressionAnomaly( TXT("Cannot find an operator in this expression."), ANOMALY_NOOPERATOR );
+		return 0; //To placate the compiler.
 	}
 	else return LowPrecedenceOpIndex - mBounds.Lower;
 }
@@ -1120,11 +1172,11 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 										"in use (or it isn't even an identifier)."), ANOMALY_BADDECLARATION );
 		}
 	}
-	else
-	{
-		ThrowExpressionAnomaly( TXT("Unhandled hard-coded unary operator.  Please report this."),
+	
+	ThrowExpressionAnomaly( TXT("Unhandled hard-coded unary operator.  Please report this."),
 								ANOMALY_PANIC );
-	}	
+	return VariableBasePtr(); //To placate the compiler.
+	
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

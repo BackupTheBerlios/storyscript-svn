@@ -224,7 +224,9 @@ ElapsedSeconds::Get____Data
 NOTES: The guts.
 */
 NumType ElapsedSeconds::GetNumData() const{
-	return NumType( gProgramTimer.elapsed() );
+	NumType New;
+	mpfr_set_d( New.get(), gProgramTimer.elapsed(), LangOpts::Instance().RoundingMode );
+	return New;
 }
 
 StringType ElapsedSeconds::GetStringData() const{
