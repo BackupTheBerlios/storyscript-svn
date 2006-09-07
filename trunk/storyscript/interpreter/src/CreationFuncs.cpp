@@ -12,8 +12,9 @@ NOTES: Contains functions for safely creating derivatives of ScopeObject.
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Creation of generic objects that derive from ScopeObject.
 */
+
 template< typename T >
-boost::shared_ptr<T> SS::CreateGeneric()
+boost::shared_ptr<T> SS::CreateBasic()
 {
 	boost::shared_ptr<T> pNewObj( new T );
 	pNewObj->SetSharedPtr( pNewObj );
@@ -39,6 +40,7 @@ boost::shared_ptr<T> SS::CreateGeneric( SS_DECLARE_BASE_ARGS )
 	
 	return pNewObj;	
 }
+
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

@@ -22,9 +22,9 @@ using namespace SS;
 Block::Block()
 {}
 
-Block::Block( const STRING& Name, bool Static, bool Const,
+Block::Block( SS_DECLARE_BASE_ARGS,
 			  Interpreter& I, const Bookmark& Position, unsigned int ListIndex )
-	: Operator(Name, Static, Const), mBeenSaid(false),
+	: Operator( SS_BASE_ARGS ), mBeenSaid(false),
 	  mFilePosition(Position), mListIndex(ListIndex), mpI(&I)
 {
 	RegisterPredefinedVars();
@@ -37,18 +37,18 @@ void Block::RegisterPredefinedVars()
 	bool WasConst = IsConst();
 	SetConst( false );
 
-	Register( ScopeObjectPtr( new BoundFlagVar( LC_BeenSaid, mBeenSaid, true ) ) );
+	Register( ScopeObjectPtr( new BoundFlagVar( LC_BeenSaid, true, mBeenSaid ) ) );
 	
 	//This is dangerous to create here (it break recursion), so instead it get done in each instance.
 	//Register( ScopeObjectPtr( CreateGeneric<List>( LC_Input, true, false ) ) );
 	
-	Register( CreateVariable<Variable>( LC_Output, true, false, STRING() ) );
+	Register( CreateVariable<Variable>( LC_Output, false, STRING() ) );
 
 	//The STRING(TXT("")) is probably not necessary.  I just want to make sure it
 	//gets created as a string.  Not that it matters.
 
 	//The nextline.
-	Register( CreateGeneric<List>( LC_NextBlock, true, false ) );
+	Register( CreateGeneric<List>( LC_NextBlock, false ) );
 
 	SetConst( WasConst );
 }
@@ -65,7 +65,7 @@ VariableBasePtr Block::Operate( VariableBasePtr In )
 	//return GetScopeObject( LC_Output )->CastToVariableBase();	
 	
 	//Instead we make a copy and return that.
-	return CreateVariable<Variable>( LC_Output, false, true,
+	return CreateVariable<Variable>( LC_Output, true,
 			 					     *GetScopeObjectLocal( LC_Output )->CastToVariable() );
 }
 

@@ -42,12 +42,8 @@ NOTES: Special variable that always reports the current time.
 class TimeVar : public SpecialVarBase
 {
 public:
-	TimeVar();
-	TimeVar( const SS::STRING& Name,
-		bool Static = false, bool Const = false );
+	TimeVar( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	~TimeVar();
-
-
 
 	VarType GetVariableType() const;
 
@@ -69,9 +65,7 @@ NOTES: Reports the data.  As a string "03/21/05" or as a number "032105"
 class DateVar : public SpecialVarBase
 {
 public:
-	DateVar();
-	DateVar( const SS::STRING& Name, 
-		bool Static = false, bool Const = false );
+	DateVar( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	~DateVar();
 
 	VarType GetVariableType() const;
@@ -95,9 +89,7 @@ test if a certain ammount of time has gone by.
 class ElapsedSeconds : public SpecialVarBase
 {
 public:
-	ElapsedSeconds();
-	ElapsedSeconds( const SS::STRING& Name,
-		bool Static = false, bool Const = false);
+	ElapsedSeconds( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	~ElapsedSeconds();
 
 
@@ -118,9 +110,7 @@ NOTES: Returns a string with the current time zone name.
 class TimeZoneVar : public SpecialVarBase
 {
 public:
-	TimeZoneVar();
-	TimeZoneVar( const SS::STRING& Name,
-		bool Static = false, bool Const = false);
+	TimeZoneVar( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	~TimeZoneVar();
 
 	VarType GetVariableType() const;

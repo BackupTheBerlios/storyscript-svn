@@ -194,14 +194,9 @@ const VarType DEFAULT_VARTYPE = VARTYPE_BOOL;
  VariableBase::VariableBase
  NOTES: constructors
 */
-VariableBase::VariableBase()
-{
-}
 
-
-VariableBase::VariableBase( const SS::STRING& Name,
-						    bool Static /*= false*/, bool Const /*= false*/ )
-: Scope( Name, Static, Const )
+VariableBase::VariableBase( SS_DECLARE_BASE_ARGS )
+: Scope( SS_BASE_ARGS )
 {
 }
 
@@ -284,7 +279,7 @@ NOTES: Converts the variable to a list holding itself.
 ListPtr VariableBase::CastToList()
 {
 	AssertCastingAllowed();
-	ListPtr pNewList = CreateGeneric<List>( GetName(), false, false );
+	ListPtr pNewList = CreateGeneric<List>( GetName(), false );
 	pNewList->PushWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
@@ -293,7 +288,7 @@ ListPtr VariableBase::CastToList()
 const ListPtr VariableBase::CastToList() const
 {
 	AssertCastingAllowed();
-	ListPtr pNewList = CreateGeneric<List>( GetName(), false, false );
+	ListPtr pNewList = CreateGeneric<List>( GetName(), false );
 	pNewList->PushWithoutCopy( this->CastToVariable() );
 
 	return pNewList;
@@ -453,10 +448,9 @@ VariableBasePtr VariableBase::op_neg() const{
  Variable::Variable
  NOTES: 
 */
-Variable::Variable( const SS::STRING& Name,
-					bool Static, bool Const,
+Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const Variable& X )
-	: VariableBase( Name, Static, Const ), 
+	: VariableBase( SS_BASE_ARGS ), 
 	  mCurrentType( X.mCurrentType ),
 	  mBoolPart( X.mBoolPart ),
 	  mStringPart( X.mStringPart )
@@ -465,17 +459,26 @@ Variable::Variable( const SS::STRING& Name,
 	mpfr_set( mNumPart.get(), X.mNumPart.get(), LangOpts::Instance().RoundingMode );
 }
 
+Variable::Variable( SS_DECLARE_BASE_ARGS )
+: VariableBase(SS_BASE_ARGS),
+  mCurrentType( DEFAULT_VARTYPE ),
+  mNumPart( LangOpts::Instance().DefaultPrecision ),
+  mBoolPart(false)
+ {
+ 	RegisterPredefinedVars();
+ }
+
 Variable::Variable()
 : mCurrentType( DEFAULT_VARTYPE ),
-  mNumPart( LangOpts::Instance().DefaultPrecision )
+  mNumPart( LangOpts::Instance().DefaultPrecision ),
+  mBoolPart( false )
 {
 	RegisterPredefinedVars();
 }
 
-Variable::Variable( const STRING& Name,
-				    bool Static, bool Const,
+Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const NumType& X )
-: VariableBase(Name, Static, Const),
+: VariableBase(SS_BASE_ARGS),
   mCurrentType( VARTYPE_NUM ),
   mBoolPart(false)
 {
@@ -483,10 +486,9 @@ Variable::Variable( const STRING& Name,
 	RegisterPredefinedVars();
 }
 
-Variable::Variable( const STRING& Name,
-				    bool Static, bool Const,
+Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const StringType& X )
-: VariableBase(Name, Static, Const),
+: VariableBase(SS_BASE_ARGS),
   mCurrentType( VARTYPE_STRING ),
   mNumPart( LangOpts::Instance().DefaultPrecision ),
   mBoolPart(false),
@@ -495,10 +497,9 @@ Variable::Variable( const STRING& Name,
 	RegisterPredefinedVars();
 }
 
-Variable::Variable( const STRING& Name,
-				    bool Static, bool Const,
+Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const BoolType& X )
-: VariableBase(Name, Static, Const),
+: VariableBase(SS_BASE_ARGS),
   mCurrentType( VARTYPE_BOOL ),
   mNumPart( LangOpts::Instance().DefaultPrecision ),
   mBoolPart( X )
@@ -536,7 +537,7 @@ ScopeObjectPtr Variable::GetScopeObjectHook( const STRING& Name )
 {
 	if( !mPrecisionVarCreated && Name == LC_Precision ){
 		mPrecisionVarCreated = true;
-		return Register( ScopeObjectPtr( new PrecisionVar( LC_Precision, *this, true ) ) );
+		return Register( ScopeObjectPtr( new PrecisionVar( LC_Precision, *this ) ) );
 	}
 	else return VariableBase::GetScopeObjectHook( Name );
 }

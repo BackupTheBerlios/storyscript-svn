@@ -16,25 +16,25 @@ using namespace SS;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ImportOperator::ImportOperator( Interpreter& I )
-: Operator( LC_Import, true, true ), mI(I)
+: Operator( LC_Import, true ), mI(I)
 {}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 UnImportOperator::UnImportOperator( Interpreter& I )
-: Operator( LC_UnImport, true, true ), mI(I)
+: Operator( LC_UnImport, true ), mI(I)
 {}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ReturnOperator::ReturnOperator( Interpreter& I )
-: Operator( LC_Return, true, true ), mI(I)
+: Operator( LC_Return, true ), mI(I)
 {}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 PrintOperator::PrintOperator( Interpreter& I )
-: Operator( TXT("print"), true, true ), mI(I)
+: Operator( TXT("print"), true ), mI(I)
 {}
 
 

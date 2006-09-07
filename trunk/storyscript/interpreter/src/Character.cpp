@@ -18,13 +18,8 @@ using namespace SS;
 Character::Character
 NOTES: Adds all the predefined variables
 */
-Character::Character()
-{
-}
-
-Character::Character( const STRING& Name,
-					  bool Static /*= false*/, bool Const /*= false*/ )
-: Scope(Name, Static, Const)
+Character::Character( SS_DECLARE_BASE_ARGS )
+: Scope(SS_BASE_ARGS)
 {
 }
 

@@ -31,13 +31,8 @@ using namespace SS;
  SpecialVarBase::SpecialVar/~SpecialVar
  NOTES: Ctors and Dtor
 */
-SpecialVarBase::SpecialVarBase()
-{
-}
-
-SpecialVarBase::SpecialVarBase( const STRING& Name,
-							    bool Static /*= false*/, bool Const /*= false*/ )
-: VariableBase( Name, Static, Const )
+SpecialVarBase::SpecialVarBase( SS_DECLARE_BASE_ARGS )
+: VariableBase( SS_BASE_ARGS )
 {
 }
 
@@ -57,13 +52,13 @@ VariablePtr SpecialVarBase::MakeVariable() const
 
 	switch( this->GetVariableType() ){
 		case VARTYPE_NUM:
-			return CreateVariable<Variable>( UNNAMMED, false, true, GetNumData() );
+			return CreateVariable<Variable>( UNNAMMED, true, GetNumData() );
 
 		case VARTYPE_STRING:
-			return CreateVariable<Variable>( UNNAMMED, false, true, GetStringData() );
+			return CreateVariable<Variable>( UNNAMMED, true, GetStringData() );
 
 		case VARTYPE_BOOL:
-			return CreateVariable<Variable>( UNNAMMED, false, true, GetBoolData() );
+			return CreateVariable<Variable>( UNNAMMED, true, GetBoolData() );
 
 		default:
 			ThrowParserAnomaly( TXT("Unknown variable type."), ANOMALY_PANIC );
@@ -193,9 +188,8 @@ VariableBasePtr SpecialVarBase::op_neg() const{
 BoundFlagVar::BoundFlagVar
 NOTES: 
 */
-BoundFlagVar::BoundFlagVar( const STRING& Name, bool& Flag,
-						    bool Static /*= false*/, bool Const /*= false*/)
-: SpecialVarBase( Name, Static, Const ), mFlag(Flag)
+BoundFlagVar::BoundFlagVar( SS_DECLARE_BASE_ARGS, bool& Flag )
+: SpecialVarBase( SS_BASE_ARGS ), mFlag(Flag)
 {}
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -238,9 +232,8 @@ BoolType BoundFlagVar::GetBoolData() const{
  BoundStringVar::BoundStringVar
  NOTES: contructor
 */
-BoundStringVar::BoundStringVar( const STRING& Name, STRING& String,
-							    bool Static /*=false*/, bool Const /*=false*/ )
-	: SpecialVarBase( Name, Static, Const ), mString(String)
+BoundStringVar::BoundStringVar( SS_DECLARE_BASE_ARGS, STRING& String )
+	: SpecialVarBase( SS_BASE_ARGS ), mString(String)
 {
 }
 
@@ -288,9 +281,8 @@ BoolType BoundStringVar::GetBoolData() const
 BoundNumVar::BoundNumVar
 NOTES: constructor
 */
-BoundNumVar::BoundNumVar( const STRING& Name, NumType& Num,
-						  bool Static /*=false*/, bool Const /*=false*/ )
-							   : SpecialVarBase( Name, Static, Const ), mNum(Num)
+BoundNumVar::BoundNumVar( SS_DECLARE_BASE_ARGS, NumType& Num )
+							   : SpecialVarBase( SS_BASE_ARGS ), mNum(Num)
 {
 }
 
@@ -338,9 +330,8 @@ BoolType BoundNumVar::GetBoolData() const
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Constructor
 */
-BoundULongVar::BoundULongVar( const STRING& Name, unsigned long& ULong,
-						bool Static /*= false*/, bool Const /*= false*/ )
-: SpecialVarBase( Name, Static, Const ), mNum( ULong )
+BoundULongVar::BoundULongVar( SS_DECLARE_BASE_ARGS, unsigned long& ULong )
+: SpecialVarBase( SS_BASE_ARGS ), mNum( ULong )
 {
 }
 
@@ -382,9 +373,8 @@ StringType BoundULongVar::GetStringData() const{
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Constructor
 */
-BoundUShortVar::BoundUShortVar( const STRING& Name, unsigned short& UShort,
-						bool Static /*= false*/, bool Const /*= false*/ )
-: SpecialVarBase( Name, Static, Const ), mNum( UShort )
+BoundUShortVar::BoundUShortVar( SS_DECLARE_BASE_ARGS, unsigned short& UShort )
+: SpecialVarBase( SS_BASE_ARGS ), mNum( UShort )
 {
 }
 
@@ -426,9 +416,8 @@ StringType BoundUShortVar::GetStringData() const{
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Constructor
 */
-BoundRoundModeVar::BoundRoundModeVar( const STRING& Name, mpfr_rnd_t& RoundMode,
-						bool Static /*= false*/, bool Const /*= false*/ )
-: SpecialVarBase( Name, Static, Const ), mRoundMode( RoundMode )
+BoundRoundModeVar::BoundRoundModeVar( SS_DECLARE_BASE_ARGS, mpfr_rnd_t& RoundMode )
+: SpecialVarBase( SS_BASE_ARGS ), mRoundMode( RoundMode )
 {
 }
 
@@ -510,9 +499,8 @@ StringType BoundRoundModeVar::GetStringData() const{
  FullNameVar::FullNameVar
  NOTES: constructor
 */
-FullNameVar::FullNameVar( const STRING& Name, const ScopeObject& Parent,
-						  bool Static /*=false*/, bool Const /*=false*/ )
-						  : SpecialVarBase( Name, Static, Const ), mParent(Parent)
+FullNameVar::FullNameVar( SS_DECLARE_BASE_ARGS, const ScopeObject& Parent )
+	: SpecialVarBase( SS_BASE_ARGS ), mParent(Parent)
 {
 }
 
@@ -545,9 +533,8 @@ StringType FullNameVar::GetStringData() const{
 ListLengthVar::ListLengthVar
 NOTES: 
 */
-ListLengthVar::ListLengthVar( const STRING& Name, List& Parent,
-							  bool Static /*= false*/, bool Const /*= false*/)
-: SpecialVarBase( Name, Static, Const ), mParent(Parent)
+ListLengthVar::ListLengthVar( SS_DECLARE_BASE_ARGS, List& Parent )
+: SpecialVarBase( SS_BASE_ARGS ), mParent(Parent)
 {
 
 }
@@ -600,9 +587,8 @@ BoolType ListLengthVar::GetBoolData() const
  Precision::Precision
  NOTES: constructor
 */
-PrecisionVar::PrecisionVar( const SS::STRING& Name, Variable& Parent,
-						    bool Static /*=false*/, bool Const /*=false*/ )
-	: SpecialVarBase( Name, Static, Parent.IsConst() ), mParent(Parent)
+PrecisionVar::PrecisionVar( const STRING& Name, Variable& Parent )
+	: SpecialVarBase( Name, Parent.IsConst() ), mParent(Parent)
 {}
 
 

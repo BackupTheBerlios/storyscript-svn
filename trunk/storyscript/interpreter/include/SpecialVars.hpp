@@ -28,9 +28,7 @@ namespace SS{
 class SpecialVarBase : public VariableBase
 {
 public:
-	SpecialVarBase();
-	SpecialVarBase( const SS::STRING& Name, 
-					bool Static = false, bool Const = false );
+	SpecialVarBase( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	~SpecialVarBase();
 
 	VariableBasePtr operator+(const VariableBase&) const;
@@ -79,8 +77,7 @@ NOTES: This is used to create a variable in the ss script that is bound to
 class BoundFlagVar : public SpecialVarBase
 {
 public:
-	BoundFlagVar( const SS::STRING& Name, bool& Flag, 
-				  bool Static = false, bool Const = false );
+	BoundFlagVar( const SS::STRING& Name, bool Const, bool& Flag );
 	
 	virtual VariableBasePtr operator=(const VariableBase&);
 
@@ -103,8 +100,7 @@ private:
 class BoundStringVar : public SpecialVarBase
 {
 public:
-	BoundStringVar( const SS::STRING& Name, SS::STRING& String,
-					bool Static = false, bool Const = false );
+	BoundStringVar( const SS::STRING& Name, bool Const, SS::STRING& String );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 
@@ -127,8 +123,7 @@ NOTES: Binds a hard-coded string to an SS variable.
 class BoundNumVar : public SpecialVarBase
 {
 public:
-	BoundNumVar( const SS::STRING& Name, NumType& Num,
-		bool Static = false, bool Const = false );
+	BoundNumVar( const SS::STRING& Name, bool Const, NumType& Num );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 
@@ -149,8 +144,7 @@ private:
 class BoundULongVar : public SpecialVarBase
 {
 public:
-	BoundULongVar( const STRING& Name, unsigned long& ULong,
-				bool Static = false, bool Const = false );
+	BoundULongVar( const STRING& Name, bool Const, unsigned long& ULong );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 	
@@ -171,8 +165,7 @@ private:
 class BoundUShortVar : public SpecialVarBase
 {
 public:
-	BoundUShortVar( const STRING& Name, unsigned short& UShort,
-				bool Static = false, bool Const = false );
+	BoundUShortVar( const STRING& Name, bool Const, unsigned short& UShort );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 	
@@ -192,8 +185,7 @@ private:
 class BoundRoundModeVar : public SpecialVarBase
 {
 public:
-	BoundRoundModeVar( const STRING& Name, mpfr_rnd_t& RoundMode,
-				bool Static = false, bool Const = false );
+	BoundRoundModeVar( const STRING& Name, bool Const, mpfr_rnd_t& RoundMode );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 	
@@ -214,8 +206,7 @@ private:
 class FullNameVar : public SpecialVarBase
 {
 public:
-	FullNameVar( const SS::STRING& Name, const ScopeObject& Parent,
-				 bool Static = false, bool Const = false );
+	FullNameVar( const SS::STRING& Name, bool Const, const ScopeObject& Parent );
 
 	VarType GetVariableType() const;
 
@@ -238,8 +229,7 @@ NOTES: This one reports the length of a list.
 class ListLengthVar : public SpecialVarBase
 {
 public:
-	ListLengthVar( const SS::STRING& Name, List& Parent,
-				   bool Static = false, bool Const = false );
+	ListLengthVar( const SS::STRING& Name, bool Const, List& Parent );
 
 	VariableBasePtr operator=(const VariableBase&);
 
@@ -262,8 +252,7 @@ private:
 class PrecisionVar : public SpecialVarBase
 {
 public:
-	PrecisionVar( const SS::STRING& Name, Variable& Parent,
-				  bool Static = false, bool Const = false );
+	PrecisionVar( const SS::STRING& Name, Variable& Parent );
 
 	VariableBasePtr operator=( const VariableBase&);
 

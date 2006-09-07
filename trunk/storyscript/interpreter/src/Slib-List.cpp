@@ -31,7 +31,7 @@ using namespace SS::SLib;
  NOTES: Constructor
 */
 SLib::List::List()
-	: Scope( LC_SL_List, true )
+	: Scope( LC_SL_List, false )
 {
 	RegisterPredefined();
 	SetConst();
@@ -43,9 +43,9 @@ void SLib::List::RegisterPredefined()
 	//Register( ScopeObjectPtr( new RemoveAll( TXT("removeall"), true, true ) ) );
 	//Register( ScopeObjectPtr( new Push( TXT("push"), true, true ) ) );
 	//Register( ScopeObjectPtr( new Pop( TXT("pop"), true, true ) ) );
-	Register( ScopeObjectPtr( new Sort( TXT("sort"), true, true ) ) );
-	Register( ScopeObjectPtr( new Reverse( TXT("reverse"), true, true ) ) );
-	Register( ScopeObjectPtr( new PickOne( TXT("pickone"), true, true ) ) );
+	Register( ScopeObjectPtr( new Sort( TXT("sort"), true ) ) );
+	Register( ScopeObjectPtr( new Reverse( TXT("reverse"), true ) ) );
+	Register( ScopeObjectPtr( new PickOne( TXT("pickone"), true ) ) );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

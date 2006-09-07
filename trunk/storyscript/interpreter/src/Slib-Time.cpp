@@ -22,7 +22,6 @@ using namespace SS;
 using namespace SS::SLib;
 
 
-
 //This is used only by ElapsedSeconds.  This should get initialized when the program starts.
 boost::timer gProgramTimer;
 
@@ -32,7 +31,7 @@ boost::timer gProgramTimer;
  NOTES: A special scope that holds all the Time library vars/funcs.
 */
 Time::Time()
- : Scope( LC_SL_Time, true )
+ : Scope( LC_SL_Time, false )
 {
 	RegisterPredefined();
 	SetConst();
@@ -45,10 +44,10 @@ Time::Time()
 */
 void Time::RegisterPredefined()
 {
-	Register( ScopeObjectPtr( new TimeVar       ( TXT("time"), true, true ) ) );
-	Register( ScopeObjectPtr( new ElapsedSeconds( TXT("elapsed_seconds"), true, true ) ) );
-	Register( ScopeObjectPtr( new DateVar       ( TXT("date"), true, true ) ) );
-	Register( ScopeObjectPtr( new TimeZoneVar   ( TXT("timezone"), true, true ) ) );
+	Register( ScopeObjectPtr( new TimeVar       ( TXT("time"),            true ) ) );
+	Register( ScopeObjectPtr( new ElapsedSeconds( TXT("elapsed_seconds"), true ) ) );
+	Register( ScopeObjectPtr( new DateVar       ( TXT("date"),            true ) ) );
+	Register( ScopeObjectPtr( new TimeZoneVar   ( TXT("timezone"),        true ) ) );
 }
 
 
@@ -62,15 +61,8 @@ TimeVar::TimeVar/~TimeVar
 NOTES: Do I really have to write some stupid "Ctor & Dtor" shit for every one
 of these.
 */
-TimeVar::TimeVar()
-{
-	mpBuffer = new char[mBufferSize];
-}
-
-
-TimeVar::TimeVar( const STRING& Name,
-				 bool Static /*= false*/, bool Const /*= false*/ )
-				 : SpecialVarBase( Name, Static, Const )
+TimeVar::TimeVar( SS_DECLARE_BASE_ARGS )
+				 : SpecialVarBase( SS_BASE_ARGS )
 {
 	mpBuffer = new char[mBufferSize];
 }
@@ -133,14 +125,8 @@ const int DateVar::mBufferSize = 64;
 DateVar::DateVar/~DateVar
 NOTES: 
 */
-DateVar::DateVar()
-{
-	mpBuffer = new char[mBufferSize];
-}
-
-DateVar::DateVar( const STRING& Name,
-				 bool Static /*= false*/, bool Const /*= false*/)
-				 : SpecialVarBase(Name, Static, Const)
+DateVar::DateVar( SS_DECLARE_BASE_ARGS)
+				 : SpecialVarBase(SS_BASE_ARGS)
 {
 	mpBuffer = new char[mBufferSize];
 }
@@ -196,13 +182,8 @@ ElapsedSeconds::ElapsedSeconds/~ElapsedSeconds
 NOTES: Nope, I'm not going to do it.  I'm sick of writing descriptions for
 what everyone knows are constructors and destructors.
 */
-ElapsedSeconds::ElapsedSeconds()
-{
-}
-
-ElapsedSeconds::ElapsedSeconds( const STRING& Name,
-							   bool Static /*= false*/, bool Const /*= false*/ )
-							   : SpecialVarBase(Name, Static, Const)
+ElapsedSeconds::ElapsedSeconds( SS_DECLARE_BASE_ARGS )
+							   : SpecialVarBase(SS_BASE_ARGS)
 {
 }
 
@@ -246,13 +227,8 @@ const int TimeZoneVar::mBufferSize = 64;
 TimeZoneVar::TimeZoneVar/~TimeZoneVar
 NOTES: 
 */
-TimeZoneVar::TimeZoneVar(){
-	mpBuffer = new char[mBufferSize];
-}
-
-TimeZoneVar::TimeZoneVar( const STRING& Name,
-						 bool Static /*= false*/, bool Const /*= false*/ )
-						 : SpecialVarBase( Name, Static, Const )
+TimeZoneVar::TimeZoneVar( SS_DECLARE_BASE_ARGS )
+						 : SpecialVarBase( SS_BASE_ARGS )
 {
 	mpBuffer = new char[mBufferSize];
 }

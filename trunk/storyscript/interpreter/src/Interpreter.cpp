@@ -118,22 +118,22 @@ Interface& Interpreter::GetInterface()
 void Interpreter::RegisterSpecials()
 {
 	//The last two values are just bullshit.
-	mpEndBlock = CreateBlock<Block>( LC_EndBlock, true, true, *this, Bookmark(), 0 ); 
+	mpEndBlock = CreateBlock<Block>( LC_EndBlock, true, *this, Bookmark(), 0 ); 
 	mpGlobalScope->Register( ScopeObjectPtr( mpEndBlock ) );
 
 	//SLib-Common gets special treatment.  It gets auto-imported.
-	ScopePtr pCommonScope( CreateGeneric<SS::SLib::Common>() );
+	ScopePtr pCommonScope( CreateBasic<SS::SLib::Common>() );
 	mpGlobalScope->Register( pCommonScope );
 	mpGlobalScope->Import( pCommonScope );
 	
 	//I'm goig to import List also.  Those seem like pretty common functions
-	ScopePtr pListScope( CreateGeneric<SS::SLib::List>() );
+	ScopePtr pListScope( CreateBasic<SS::SLib::List>() );
 	mpGlobalScope->Register( pListScope );
 	mpGlobalScope->Import( pListScope );
 
-	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Time>() ) );
-	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::Math>() ) );
-	mpGlobalScope->Register( ScopeObjectPtr( CreateGeneric<SS::SLib::LangOpts>() ) );
+	mpGlobalScope->Register( ScopeObjectPtr( CreateBasic<SS::SLib::Time>() ) );
+	mpGlobalScope->Register( ScopeObjectPtr( CreateBasic<SS::SLib::Math>() ) );
+	mpGlobalScope->Register( ScopeObjectPtr( CreateBasic<SS::SLib::LangOpts>() ) );
 	
 	//Register build in functions
 	mpGlobalScope->Register( CreateGeneric<PrintOperator>   ( *this ) );
@@ -237,7 +237,7 @@ void Interpreter::SetSource( ReaderSource& Source )
 	
 	mSources[ Source.GetName() ].reset( &Source, null_deleter() );
 	
-	ScopePtr pNewScope( CreateGeneric<Scope>( Source.GetName(), false, false ) );
+	ScopePtr pNewScope( CreateGeneric<Scope>( Source.GetName(), false ) );
 	
 	mpGlobalScope->Register( ScopeObjectPtr( pNewScope ) );
 	mpCurrentScope = pNewScope;
@@ -269,7 +269,7 @@ void Interpreter::LoadFile( const STRING& FileName )
 
 
 	ScopePtr pNewScope( CreateGeneric<Scope>( 
-			MakeScopeNameFromFileName( pNewFile->GetName() ), false, false ) );
+			MakeScopeNameFromFileName( pNewFile->GetName() ), false ) );
 	
 	mpGlobalScope->Register( ScopeObjectPtr( pNewScope ) );
 	mpCurrentScope = pNewScope;
@@ -334,7 +334,9 @@ ReaderSource& Interpreter::GetSource( const Bookmark& Pos )
 void Interpreter::Open( const SS::STRING& FileName )
 {
 	AssertAttachedInterface();
-	Close();
+	//Keep an eye on the following line.  Close wipes the global scope,
+	//and if this get incorrectly triggered, bad things will happen.
+	if( mpCurrentSource ) Close();
 	LoadFile( FileName );	
 }
 
@@ -409,8 +411,8 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	//Every time a block gets executed it creates this temporary instance
 	//scope, which all non-statics get created on
 	ScopePtr pInstance = CreateGeneric<Scope>();
-	ListPtr InInstance = CreateGeneric<List>( LC_Input, false, false );
-	VariablePtr OutInstance = CreateVariable<Variable>( LC_Output, false, false, STRING() );
+	ListPtr InInstance = CreateGeneric<List>( LC_Input, false );
+	VariablePtr OutInstance = CreateVariable<Variable>( LC_Output, false, STRING() );
 	if( In ) *InInstance = *In;
 	pInstance->Register( InInstance );
 	pInstance->Register( OutInstance );
@@ -925,30 +927,30 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
  {
 	ScopeObjectPtr pNewObj;
 
-	const STRING& Name = S[0];
+	const STRING& Name = S[S.size()-1];
 	CompoundString ScopeName( S.begin(), S.end() - 1 );
 
 	switch( Type )
 	{
 	case SCOPEOBJ_BLOCK:
 		{
-		BlockPtr pTempBlock( CreateBlock<Block>( Name, Static, Const, *this,
+		BlockPtr pTempBlock( CreateBlock<Block>( Name, Const, *this,
 								 GetCurrentPos(), (BlockIndex)mBlockOrder.size() ) );
 		mBlockOrder.push_back( pTempBlock );
 		pNewObj = (ScopeObjectPtr)pTempBlock ;
 		}
 		break;
 	case SCOPEOBJ_VARIABLE:
-		pNewObj = CreateVariable<Variable>( Name, Static, Const, 0 );
+		pNewObj = CreateGeneric<Variable>( Name, Const );
 		break;
 	case SCOPEOBJ_CHARACTER:
-		pNewObj = CreateGeneric<Character>( Name, Static, Const );
+		pNewObj = CreateGeneric<Character>( Name, Const );
 		break;
 	case SCOPEOBJ_SCOPE:
-		pNewObj = CreateGeneric<Scope>( Name, Static, Const );
+		pNewObj = CreateGeneric<Scope>( Name, Const );
 		break;
 	case SCOPEOBJ_LIST:
-		pNewObj = CreateGeneric<List>( Name, Static, Const );
+		pNewObj = CreateGeneric<List>( Name, Const );
 		break;
 	default:
 		SS::STRING tmp = TXT("Tried to register an object with an unknown type named: \'");
@@ -971,7 +973,6 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
 		//belongs to (eg. 'var Donkey::Foo;'), it is automatically static.
 		//This is the only behavior that really makes sense.
 		
-		pNewObj->SetStatic();
 		GetScopeObject( ScopeName )->CastToScope()->Register( pNewObj );
 	}
 

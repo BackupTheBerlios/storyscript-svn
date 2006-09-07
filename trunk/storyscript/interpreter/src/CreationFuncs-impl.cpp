@@ -25,12 +25,13 @@ NOTES: Implementation of various creation function templates enumerated here.
 
 using namespace SS;
 
-#define Implement_CreateGeneric(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ( SS_DECLARE_BASE_ARGS );\
-template boost::shared_ptr<x> SS::CreateGeneric<x> ()
+#define Implement_CreateGeneric(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ( SS_DECLARE_BASE_ARGS );
 
 #define Implement_CreateGeneric_BuiltIn(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ( Interpreter& );
 
-#define Implement_CreateGeneric_NoArgs(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ()
+//#define Implement_CreateGeneric_NoArgs(x) template boost::shared_ptr<x> SS::CreateGeneric<x> ()
+#define Implement_CreateBasic(x) \
+template boost::shared_ptr<x> SS::CreateBasic<x>( )
 
 #define Implement_CreateVariable(x) template boost::shared_ptr<x> SS::CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const Variable& );\
 template boost::shared_ptr<x> SS::CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const NumType& );\
@@ -43,11 +44,12 @@ Implement_CreateGeneric(ScopeObject);
 Implement_CreateGeneric(Scope);
 Implement_CreateGeneric(List);
 Implement_CreateGeneric(Character);
-Implement_CreateGeneric_NoArgs(SLib::Common);
-Implement_CreateGeneric_NoArgs(SLib::List);
-Implement_CreateGeneric_NoArgs(SLib::Math);
-Implement_CreateGeneric_NoArgs(SLib::Time);
-Implement_CreateGeneric_NoArgs(SLib::LangOpts);
+Implement_CreateGeneric(Variable);
+Implement_CreateBasic(SLib::Common);
+Implement_CreateBasic(SLib::List);
+Implement_CreateBasic(SLib::Math);
+Implement_CreateBasic(SLib::Time);
+Implement_CreateBasic(SLib::LangOpts);
 Implement_CreateGeneric_BuiltIn(PrintOperator);
 Implement_CreateGeneric_BuiltIn(ImportOperator);
 Implement_CreateGeneric_BuiltIn(UnImportOperator);

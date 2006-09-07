@@ -25,8 +25,7 @@ class SS_API List : public VariableBase
 {
 protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(List);
-	List();
-	List( const SS::STRING&, bool Static = false, bool Const = false );
+	List( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	
 public:
 	~List();
@@ -94,7 +93,7 @@ private:
 	{
 		public:
 		InternalListFunc( const STRING& Name, List& Parent )
-		: Operator( Name, true, true ), mParentList( Parent )
+		: Operator( Name, true ), mParentList( Parent )
 		{}
 		
 		protected:

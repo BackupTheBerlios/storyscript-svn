@@ -35,154 +35,74 @@ private:
 // sqrt
 // NOTES: The square root function.
 //
-class sqrt : public Operator
-{
-public:
-	sqrt( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-	
-	VariableBasePtr Operate( VariableBasePtr );
-	
-};
+SS_DECLARE_OPERATOR(sqrt);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  abs
  NOTES: The absolute value function
 */
-class abs : public Operator
-{
-public:
-	abs( const SS::STRING& Name, bool Static = false, bool Const = false ) 
-		: Operator( Name, Static, Const ) {}
-
-    VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(abs);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  mean
  NOTES: Find the mean of a list of numbers
 */
-class mean : public Operator
-{
-public:
-	mean(  const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-	VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(mean);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  sin
  NOTES: The sine function.  (Input is in radians)
 */
-class sin : public Operator
-{
-public:
-	sin( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-	VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(sin);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  cos
  NOTES: The cosine function.  (Input is in radians)
 */
-class cos : public Operator
-{
-public:
-	cos( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-	VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(cos);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  tan
  NOTES: The tangent function.  (Input is in radians.)
 */
-class tan : public Operator
-{
-public:
-	tan( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-	VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(tan);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 sin
 NOTES: The arc-sine function.  (Output is in radians)
 */
-class asin : public Operator
-{
-public:
-	asin( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-		VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(asin);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 cos
 NOTES: The arc-cosine function.  (Output is in radians)
 */
-class acos : public Operator
-{
-public:
-	acos( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-		VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(acos);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 tan
 NOTES: The arc-tangent function.  (Output is in radians.)
 */
-class atan : public Operator
-{
-public:
-	atan( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-		VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(atan);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  max
  NOTES: Returns the maximum from a list of elements.
 */
-class max: public Operator
-{
-public:
-	max( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-	VariableBasePtr Operate( VariableBasePtr );
-};
+SS_DECLARE_OPERATOR(max);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 min
 NOTES: Returns the minimum from a list of elements.
 */
-class min: public Operator
-{
-public:
-	min( const SS::STRING& Name, bool Static = false, bool Const = false )
-		: Operator( Name, Static, Const ) {}
-
-		VariableBasePtr Operate( VariableBasePtr );
-};
-
-
+SS_DECLARE_OPERATOR(min);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
@@ -206,7 +126,7 @@ SS_DECLARE_OPERATOR(Floor);
 class MathConst : public SpecialVarBase
 {
 public:
-	MathConst( SS_DECLARE_BASE_ARGS );
+	MathConst( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	
 	VarType GetVariableType() const;
 
@@ -223,6 +143,15 @@ protected:
 	
 };
 
+/*
+#define SS_DECLARE_MAGIC_NUMBER(x) \
+class x : public MathConst{\
+public:\
+x( SS_DECLARE_DEFAULTED_BASE_ARGS );\
+private:\
+void Generate() const;\
+}
+*/
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: A special version of precision made for MathConst.
@@ -230,8 +159,7 @@ protected:
 class MathConstPrec : public SpecialVarBase
 {
 	public:
-		MathConstPrec( const SS::STRING& Name, MathConst& Parent,
-					   bool Static = false, bool Const = false );
+		MathConstPrec( const SS::STRING& Name, bool Const, MathConst& Parent );
 
 		VariableBasePtr operator=( const VariableBase& );
 	

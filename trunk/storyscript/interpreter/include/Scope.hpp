@@ -187,11 +187,9 @@ public:
 	const ScopePtr CastToScope() const;
 
 protected:
-	/// Default constructor
-	Scope();
-	
+
 	/// Constructor
-	Scope( const SS::STRING& Name, bool Static = false, bool Const = false );
+	Scope( const SS::STRING& Name = SS::STRING(), bool Const = false );
 	
 	/**
 		\brief Overridable hook fucntion for GetScopeObject

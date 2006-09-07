@@ -28,14 +28,9 @@ void Scope::AcceptVisitor( ScopeObjectVisitor& V )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-Scope::Scope()
-{
-	RegisterPredefinedVars();
-}
 
-Scope::Scope( const STRING& Name,
-			  bool Static /*= false*/, bool Const /*= false*/ )
-: ScopeObject( Name, Static, Const )
+Scope::Scope( SS_DECLARE_BASE_ARGS )
+: ScopeObject( SS_BASE_ARGS )
 {
 	RegisterPredefinedVars();
 }
@@ -47,9 +42,6 @@ void Scope::RegisterPredefinedVars()
 {
 	mNameCreated = mFullNameCreated = mDocStringCreated = false;
 }
-
-
-
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -119,12 +111,16 @@ ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Scope::Clear()
 {
+	/*
 	ScopeListType::iterator i = mList.begin();;
 
 	while( i != mList.end() ){
 		if( !(*i).second->IsStatic() )  mList.erase( i );
 		else i++;
 	}
+	*/
+	
+	mList.clear();
 }
 
 
@@ -335,17 +331,17 @@ ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 	if( !mNameCreated && Name == LC_Name )
 	{
 		mNameCreated = true;	
-		return Register( ScopeObjectPtr( new BoundStringVar( LC_Name, mName, true, true ) ) );
+		return Register( ScopeObjectPtr( new BoundStringVar( LC_Name, true, mName ) ) );
 	}
 	else if( !mFullNameCreated && Name == LC_FullName )
 	{
 		mFullNameCreated = true;
-		return Register( ScopeObjectPtr( new FullNameVar( LC_FullName, *this, true, true ) ) );
+		return Register( ScopeObjectPtr( new FullNameVar( LC_FullName, true, *this ) ) );
 	}
 	else if( !mDocStringCreated && Name == LC_Doc )
 	{
 		mDocStringCreated = true;
-		ScopeObjectPtr Tmp = Register( ScopeObjectPtr( CreateVariable<Variable>( LC_Doc, true, false, STRING() ) ) );
+		ScopeObjectPtr Tmp = Register( ScopeObjectPtr( CreateVariable<Variable>( LC_Doc, false, STRING() ) ) );
 		return Tmp;
 	}
 	else return ScopeObjectPtr();

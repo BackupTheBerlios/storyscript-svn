@@ -51,8 +51,8 @@ protected:
 		\param ListIndex The order of the block in relation to others.  (So the
 		next block an be auto-called
 	*/
-	Block( const SS::STRING& Name, bool Static, bool Const,
-		Interpreter& I, const Bookmark& Position, BlockIndex ListIndex );
+	Block( const SS::STRING& Name, bool Const,
+		   Interpreter& I, const Bookmark& Position, BlockIndex ListIndex );
 
 public:
 	void AcceptVisitor( ScopeObjectVisitor& );

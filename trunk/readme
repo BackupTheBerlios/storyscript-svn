@@ -1,4 +1,4 @@
-If you are reading this, you've managed to find the super ultra-secret storyscript svn repository.  Congradulations!
+If you are reading this, you've managed to find the super ultra-secret storyscript svn repository.  Congratulations!
 
 Now onto business:
 
@@ -9,7 +9,7 @@ The directory "storyscript" contains the actual interpreter.  Under that there i
 "ssdocs" contains the latex documentation for StoryScript language.  You can compile this with a latex distribution into html, or pdf, or whatever you like.
 
 
-DEPENDANCIES
+DEPENDENCIES
 
 The interpreter depends a few outside libraries, including:
 
@@ -30,11 +30,11 @@ The API is documented using doxygen (http://www.stack.nl/~dimitri/doxygen/).  Ru
 
 BUILDING/INSTALLING
 
-Currently the prefered method to build storyscript is with gnu autoconf/make.  
+Currently the preferred method to build storyscript is with gnu autoconf/make.  
 
-There are scons and ant makefiles provided but I can't guarentee that they are up to date.  In fact, they most likely aren't.  The same goes for the Visual Studio project files.
+There are scons and ant makefiles provided but I can't guarantee that they are up to date.  In fact, they most likely aren't.  The same goes for the Visual Studio project files.
 
-To build under windows I would recomend utilizing MinGW (http://www.mingw.org/) to build storyscript.  I try to provide MSVC project files, but most of my actual devlopment is done in linux and thos project files are natoriously outdated.  This will hopefully be remedied in the near future.
+To build under windows I would recommend utilizing MinGW (http://www.mingw.org/) to build storyscript.  I try to provide MSVC project files, but most of my actual development is done in linux and those project files are notoriously outdated.  This will hopefully be remedied in the near future.
 
 
 HACKING
@@ -46,7 +46,7 @@ CONTACT
 
 If you have any problems, please email me.  Storyscript is a pretty obscure piece of software at the moment, so I enjoy answering questions about it.
 
-Yours Truely,
+Yours Truly,
 Daniel Jones 
 (DanielCJones@gmail.com)
 

@@ -26,8 +26,7 @@ public:
 
 protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(Character);
-	Character();
-	Character( const SS::STRING& Name, bool Static = false, bool Const = false );
+	Character( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	//void RegisterPredefinedVars();
 };
 

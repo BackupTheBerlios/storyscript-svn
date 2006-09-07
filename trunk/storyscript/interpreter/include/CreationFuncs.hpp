@@ -28,25 +28,36 @@ by the creators.  (Which is the case with most of the base
 classes. (Do ad ';' at the end of these.  KDevelop gets confused
 if I have them at the end and don't include a ';'.
 */
-#define SS_FRIENDIFY_GENERIC_CREATOR(x) friend boost::shared_ptr<x> CreateGeneric<x> ( SS_DECLARE_BASE_ARGS );\
-friend boost::shared_ptr<x> CreateGeneric<x> ()
+#define SS_FRIENDIFY_GENERIC_CREATOR(x) \
+friend boost::shared_ptr<x> CreateGeneric<x> ( SS_DECLARE_BASE_ARGS );
 
-#define SS_FRIENDIFY_VARIABLE_CREATOR(x) friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const Variable& );\
+#define SS_FRIENDIFY_BASIC_CREATOR(x) \
+friend boost::shared_ptr<x> CreateBasic<x> ()
+
+#define SS_FRIENDIFY_VARIABLE_CREATOR(x) \
+friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const Variable& );\
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const NumType& );\
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const StringType& );\
 friend boost::shared_ptr<x> CreateVariable<x> ( SS_DECLARE_BASE_ARGS, const BoolType& )
 
-#define SS_FRIENDIFY_BLOCK_CREATOR(x) friend boost::shared_ptr<x> CreateBlock<x> ( SS_DECLARE_BASE_ARGS, Interpreter& I, const Bookmark& Position, BlockIndex ListIndex )
+#define SS_FRIENDIFY_BLOCK_CREATOR(x) \
+friend boost::shared_ptr<x> CreateBlock<x> ( SS_DECLARE_BASE_ARGS, Interpreter& I,\
+											 const Bookmark& Position, BlockIndex ListIndex )
 
+/*
 template <typename T > extern
 boost::shared_ptr<T> CreateGeneric();
+*/
 
 // For "BuiltInFunctions".
 template <typename T > extern
 boost::shared_ptr<T> CreateGeneric( Interpreter& );
 
 template <typename T > extern
-boost::shared_ptr<T> CreateGeneric( SS_DECLARE_BASE_ARGS );
+boost::shared_ptr<T> CreateGeneric( SS_DECLARE_DEFAULTED_BASE_ARGS );
+
+template <typename T > extern
+boost::shared_ptr<T> CreateBasic( );
 
 template <typename T > extern
 boost::shared_ptr<T> CreateVariable( SS_DECLARE_BASE_ARGS, const Variable& );

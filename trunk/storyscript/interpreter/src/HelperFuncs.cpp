@@ -186,17 +186,17 @@ bool SS::IsNumber( CHAR c )
 */
 bool SS::IsBinaryOperator( const SS::STRING& c )
 {
-	if( gBinaryOperatorMap.find( c ) != gBinaryOperatorMap.end() ) return true;
+	if( gBinaryOperatorMap.find( c.c_str() ) != gBinaryOperatorMap.end() ) return true;
 	else return false;
 }
 
 //Checks single characters
 bool SS::IsBinaryOperator( CHAR c )
 {
-	std::map< ExtraDesc, SS::STRING >::iterator i;
+	std::map< ExtraDesc, const SS::CHAR* >::iterator i;
 	
 	for( i = gBinaryOperatorReverseMap.begin(); i != gBinaryOperatorReverseMap.end(); i++ )	{
-		if( (*i).second[0] == c ) return true;
+		if( c == (*i).second[0] ) return true;
 	}
 	
 	return false;
@@ -209,13 +209,13 @@ bool SS::IsBinaryOperator( CHAR c )
 */
 bool SS::IsUnaryOperator( const SS::STRING& c )
 {
-	if( gUnaryOperatorMap.find( c ) != gUnaryOperatorMap.end() ) return true;
+	if( gUnaryOperatorMap.find( c.c_str() ) != gUnaryOperatorMap.end() ) return true;
 	else return false;
 }
 
 bool SS::IsUnaryOperator( CHAR c )
 {
-	std::map< ExtraDesc, SS::STRING >::iterator i;
+	std::map< ExtraDesc, const SS::CHAR* >::iterator i;
 	
 	for( i = gUnaryOperatorReverseMap.begin(); i != gUnaryOperatorReverseMap.end(); i++ )	{
 		if( (*i).second[0] == c ) return true;	

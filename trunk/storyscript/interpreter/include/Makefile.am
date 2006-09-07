@@ -35,5 +35,4 @@ UseNarrowChar.hpp \
 UseWideChar.hpp \
 Variable.hpp \
 VersionInfo.hpp \
-Word.hpp \
-mpfrxx.h
+Word.hpp

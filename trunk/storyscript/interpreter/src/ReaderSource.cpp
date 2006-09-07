@@ -261,12 +261,12 @@ const Word& ReaderSource::GetNextWord()
 		{
 			//Special check for operators that can be binary or unary (e.g. '-').
 			if( IsBinaryOperator( TempString ) ){
-				return PushWord( Word( WORDTYPE_AMBIGUOUSOPERATOR, gAmbigOperatorMap[TempString] ) );
+				return PushWord( Word( WORDTYPE_AMBIGUOUSOPERATOR, gAmbigOperatorMap[TempString.c_str()] ) );
 			}
-			else return PushWord( Word( WORDTYPE_UNARYOPERATOR, gUnaryOperatorMap[TempString] ) );
+			else return PushWord( Word( WORDTYPE_UNARYOPERATOR, gUnaryOperatorMap[TempString.c_str()] ) );
 		}
 		//BINAY OPERATORS
-		else if( IsBinaryOperator( TempString ) ) return PushWord( Word( WORDTYPE_BINARYOPERATOR, gBinaryOperatorMap[TempString] ) );
+		else if( IsBinaryOperator( TempString ) ) return PushWord( Word( WORDTYPE_BINARYOPERATOR, gBinaryOperatorMap[TempString.c_str()] ) );
 		
 		//VARIABLE DECLARATORS
 		/*
@@ -282,14 +282,14 @@ const Word& ReaderSource::GetNextWord()
 		//This part determines what belongs to the identifier and what doesn't
 		bool IDBeginning = false;
 		bool ExpectScopeResOp = false;
-		Word NewID = Word( TempString, WORDTYPE_IDENTIFIER );
+		Word NewID = Word( WORDTYPE_IDENTIFIER );
 		
 		//Infinate loop.  This one may be dangerous.  Watch it.
 		while( true )
 		{
 			CHAR TempChar = Get();
 
-			if( ExpectScopeResOp && TempChar != LC_ScopeResolution[0] )
+			if( ExpectScopeResOp && !IsWhitespace(TempChar) && TempChar != LC_ScopeResolution[0] )
 			{
 				UnGet();
 				break;
@@ -331,6 +331,8 @@ const Word& ReaderSource::GetNextWord()
 			}
 		}
 		
+		if( TempString.length() != 0 ) NewID.String.push_back( TempString );
+		
 		return PushWord( NewID );
 	}
 
@@ -356,13 +358,13 @@ const Word& ReaderSource::GetNextWord()
 		//NOTE: This is not very good greedy matching.  In fact it is very very bad greedy matching.
 		while( IsBinaryOperator( TempString + (CHAR)Peek() ) ) TempString += Get();
 
-		if( gBinaryOperatorMap.find( TempString ) != gBinaryOperatorMap.end() ) {
+		if( gBinaryOperatorMap.find( TempString.c_str() ) != gBinaryOperatorMap.end() ) {
 
 			//Check for ambiguous operators.
 			if( IsUnaryOperator( TempString ) ){
-				return PushWord( Word( WORDTYPE_AMBIGUOUSOPERATOR, gAmbigOperatorMap[TempString] ) );
+				return PushWord( Word( WORDTYPE_AMBIGUOUSOPERATOR, gAmbigOperatorMap[TempString.c_str()] ) );
 			}
-			else return PushWord( Word( WORDTYPE_BINARYOPERATOR, gBinaryOperatorMap[TempString] ) );
+			else return PushWord( Word( WORDTYPE_BINARYOPERATOR, gBinaryOperatorMap[TempString.c_str()] ) );
 		}
 		else{
 			STRING TmpError = TXT("Cannot figure out what type of binary operator \'");
@@ -378,8 +380,8 @@ const Word& ReaderSource::GetNextWord()
 
 		while( IsUnaryOperator( TempString + (CHAR)Peek() ) ) TempString += Get();
 
-		if( gUnaryOperatorMap.find( TempString ) != gUnaryOperatorMap.end() ) {
-			return PushWord( Word( WORDTYPE_UNARYOPERATOR, gUnaryOperatorMap[TempString] ) );
+		if( gUnaryOperatorMap.find( TempString.c_str() ) != gUnaryOperatorMap.end() ) {
+			return PushWord( Word( WORDTYPE_UNARYOPERATOR, gUnaryOperatorMap[TempString.c_str()] ) );
 		}
 		else{
 			STRING TmpError = TXT("Cannot figure out what type of unary operator \'");

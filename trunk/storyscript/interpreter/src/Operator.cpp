@@ -18,14 +18,8 @@ using namespace SS;
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-Operator::Operator()
-{
-	RegisterPredefinedVars();
-}
-
-
-Operator::Operator( const SS::STRING& Name, bool Static/* = false*/, bool Const/* = false*/ )
-	: Scope( Name, Static, Const )
+Operator::Operator( SS_DECLARE_BASE_ARGS )
+	: Scope( SS_BASE_ARGS )
 {
 	RegisterPredefinedVars();
 }

@@ -1,13 +1,9 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: Contains defs for the Expression class which is responsible for
-	interpreting and executing expressions.
-	
-	To anyone trying to hack this:  This is the most complex and difficult to understand source file in the whole project.
-		It also defines the behavior of much of the language.  Abandon all ye who enter here.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
 
@@ -25,26 +21,13 @@ using namespace SS;
 
 const unsigned long BAD_PRECEDENCE = ~0U;
 
-//std::vector<VariableBasePtr> Expression::mUnnamedVariables;
 
-
-//////////////////////////////////////////////////////////////////////Expression
-
-
-
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
- NOTES: This is on the verge of a hack.  There are certain cases when Expression
- 		needs to return an identifier name.
- 		
- 		Such as, "(SomeScope):Foo",
- 		or "var Foo",
- 		or "use Foo".
- 		
- 		This takes care of that.  If you try to use it like a normal VariableBase,
- 		it will give you an error that the value can't be found.
- 		
- 		The special cases that need it need to do a dynamic_cast to get it.
+/**
+	\brief Magic hack that makes incomplete identifiers possible.
+	
+	There are cases such as "(Foo):Bar, or even "var Foo", where a nonexistant
+	identifier must be evaluated but should not generate an error.  This class
+	is part of a little loophole that makes this possible.	
 */
 class LooseIdentifier : public VariableBase
 {
@@ -82,10 +65,7 @@ private:
 };
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::Expression
- NOTES: constructors
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Expression::Expression( Interpreter& I )
 	: mSyntaxChecked(false), mI(I), mpWordList( new WordList ), mStatic(false)
 {
@@ -119,10 +99,7 @@ Expression::Expression( const Expression& OtherExp, const Bounds& OtherBounds )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::operator=
- NOTES: Assignment
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Expression& Expression::operator=( const Expression& OtherExp )
 {
 	mpWordList = OtherExp.mpWordList;
@@ -134,10 +111,7 @@ Expression& Expression::operator=( const Expression& OtherExp )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: You need to inform an expression if it is static so that it knows if
- 		new objects should be created as static or non-static.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool Expression::IsStatic() const{
 	return mStatic;
 }
@@ -147,11 +121,7 @@ void Expression::SetStatic( bool flag /*= true*/ ) const{
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::______
- NOTES: Wrapper's for std::vector.  All indexes are in terms of
- 		mLowerBounds and mUpperBounds.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Word& Expression::operator[]( unsigned long i )
 {
 	return (*mpWordList)[ GetAbsoluteIndex(i) ];
@@ -162,7 +132,7 @@ const Word& Expression::operator[]( unsigned long i ) const
 	return (*mpWordList)[ GetAbsoluteIndex(i) ];
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::clear()
 {
 	if( mpWordList.unique() ) mpWordList->clear();
@@ -176,6 +146,7 @@ void Expression::clear()
 	if( mSyntaxChecked ) mSyntaxChecked = false;	
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::push_back( const Word& SomeWord )
 {
 	RevertToLocalCopy();
@@ -185,6 +156,7 @@ void Expression::push_back( const Word& SomeWord )
 	if( mSyntaxChecked ) mSyntaxChecked = false;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::pop_back()
 {
 	RevertToLocalCopy();	
@@ -194,6 +166,7 @@ void Expression::pop_back()
 	if( mSyntaxChecked ) mSyntaxChecked = false;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool Expression::empty() const
 {
 	if( mpWordList->empty() || mBounds.Lower == mBounds.Upper ) return true;
@@ -213,6 +186,7 @@ unsigned long Expression::size() const
 	return (unsigned long)(mBounds.Upper - mBounds.Lower);
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::erase( unsigned long i )
 {
 	RevertToLocalCopy();
@@ -222,11 +196,8 @@ void Expression::erase( unsigned long i )
 	if( mSyntaxChecked ) mSyntaxChecked = false;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: This converts relative coordinates (i.e. ones that are in terms of there
- 		upper and lower bounds) to absolute coordinates (one that are in terms
- 		of the actual vector).
-*/
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 unsigned long Expression::GetAbsoluteIndex( unsigned long i ) const
 {
 	unsigned long ProposedIndex = i + mBounds.Lower;
@@ -239,10 +210,7 @@ unsigned long Expression::GetAbsoluteIndex( unsigned long i ) const
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: In a Expression using someone elses WordList, this will convert it
-		to a local copy.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::RevertToLocalCopy()
 {
 	if( !mpWordList.unique() )
@@ -264,29 +232,16 @@ void Expression::RevertToLocalCopy()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::Interpret
- NOTES: Calls RealInterpret.  This a saftey layer between RealInterpret and
-		the user, so the user doesn't try to pass parameter to it and screw
-		it up.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Expression::Evaluate() const
 {
 	return InternalEvaluate();
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MONOLITHIC~FUNCTION~~~~~~
- Expression::InternalEvaluate
- NOTES: Where the real work is done.  This uses a divide and conqueror approach
-		to figure out the the result of the expression.
-
-		INPUTS:
-		
-		
-		OUTPUT:
-		Returns the result of the expression.
-*/
-VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCachePtr pCachedObjects /*= ObjectCachePtr()*/ ) const
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MONOLITHIC~FUNCTION~~~~~~
+VariableBasePtr Expression::InternalEvaluate( 
+					 bool TopLevel /*=true*/,
+					 ObjectCachePtr pCachedObjects /*= ObjectCachePtr()*/ ) const
 {
 	/*
 		Take care of any business before we get started.
@@ -330,16 +285,16 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 			return (*pCachedObjects)[GetAbsoluteIndex(0)]->CastToVariableBase();
 		}
 		else if( FirstWord.Extra == EXTRA_BOOLLITERAL_True ) {
-			return CreateVariable<Variable>( UNNAMMED, false, true, true );
+			return CreateVariable<Variable>( UNNAMMED, true, true );
 		}
 		else if( FirstWord.Extra == EXTRA_BOOLLITERAL_False ) {
-			return CreateVariable<Variable>( UNNAMMED, false, true, false );
+			return CreateVariable<Variable>( UNNAMMED, true, false );
 		}
 		else if( FirstWord.Type == WORDTYPE_STRINGLITERAL ||
 				 FirstWord.Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
-			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, false, true, (*this)[0].String[0] ) );
+			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, true, (*this)[0].String[0] ) );
 
 			if( FirstWord.Type == WORDTYPE_FLOATLITERAL ) {
 				pTempVar->ForceConversion( VARTYPE_NUM );
@@ -518,10 +473,7 @@ VariableBasePtr Expression::InternalEvaluate( bool TopLevel /*=true*/, ObjectCac
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::CheckSyntax
- NOTES: Checks the expression for obvious syntax errors.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 {
 	const Word* pPrevWord = &NULL_WORD;
@@ -541,8 +493,9 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 		{
 			if( ParenthesisCount == 0 )
 			{
-				ThrowExpressionAnomaly( TXT("Extra \')\'.  Can't find the matching \'(\'."),
-										ANOMALY_BADPUNCTUATION );
+				ThrowExpressionAnomaly( 
+					TXT("Extra \')\'.  Can't find the matching \'(\'."),
+					ANOMALY_BADPUNCTUATION );
 			}
 			else ParenthesisCount--;
 		}
@@ -555,8 +508,10 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 			pCurrentWord->Type == WORDTYPE_UNARYOPERATOR ||
 			pCurrentWord->Type == WORDTYPE_AMBIGUOUSOPERATOR )  )
 		{
-			ThrowExpressionAnomaly( TXT("Expressions must begin with an identifier, literal, or unary operator."),
-								    ANOMALY_BADGRAMMAR );
+			ThrowExpressionAnomaly( 
+				TXT("Expressions must begin with an identifier, "
+				"literal, or unary operator."),
+				ANOMALY_BADGRAMMAR );
 		}
 		//RULE: Either an identifier, literal, or '(' must follow an operator
 		else if( (pPrevWord->Type == WORDTYPE_BINARYOPERATOR || 
@@ -566,8 +521,10 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 				 pCurrentWord->Extra == EXTRA_PARENTHESIS_Left || pCurrentWord->Type == WORDTYPE_UNARYOPERATOR ||
 				 pCurrentWord->Type == WORDTYPE_AMBIGUOUSOPERATOR ) )
 		{
-			ThrowExpressionAnomaly( TXT("Either an identifier, literal, or a unary operator must follow an operator"),
-								    ANOMALY_BADGRAMMAR );
+			ThrowExpressionAnomaly( 
+				TXT("Either an identifier, literal, or a unary "
+				"operator must follow an operator"),
+				ANOMALY_BADGRAMMAR );
 		}
 		//RULE: operators can not be followed by ')' or preceded by '('.  (i.e. No "x (+) b" stuff)
 		else if( pPrevWord->Extra == EXTRA_PARENTHESIS_Left &&
@@ -601,18 +558,15 @@ void Expression::CheckSyntax( bool IgnoreTrailingOps /*=false*/ ) const
 	//RULE: All '(' must have a matching ')'
 	if( ParenthesisCount != 0 )
 	{
-		ThrowExpressionAnomaly( TXT("Extra \'(\'. Can't find the matching \')\', or the matching \')\' is outside of the expression"),
-							   ANOMALY_BADGRAMMAR );
+		ThrowExpressionAnomaly( 
+			TXT("Extra \'(\'. Can't find the matching \')\', or the matching "
+				"\')\' is outside of the expression"),
+			ANOMALY_BADGRAMMAR );
 	}
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::StryOutlyingParenthesis
- NOTES: Does pretty much what it says. 
-		Won't complain if there are no outlying parenthesis.
-		Will complain if there is a parenthesis mismatch.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool Expression::StripOutlyingParenthesis() const
 {
 	if( (*this)[0].Extra != EXTRA_PARENTHESIS_Left ) return false;
@@ -654,54 +608,9 @@ bool Expression::StripOutlyingParenthesis() const
 		return true;
 	}
 	else return false;
-	
-	
-	
-	
-	//////////////////////////////////
-	
-	/*
-	
-	if( (*this)[0].Extra == EXTRA_PARENTHESIS_Left )
-	{
-		const unsigned long ExpressionSize = size();
-	
-		int ParenthesisCount = 0; //Gets reused later down
-		
-		const Word* pTempWord;
-		unsigned int i;
-		for( i = 0; i < ExpressionSize; i++ )
-		{
-			pTempWord = &(*this)[i];
-			if( pTempWord->Extra == EXTRA_PARENTHESIS_Left ) ParenthesisCount++;
-			else if( pTempWord->Extra == EXTRA_PARENTHESIS_Right ) ParenthesisCount--;
-
-			//Found a matching ")"
-			if( ParenthesisCount == 0 ) break;
-		}
-
-		if( i == ExpressionSize )//Parenthesis mismatch
-		{ 
-			ThrowParserAnomaly( TXT("Parenthesis mismatch."), ANOMALY_BADGRAMMAR );
-			
-			return false; // Just to placate the compiler.
-		}
-		else if( i == ExpressionSize - 1 )//Outlying parenthesis, ok to strip
-		{
-			mBounds.Lower++;
-			mBounds.Upper = GetAbsoluteIndex( size() - 1 );
-			return true;
-		}
-		else return false;
-	}
-	
-	*/
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::ThrowExpressionAnomaly
- NOTES: Formats an anomaly description specifically regarding expressions.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::ThrowExpressionAnomaly( const STRING& Desc, AnomalyCode Code ) const
 {
 	STRING FullDesc = TXT("Bad expression: \'");
@@ -713,10 +622,7 @@ void Expression::ThrowExpressionAnomaly( const STRING& Desc, AnomalyCode Code ) 
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Expression::DumpToSTring
- NOTES: Dumps the expression to a human readable format.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 STRING Expression::DumpToString() const
 {
 	STRING Out;
@@ -772,9 +678,7 @@ STRING Expression::DumpToString() const
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns the precedence of the given operator.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) const
 {
 		//A list of operators in order of lowest to highest precedence
@@ -846,9 +750,7 @@ Expression::OperatorPrecedence Expression::GetPrecedenceLevel( const Word& W ) c
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Calculates the the precedence order for the whole expression.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 size_t Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache ) const
 {
 	/*
@@ -1035,10 +937,7 @@ size_t Expression::CalculateLowPrecedenceOperator( ObjectCachePtr pCache ) const
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: These are the equivalent of operator[], but they return ExtendedWord's
- 		insted of Words.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Word& Expression::GetWord( unsigned long i ){
 	return (*mpWordList)[ GetAbsoluteIndex(i) ];
 }
@@ -1048,12 +947,7 @@ const Word& Expression::GetWord( unsigned long i ) const{
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Looks up all the identifiers in the current context and stores their
- 		objects.   This is really just optimizations sake.  Otherwise most of the
- 		time spend parsing expressions is due to having to loop up identifiers
- 		over and over.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 {
 	size_t i;
@@ -1103,10 +997,7 @@ void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Maps unary operators onto their actual operations.  Essentially part of
- 		InternalEvaluate, broken off to aid with readbility.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRight ) const
 {
 	//not
@@ -1179,10 +1070,7 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 	
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Maps binary operators onto their actual operations.  Essentially part of
- 		InternalEvaluate, broken off to aid with readbility.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Expression::EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr pLeft,
 											  VariableBasePtr pRight ) const
 {
@@ -1308,7 +1196,7 @@ VariableBasePtr Expression::EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr pLef
 		//pLeft is not a list, so we have to create a new one.
 		else
 		{
-			ListPtr pNewList( CreateGeneric<List>( UNNAMMED, false, true ) );
+			ListPtr pNewList( CreateGeneric<List>( UNNAMMED, true ) );
 			
 			//If its a real variable, append the actual pointer,
 			//otherwise make a copy of the value.

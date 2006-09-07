@@ -65,8 +65,7 @@ class SS_API VariableBase : public Scope
 {
 protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(VariableBase);
-	VariableBase();
-	VariableBase( const SS::STRING&, bool Static = false, bool Const = false );
+	VariableBase( SS_DECLARE_DEFAULTED_BASE_ARGS );
 
 public:
 
@@ -138,23 +137,22 @@ class SS_API Variable : public VariableBase
 {
 protected:	
 	SS_FRIENDIFY_VARIABLE_CREATOR(Variable);
+	SS_FRIENDIFY_GENERIC_CREATOR(Variable);
 
 	Variable();
 	
-	Variable( const SS::STRING& Name,
-			  bool Static, bool Const,
+	Variable( SS_DECLARE_BASE_ARGS );
+	
+	Variable( SS_DECLARE_BASE_ARGS,
 			  const Variable& );
 	
-	Variable( const SS::STRING& Name,
-			  bool Static, bool Const,
+	Variable( SS_DECLARE_BASE_ARGS,
 			  const NumType& );
 	
-	Variable( const SS::STRING& Name, 
-			  bool Static, bool Const,
+	Variable( SS_DECLARE_BASE_ARGS,
 			  const StringType& );
 	
-	Variable( const SS::STRING& Name, 
-			  bool Static, bool Const,
+	Variable( SS_DECLARE_BASE_ARGS,
 			  const BoolType& );
 public:
 

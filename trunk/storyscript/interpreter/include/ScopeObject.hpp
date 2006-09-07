@@ -152,20 +152,15 @@ class SS_API ScopeObject
 protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(ScopeObject);
 	
-	/// Default Constructor
-	ScopeObject();
-	
 	/**
 		\brief Constructor
 		
 		\param Name The name of the object.  It should obey storyscript
 		identifier naming rules if you want to be able to actually access it.
-		\param Static !!DEPRICATED!!  Set it to whatever you want.
-		this will be removed in future versions.
 		\param Const Whether the object is constant (modifyable) or not. 
 		
 	*/
-	ScopeObject( const SS::STRING& Name, bool Static = false, bool Const = false );
+	ScopeObject( const SS::STRING& Name = SS::STRING(), bool Const = false );
 
 public:
 	/// Destructor
@@ -195,24 +190,6 @@ public:
 		\return A pointer to object' parent.
 	*/
 	ScopePtr GetParent() const;
-
-	/**
-		\brief !!DEPRICATED!!
-		
-		Returns true if the object is static.  This function will be removed
-		in future versions. 
-	*/
-	bool IsStatic() const;
-	
-	/**
-		\brief !!DEPRICATED!!
-		
-		Turns the static flag on or off.  This function will be removed
-		in future versions.
-		
-		\param Flag What to set the static flag to. 
-	*/
-	void SetStatic( bool Flag = true );
 
 	/**
 		\brief Returns true if the object is constant.
@@ -366,8 +343,6 @@ protected:
 	*/
 	ScopeObjectPtrWeak mpThis;
 	
-	/// !!DEPRICATED!! This will be removed in a future version.
-	bool mStatic;
 	/// The constant flag.
 	bool mConst;
 

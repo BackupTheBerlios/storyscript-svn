@@ -30,8 +30,8 @@ directory named "license".
 	
 	\param x The name of the the new operator derivative.
 */
-#define SS_OP_DEFAULT_CTOR(x) x( const SS::STRING& Name, bool Static = false, bool Const = false )\
-		 : Operator( Name, Static, Const ){}
+#define SS_OP_DEFAULT_CTOR(x) x( SS_DECLARE_DEFAULTED_BASE_ARGS )\
+		 : Operator( SS_BASE_ARGS ){}
 
 /**
 	\brief A conveniance macro for declaring operator derivatives.
@@ -41,8 +41,8 @@ directory named "license".
 #define SS_DECLARE_OPERATOR(x) \
 class x : public Operator{\
 public:\
-	x( const SS::STRING& Name, bool Static = false, bool Const = false )\
-		 : Operator( Name, Static, Const ){}\
+	x( SS_DECLARE_DEFAULTED_BASE_ARGS )\
+		 : Operator( SS_BASE_ARGS ){}\
 	VariableBasePtr Operate( VariableBasePtr );\
  }
 	
@@ -64,10 +64,8 @@ public:\
 class SS_API Operator : public Scope
 {
 public:
-	/// Default Constructor
-	Operator();
 	/// Constructor
-	Operator( const SS::STRING& Name, bool Static = false, bool Const = false );
+	Operator( SS_DECLARE_DEFAULTED_BASE_ARGS );
 	
 	void AcceptVisitor( ScopeObjectVisitor& );
 

@@ -31,7 +31,7 @@ using namespace SS::SLib;
  NOTES: Common constructor
 */
 Common::Common()
-	: Scope( LC_SL_Common, true )
+	: Scope( LC_SL_Common, false )
 {
 	RegisterPredefined();
 	SetConst();
@@ -53,7 +53,7 @@ void Common::RegisterPredefined()
  NOTES: Contructor
 */
 SS::SLib::LangOpts::LangOpts()
-	: Scope( LC_SL_LangOpts, true )
+	: Scope( LC_SL_LangOpts, false )
 {
 	RegisterPredefined();
 	SetConst();
@@ -67,17 +67,17 @@ void SS::SLib::LangOpts::RegisterPredefined()
 	SS::LangOpts& MyLangOpts = SS::LangOpts::Instance();
 	
 	Register( ScopeObjectPtr( 
-		new BoundULongVar( TXT("default_precision"), MyLangOpts.DefaultPrecision, true, false ) ) );
+		new BoundULongVar(     TXT("default_precision"), false, MyLangOpts.DefaultPrecision ) ) );
 	Register( ScopeObjectPtr( 
-		new BoundRoundModeVar( TXT("rounding_mode"), MyLangOpts.RoundingMode, true, false ) ) );
+		new BoundRoundModeVar( TXT("rounding_mode"),     false, MyLangOpts.RoundingMode ) ) );
 	Register( ScopeObjectPtr( 
-		new BoundULongVar( TXT("max_digit_output"), MyLangOpts.MaxDigitOutput, true, false ) ) );
+		new BoundULongVar(     TXT("max_digit_output"),  false, MyLangOpts.MaxDigitOutput ) ) );
 	Register( ScopeObjectPtr( 
-		new BoundULongVar( TXT("number_base"), MyLangOpts.NumberBase, true, false ) ) );
+		new BoundULongVar(     TXT("number_base"),       false, MyLangOpts.NumberBase ) ) );
 	Register( ScopeObjectPtr( 
-		new BoundFlagVar( TXT("use_strict_lists"), MyLangOpts.UseStrictLists, true, false ) ) );
+		new BoundFlagVar(      TXT("use_strict_lists"),  false, MyLangOpts.UseStrictLists ) ) );
 	Register( ScopeObjectPtr(
-		new BoundFlagVar( TXT("verbose"), MyLangOpts.Verbose, true, false ) ) );
+		new BoundFlagVar(      TXT("verbose"),           false, MyLangOpts.Verbose ) ) );
 }
 
 

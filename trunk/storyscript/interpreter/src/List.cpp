@@ -27,13 +27,8 @@ ListPtr SS::gpEmptyList;
  List::List
  NOTES: 
 */
-List::List()
-{
-	RegisterPredefinedVars();
-}
-
-List::List( const STRING& Name, bool Static /*= false*/, bool Const /*= false*/ )
-: VariableBase( Name, Static, Const )
+List::List( SS_DECLARE_BASE_ARGS )
+: VariableBase( SS_BASE_ARGS )
 {
 	RegisterPredefinedVars();
 }
@@ -409,7 +404,7 @@ VariablePtr List::MakeVariable() const
 		TheBigString += mList[i]->CastToVariableBase()->GetStringData();		
 	}
 	
-	return CreateVariable<Variable>( mName, false, true, TheBigString );
+	return CreateVariable<Variable>( mName, true, TheBigString );
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -465,7 +460,7 @@ ScopeObjectPtr List::GetScopeObjectHook( const STRING& Name )
 	}
 	else if( !mLengthCreated && Name == LC_Length ){
 		mLengthCreated = true;
-		return Register( ScopeObjectPtr( new ListLengthVar( LC_Length, *this, true ) ) );
+		return Register( ScopeObjectPtr( new ListLengthVar( LC_Length, true, *this ) ) );
 	}	
 	else return VariableBase::GetScopeObjectHook( Name );	
 }

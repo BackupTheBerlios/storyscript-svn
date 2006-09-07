@@ -21,27 +21,18 @@ using namespace SS;
 const STRING SS::UNNAMMED;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObject::ScopeObject()
+ScopeObject::ScopeObject( const STRING& Name /*= STRING()*/,
+						  bool Const /*= false*/ )
 {
-	//Realistically, the default constructor is probabably never called.
-	ZeroVars();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObject::ScopeObject( const STRING& Name,
-						  bool Static /*= false*/, bool Const /*= false*/ )
-{
-	ZeroVars();
 	mName = Name;
-	mStatic = Static;
 	mConst = Const;
+	mpParent = 0;
 }
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ScopeObject::ZeroVars()
 {
-	mStatic = false;
 	mConst = false;
 	mpParent = 0;
 }
@@ -50,18 +41,6 @@ void ScopeObject::ZeroVars()
 ScopeObject::~ScopeObject()
 {
 
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-bool ScopeObject::IsStatic() const{
-	return mStatic;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void ScopeObject::SetStatic( bool Flag /*= true*/ ){
-	mStatic = Flag;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -220,11 +199,11 @@ const VariableBasePtr ScopeObject::CastToVariableBase() const{
 
 //Variable (Current default behavior is to return a variable of its full name.)
 VariablePtr ScopeObject::CastToVariable(){
-	return CreateVariable<Variable>( GetFullName(), false, true, GetFullName() );
+	return CreateVariable<Variable>( GetFullName(), true, GetFullName() );
 }
 
 const VariablePtr ScopeObject::CastToVariable() const{
-	return CreateVariable<Variable>( GetFullName(), false, true, GetFullName() );
+	return CreateVariable<Variable>( GetFullName(), true, GetFullName() );
 }
 
 

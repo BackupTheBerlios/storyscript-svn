@@ -30,7 +30,7 @@ using namespace SS::SLib;
 // NOTES: constructor
 //
 Math::Math()
-	: Scope( LC_SL_Math, true )
+	: Scope( LC_SL_Math, false )
 {
 	RegisterPredefined();
 	SetConst();
@@ -44,23 +44,23 @@ Math::Math()
 void Math::RegisterPredefined()
 {
 	//Functions
-	Register( ScopeObjectPtr( new sqrt( TXT("sqrt"), true, true ) ) );	
-	Register( ScopeObjectPtr( new abs( TXT("abs"), true, true ) ) );
-	Register( ScopeObjectPtr( new mean( TXT("mean"), true, true ) ) );
-	Register( ScopeObjectPtr( new sin( TXT("sin"), true, true ) ) );
-	Register( ScopeObjectPtr( new cos( TXT("cos"), true, true ) ) );
-	Register( ScopeObjectPtr( new tan( TXT("tan"), true, true ) ) );
-	Register( ScopeObjectPtr( new asin( TXT("asin"), true, true ) ) );
-	Register( ScopeObjectPtr( new acos( TXT("acos"), true, true ) ) );
-	Register( ScopeObjectPtr( new atan( TXT("atan"), true, true ) ) );
-	Register( ScopeObjectPtr( new max( TXT("max"), true, true ) ) );
-	Register( ScopeObjectPtr( new min( TXT("min"), true, true ) ) );
-	Register( ScopeObjectPtr( new Int( TXT("int"), true, true ) ) );
-	Register( ScopeObjectPtr( new Floor( TXT("floor"), true, true ) ) );
+	Register( ScopeObjectPtr( new sqrt ( TXT("sqrt"),  true ) ) );	
+	Register( ScopeObjectPtr( new abs  ( TXT("abs"),   true ) ) );
+	Register( ScopeObjectPtr( new mean ( TXT("mean"),  true ) ) );
+	Register( ScopeObjectPtr( new sin  ( TXT("sin"),   true ) ) );
+	Register( ScopeObjectPtr( new cos  ( TXT("cos"),   true ) ) );
+	Register( ScopeObjectPtr( new tan  ( TXT("tan"),   true ) ) );
+	Register( ScopeObjectPtr( new asin ( TXT("asin"),  true ) ) );
+	Register( ScopeObjectPtr( new acos ( TXT("acos"),  true ) ) );
+	Register( ScopeObjectPtr( new atan ( TXT("atan"),  true ) ) );
+	Register( ScopeObjectPtr( new max  ( TXT("max"),   true ) ) );
+	Register( ScopeObjectPtr( new min  ( TXT("min"),   true ) ) );
+	Register( ScopeObjectPtr( new Int  ( TXT("int"),   true ) ) );
+	Register( ScopeObjectPtr( new Floor( TXT("floor"), true ) ) );
 	
 	//Magic Variables
-	Register( ScopeObjectPtr( new Pi( TXT("pi"), true, true ) ) );
-	Register( ScopeObjectPtr( new Euler( TXT("e"), true, true ) ) );
+	Register( ScopeObjectPtr( new Pi(    TXT("pi"), true ) ) );
+	Register( ScopeObjectPtr( new Euler( TXT("e"),  true ) ) );
 }
 
 
@@ -256,9 +256,8 @@ VariableBasePtr Floor::Operate( VariableBasePtr X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: ctor
 */
-MathConstPrec::MathConstPrec( const SS::STRING& Name, MathConst& Parent,
-							  bool Static /*= false*/, bool Const /*= false*/ )
-	: SpecialVarBase( Name, Static, Const ),
+MathConstPrec::MathConstPrec( const SS::STRING& Name, bool Const, MathConst& Parent )
+	: SpecialVarBase( Name, Const ),
 	  mParent(Parent)
 {
 }
@@ -341,7 +340,7 @@ MathConst::MathConst( SS_DECLARE_BASE_ARGS )
 {
 	bool WasConst = mConst;
 	SetConst( false );
-	Register( ScopeObjectPtr( new MathConstPrec( LC_Precision, *this, true, true ) ) );
+	Register( ScopeObjectPtr( new MathConstPrec( LC_Precision, true, *this ) ) );
 	SetConst( WasConst );
 }
 
