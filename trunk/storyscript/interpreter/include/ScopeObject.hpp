@@ -96,7 +96,7 @@ extern SS_API const STRING UNNAMMED;
 /**
 	\page SelfCasting Self-Casting Kung-Fu
 	
-	In storyscript types are meant to be very loose and easly converted
+	In storyscript types are meant to be very loose and easily converted
 	between each other.  This is usually achieved by calling one of the
 	ScopeObject:CastTo____ functions.  This allows cool things.  For
 	example, you can cast a ScopeObject to a Variable.  Since the ScopeObject
@@ -108,12 +108,12 @@ extern SS_API const STRING UNNAMMED;
 	
 	This system is convenient and can be very powerful but it does lead to a few complications.
 	
-	When a "CastTo" function is called it sometimes simply downcasts
-	(or upcasts if possible) itself, but other times it needs to create
+	When a "CastTo" function is called it sometimes simply down-casts
+	(or up-casts if possible) itself, but other times it needs to create
 	an entirely new object.  This leads to the problem of knowing whether
 	or not an object returned needs to be deleted or not.
 	
-	The most convenient sollution, the one that is used, is using reference
+	The most convenient solution, the one that is used, is using reference
 	counted pointers (boost::shared_ptr's).  This solution requires objects
 	maintain a shared_ptr to itself, for when it simply casts itself.
 	However this isn't possible without	a two-stage construction.  First
@@ -143,7 +143,7 @@ extern SS_API const STRING UNNAMMED;
 	All variables, blocks, and anything else in-language that can have a name and
 	reside in a scope derives from this class.
 	
-	Note that ScopeObjects and derivates typically should be created with the
+	Note that ScopeObjects and derivatives typically should be created with the
 	various creation functions (CreateGereric, etc).  This ensures that they
 	are properly garbage collected.
 */
@@ -157,7 +157,7 @@ protected:
 		
 		\param Name The name of the object.  It should obey storyscript
 		identifier naming rules if you want to be able to actually access it.
-		\param Const Whether the object is constant (modifyable) or not. 
+		\param Const Whether the object is constant (modifiable) or not. 
 		
 	*/
 	ScopeObject( const SS::STRING& Name = SS::STRING(), bool Const = false );
@@ -168,7 +168,7 @@ public:
 	
 	
 	/**
-		\brief Used to accept visitor derivates.
+		\brief Used to accept visitor derivatives.
 		
 		\see ScopeObjectVisitor
 	*/
@@ -207,7 +207,7 @@ public:
 		\brief Sets the name of the object.
 		
 		Names are not checked for validity, but if you want the 
-		object to be accessable choose a name that conforms to
+		object to be accessible choose a name that conforms to
 		storyscript identifier naming rules.
 		
 		Note that if the object has been registered it will be
@@ -261,13 +261,13 @@ public:
 		if this sounds confusing.
 		
 		 \param This A boost::shared_ptr holding a copy of this object.  If you try to
-		 give it some other shared_ptr the four horemen of the apocolypse will appear
+		 give it some other shared_ptr the four horemen of the Apocalypse will appear
 		 marking the end times.
 	*/
 	void SetSharedPtr( const ScopeObjectPtr& This );
 
 	/**
-		\breif Un-register the object from its scope.
+		\brief Un-register the object from its scope.
 		
 		This is the equivalent of calling Scope::UnRegister on this object.
 		
@@ -355,7 +355,7 @@ private:
 	*/
 	void ThrowBadConversion( const STRING& Type, const STRING& Addendum = STRING()  ) const;
 
-	/// Used by the contructors to set internals to their initial values.
+	/// Used by the constructors to set internals to their initial values.
 	void ZeroVars();
 	
 	/// A pointer the objects parent.  (NULL if unregistered)

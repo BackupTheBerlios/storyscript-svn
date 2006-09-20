@@ -40,8 +40,8 @@ private:
 	/**
 		\brief A simple bounds class for Expression.
 		
-		Instead of actually choping up the expression and doing numberous copies,
-		the new sub-expressions simply have the same list with an upp and lower bounds.
+		Instead of actually chopping up the expression and doing numerous copies,
+		the new sub-expressions simply have the same list with an upper and lower bounds.
 	*/
 	struct Bounds
 	{
@@ -78,16 +78,16 @@ public:
 	void SetStatic( bool flag = true ) const;
 	
 	/**
-		\brief Retreives of specific word.
+		\brief Retrieves of specific word.
 		
-		\param Index Index to the word to retreive.
+		\param Index Index to the word to retrieve.
 	*/
 	Word& operator[]( unsigned long Index );
 	
 	/**
-		\brief Retreives of specific word. (Const version)
+		\brief Retrieves of specific word. (Const version)
 		
-		\param Index Index to the word to retreive.
+		\param Index Index to the word to retrieve.
 	*/
 	const Word& operator[]( unsigned long Index ) const;
 	
@@ -125,7 +125,7 @@ private:
 		\brief Copy constructor
 		
 		\param E The other expression.
-		\param B The subexpression of to 'copy' over.
+		\param B The sub-expression of to 'copy' over.
 	*/
 	Expression( const Expression& E, const Bounds& B );
 	
@@ -161,7 +161,7 @@ private:
 	/**
 		\brief Cache of precedence indexes. 
 		
-		The low precedence operator for each subexpression is cached so
+		The low precedence operator for each sub-expression is cached so
 		when the expression is evaluated again, it doesn't have to go through
 		of calculating the low precedence expression.
 	*/
@@ -255,10 +255,10 @@ private:
 	/// Flag specifying whether the syntax has already been checked or not.
 	mutable bool mSyntaxChecked;
 	
-	/// Removes any useless outlying parenthese from the expression.
+	/// Removes any useless outlying parentheses from the expression.
 	bool StripOutlyingParenthesis() const;
 	
-	/// Throws a specially formated expression anomaly.
+	/// Throws a specially formatted expression anomaly.
 	void ThrowExpressionAnomaly( const SS::STRING& Desc, AnomalyCode Code ) const;
 	
 	/// Converts the expression to a (hopefully) human readable form.
@@ -275,7 +275,7 @@ private:
 		\brief Convert a shared word list to a local one.
 		
 		If the expression is using another expressions word list,
-		this will copy the word list over so it is modifyable.
+		this will copy the word list over so it is modifiable.
 	*/
 	void RevertToLocalCopy();
 

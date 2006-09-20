@@ -25,9 +25,9 @@ directory named "license".
 
 
 /*
-Use the following swith to toggle unicode.
+Use the following switch to toggle unicode.
 You can define it somewhere else, but just make
-sure it gets defiend before the first includsion
+sure it gets defined before the first inclusion
 of this file.  Otherwise, you are screwed.
 */
 //#define USING_UNICODE

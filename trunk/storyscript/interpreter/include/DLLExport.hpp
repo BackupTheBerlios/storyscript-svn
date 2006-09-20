@@ -34,7 +34,7 @@ namespace SS{
 
 #if defined(_MSC_VER)
 //This is slightly unsafe but it will get rid of many unnecessary errors caused by exporting
-//STL classes.  It is unnecessary because I don't need to export private memebers.
+//STL classes.  It is unnecessary because I don't need to export private members.
 #pragma warning (disable : 4251)
 
 //This one is the warning that the "extern" before the template is non-standard.
@@ -108,7 +108,7 @@ EXPIMP_TEMPLATE template class SS_API boost::shared_ptr<Scope>;
 }
 
 
-//Reenable some stuff
+//Re-enable some stuff
 #if defined(_MSC_VER)
 #pragma warning (default : 4231)
 #endif 

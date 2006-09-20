@@ -4,6 +4,19 @@ listing sneak into my house at night and take a look at the whiteboard in my
 basement.
 
 
+
+Currently StoryScript is in self imposed feature-lock.  Right now I am working
+to finalize the interface and clean up an embarssments before I start adding
+a lot of new code.  Most of the modification for a while will be related to
+making the api easier and more intutive.  Once I get it to a point that
+I am (somewhat) happy with I will feature un-lock it.
+
+Here is what I currently have planned.
+-Change SS::STRING to SS::String for consitency.
+-Change SS::CHAR to SS::Char for consitency.
+-Doxygen documentation!!
+
+
 Bugs
 -Dumping expressions to strings doesn't work near as well as it should.
 
@@ -21,7 +34,5 @@ Features
 easier on the user.  (These should probably be declared as virtuals in VarialbeBase.)
 
 Refactoring
--Remove the now depricated mConst and mStatic flags from ScopeObject, as well a erradicating
-any evidence of their existance (eg. constructors).
 -A proper call stack would be handy.  Currently we are high-jacking the C++ call stack.
 This work fine, but it limits the debuging capability.

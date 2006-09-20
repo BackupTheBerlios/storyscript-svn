@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
 This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
 Full license information is included in the file in the top
@@ -44,7 +44,7 @@ public:
 	/**
 		\brief Return the Scope's doc(ument) string.
 		
-		Read the section on doc strings in the storyscript lagnuage
+		Read the section on doc strings in the storyscript language
 		manual if this doesn't make sense.
 		
 		\return The Scope's doc(ument) string.
@@ -57,7 +57,7 @@ public:
 		\brief Retrieve a named object from the scope.
 		
 		The name may be a complex name, in which case the scope will
-		travel up the heirarchy searching for a match.
+		travel up the hierarchy searching for a match.
 		
 		The function is simply an alias for Scope::GetScopeObject.
 		
@@ -94,7 +94,7 @@ public:
 	/**
 		\brief Checks if a object exists in the local scope.
 		
-		This searches only the local scope (and imported scoeps)
+		This searches only the local scope (and imported scopes)
 		to see if an object is registered by that name.
 		
 		\param ID A simple (non-compound) object name.
@@ -106,7 +106,7 @@ public:
 		\brief Retrieve a named object from the scope.
 		
 		The name may be a complex name, in which case the scope will
-		travel up the heirarchy searching for a match.
+		travel up the hierarchy searching for a match.
 		
 		\param Name The name of the the object to be retrieved.
 		\return A pointer to the retrieved object.
@@ -133,7 +133,7 @@ public:
 		
 		The name must be a simple (non-compound) name and only
 		the local scope is searched.  (It will not travel up the
-		heiarchy.  
+		hierarchy.  
 		
 		The function is provided for performance and convenience reasons.
 		
@@ -164,7 +164,7 @@ public:
 		When a scope is "imported" it behaves like a magical portal
 		between scopes, so that when the local scope is searched for
 		an object, it will also check the imported scopes before
-		traveling up the heiarchy.
+		traveling up the hierarchy.
 		
 		Read more about this in the storyscript language manual.
 		
@@ -192,11 +192,11 @@ protected:
 	Scope( const SS::STRING& Name = SS::STRING(), bool Const = false );
 	
 	/**
-		\brief Overridable hook fucntion for GetScopeObject
+		\brief Overridable hook function for GetScopeObject
 		
 		This function is called by GetScopeObject before it searches for an
 		object.  This is provided so this class as well as child classes can
-		spring certain object into existance right before the first time they
+		spring certain object into existence right before the first time they
 		get called on.
 		
 		This can save tremendous amounts of memory and time, so if you are
@@ -208,7 +208,7 @@ protected:
 
 
 private:
-	/// Used by the contructor to initialize private data.
+	/// Used by the constructor to initialize private data.
 	void RegisterPredefinedVars();
 	
 	//typedef boost::shared_ptr<const STRING> StringPtr;
@@ -220,7 +220,7 @@ private:
 	/**
 		\brief Return a reference to the global scope.
 		
-		The function simply travels up the scope heiarchy until a dead
+		The function simply travels up the scope hierarchy until a dead
 		end is reached, then returns it.  So it is possible the the scope
 		returned isn't _the_ global scope if this is called on a free
 		floating object or group of objects.

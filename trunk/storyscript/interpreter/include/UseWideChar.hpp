@@ -65,12 +65,12 @@ inline std::string NarrowizeString( const CHAR* x ){
 	
 	
 
-//Overide these macros if necessary
+//Override these macros if necessary
 #define SS_FILE       WIDEN(__FILE__)
 #define SS_DATE       WIDEN(__DATE__)
 #define SS_TIME       WIDEN(__TIME__)
 //I'm not exactly sure why, but this macro doesn't work the same as the others.
-//Thats why I have to use NormalizeString instead of WIDEN.
+//That's why I have to use NormalizeString instead of WIDEN.
 #define SS_FUNC       NormalizeString(__FUNCTION__)
 #define SS_TIMESTAMP  WIDEN(__TIMESTAMP__)
 #define SS_LINE       __LINE__

@@ -32,7 +32,7 @@ class Interpreter;
 	\brief The block object.
 	
 	Blocks are similar to functions in other languages.  Read about
-	them in the storyscript langage manual for details.
+	them in the storyscript language manual for details.
 */
 class SS_API Block : public Operator
 {
@@ -44,7 +44,7 @@ protected:
 	/**
 		\brief Constructor
 		
-		For other contructor parameter see ScopeObject::ScopeObject.
+		For other constructor parameter see ScopeObject::ScopeObject.
 		
 		\param Position The position of the beginning of the block as obtained
 		from ReaderSource::GetPosition
@@ -103,13 +103,13 @@ public:
 	const BlockPtr CastToBlock() const;
 
 private:
-	/// Used by the contructor to initialize private data.
+	/// Used by the constructor to initialize private data.
 	void RegisterPredefinedVars();
 	
 	/// The "been said" flag.
 	bool mBeenSaid;
 
-	/// The position of the block's begninning.
+	/// The position of the block's beginning.
 	Bookmark mFilePosition;
 	
 	/// The block order.  (See GetListIndex.)

@@ -62,7 +62,7 @@ NOTES: Do I really have to write some stupid "Ctor & Dtor" shit for every one
 of these.
 */
 TimeVar::TimeVar( SS_DECLARE_BASE_ARGS )
-				 : SpecialVarBase( SS_BASE_ARGS )
+				 : MagicVarBase( SS_BASE_ARGS )
 {
 	mpBuffer = new char[mBufferSize];
 }
@@ -126,7 +126,7 @@ DateVar::DateVar/~DateVar
 NOTES: 
 */
 DateVar::DateVar( SS_DECLARE_BASE_ARGS)
-				 : SpecialVarBase(SS_BASE_ARGS)
+				 : MagicVarBase(SS_BASE_ARGS)
 {
 	mpBuffer = new char[mBufferSize];
 }
@@ -183,7 +183,7 @@ NOTES: Nope, I'm not going to do it.  I'm sick of writing descriptions for
 what everyone knows are constructors and destructors.
 */
 ElapsedSeconds::ElapsedSeconds( SS_DECLARE_BASE_ARGS )
-							   : SpecialVarBase(SS_BASE_ARGS)
+							   : MagicVarBase(SS_BASE_ARGS)
 {
 }
 
@@ -228,7 +228,7 @@ TimeZoneVar::TimeZoneVar/~TimeZoneVar
 NOTES: 
 */
 TimeZoneVar::TimeZoneVar( SS_DECLARE_BASE_ARGS )
-						 : SpecialVarBase( SS_BASE_ARGS )
+						 : MagicVarBase( SS_BASE_ARGS )
 {
 	mpBuffer = new char[mBufferSize];
 }

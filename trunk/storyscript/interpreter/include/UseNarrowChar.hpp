@@ -40,7 +40,7 @@ typedef std::stringstream STRINGSTREAM;
 //Does nothing in non-unicode
 #define TXT
 
-//Overide these macros if necessary
+//Override these macros if necessary
 #define SS_FILE       __FILE__
 #define SS_DATE       __DATE__
 #define SS_TIME       __TIME__

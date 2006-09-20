@@ -25,7 +25,7 @@ namespace SS{
 /**
 	\brief An exception class.
 	
-	Anomaly is a basic exception class that is on the verge of deprication,
+	Anomaly is a basic exception class that is on the verge of deprecation,
 	but is still used by in a few non interpreter related errors.
 	
 	You can pretty much ignore this, but pay attention to ParserAnomaly.
@@ -59,9 +59,9 @@ public:
 		Constructor	
 		\param Desc A description of the error.
 		\param Flags User define error code.
-		\param FileName Name of file where the error occoured.
-		\param Line Line number where the error occoured.
-		\param FuncName Name of the function where the error occoured.
+		\param FileName Name of file where the error occurred.
+		\param Line Line number where the error occurred.
+		\param FuncName Name of the function where the error occurred.
 	*/
 	Anomaly( const SS::STRING& Desc,
 			 unsigned int Flags,
@@ -78,24 +78,24 @@ public:
 	/// A description of the error.
 	STRING ErrorDesc;
 	
-	/// The function in which the exception occoured.
+	/// The function in which the exception occurred.
 	STRING SourceFunction;
 	
-	/// The source file in which the exception occoured.
+	/// The source file in which the exception occurred.
 	STRING SourceFile;
 	
-	/// The line in the the source file in which the exception occoured.
+	/// The line in the the source file in which the exception occurred.
 	unsigned int SourceLine;
 
-	/// Meaning is dependant on the user.
+	/// Meaning is dependent on the user.
 	unsigned int ErrorCode;
 };
 
 
 /**
-	\brief A shorthand macro for throwing Anomalys.
+	\brief A shorthand macro for throwing an Anomaly.
 	
-	This is the prefered way the throw the Anomaly class, as it takes care of
+	This is the preferred way the throw the Anomaly class, as it takes care of
 	setting the FILE, LINE, and FUNC, for you.
 	
 	\param Desc A description of the error.

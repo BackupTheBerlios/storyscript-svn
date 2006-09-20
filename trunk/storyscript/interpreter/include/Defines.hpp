@@ -37,7 +37,7 @@ The default is std::map, which is a standard and works just fine.
 The other option is std::hash_map which is non-standard
 (it is an sgi extension but gnu and microsoft include it in one
 way or another).  hash_map may or may not be faster
-(faster best-case senerio, slower worst cast).  Use it if
+(faster best-case scenario, slower worst cast).  Use it if
 you like to live dangerously.
 
 Exactly one of these must be uncommented.

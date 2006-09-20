@@ -17,7 +17,7 @@ NOTES: S-Lib functions/mvars that are miscilaneous and used often.
 
 
 #include "CreationFuncs.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 
 
 

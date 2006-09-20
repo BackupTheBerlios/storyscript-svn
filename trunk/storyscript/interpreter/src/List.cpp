@@ -8,7 +8,7 @@ NOTES: Definitions for the List class; a dynamicaly sized list.
 
 #include "List.hpp"
 #include "LanguageConstants.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 #include "CreationFuncs.hpp"
 #include <boost/lexical_cast.hpp>
 

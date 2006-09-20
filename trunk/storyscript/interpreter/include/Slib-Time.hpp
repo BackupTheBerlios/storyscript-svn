@@ -3,7 +3,7 @@ Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 
 This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
 
-NOTES: S-Lib functions/mvars that are used to maniuplate time.
+NOTES: S-Lib functions/mvars that are used to manipulate time.
 */
 
 #if !defined(SS_Slib_Time)
@@ -11,7 +11,7 @@ NOTES: S-Lib functions/mvars that are used to maniuplate time.
 
 
 #include "Scope.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 
 namespace SS{
 namespace SLib{
@@ -39,7 +39,7 @@ private:
 TimeVar
 NOTES: Special variable that always reports the current time.
 */
-class TimeVar : public SpecialVarBase
+class TimeVar : public MagicVarBase
 {
 public:
 	TimeVar( SS_DECLARE_DEFAULTED_BASE_ARGS );
@@ -62,7 +62,7 @@ private:
 DateVar
 NOTES: Reports the data.  As a string "03/21/05" or as a number "032105"
 */
-class DateVar : public SpecialVarBase
+class DateVar : public MagicVarBase
 {
 public:
 	DateVar( SS_DECLARE_DEFAULTED_BASE_ARGS );
@@ -84,9 +84,9 @@ private:
 ElapsedSeconds
 NOTES: This is a special var which returns the number of seconds that the
 Interprete has been running.  It is useful only for comparisons to
-test if a certain ammount of time has gone by.
+test if a certain amount of time has gone by.
 */
-class ElapsedSeconds : public SpecialVarBase
+class ElapsedSeconds : public MagicVarBase
 {
 public:
 	ElapsedSeconds( SS_DECLARE_DEFAULTED_BASE_ARGS );
@@ -107,7 +107,7 @@ private:
 TimeZone
 NOTES: Returns a string with the current time zone name.
 */
-class TimeZoneVar : public SpecialVarBase
+class TimeZoneVar : public MagicVarBase
 {
 public:
 	TimeZoneVar( SS_DECLARE_DEFAULTED_BASE_ARGS );

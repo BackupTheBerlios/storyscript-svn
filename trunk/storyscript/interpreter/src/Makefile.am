@@ -20,6 +20,7 @@ Interface.cpp \
 Interpreter.cpp \
 LanguageConstants.cpp \
 List.cpp \
+MagicVars.cpp \
 Operator.cpp \
 ParserAnomaly.cpp \
 ReaderSource.cpp \
@@ -32,7 +33,6 @@ Slib-Common.cpp \
 Slib-List.cpp \
 Slib-Math.cpp \
 Slib-Time.cpp \
-SpecialVars.cpp \
 Unicode.cpp \
 Variable.cpp \
 VersionInfo.cpp \

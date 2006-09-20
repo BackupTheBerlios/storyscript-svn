@@ -229,6 +229,7 @@ extern const SS::CHAR* LC_Negate;
 extern const SS::CHAR* LC_Import;
 extern const SS::CHAR* LC_UnImport;
 extern const SS::CHAR* LC_Return;
+extern const SS::CHAR* LC_Print;
 
 //Misc.
 extern const SS::CHAR* LC_Terminal;

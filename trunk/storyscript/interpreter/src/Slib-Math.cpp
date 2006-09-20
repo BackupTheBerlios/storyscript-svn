@@ -257,7 +257,7 @@ VariableBasePtr Floor::Operate( VariableBasePtr X )
  NOTES: ctor
 */
 MathConstPrec::MathConstPrec( const SS::STRING& Name, bool Const, MathConst& Parent )
-	: SpecialVarBase( Name, Const ),
+	: MagicVarBase( Name, Const ),
 	  mParent(Parent)
 {
 }
@@ -336,7 +336,7 @@ StringType MathConstPrec::GetStringData() const
  NOTES: 
 */
 MathConst::MathConst( SS_DECLARE_BASE_ARGS )
-	: SpecialVarBase( SS_BASE_ARGS )
+	: MagicVarBase( SS_BASE_ARGS )
 {
 	bool WasConst = mConst;
 	SetConst( false );

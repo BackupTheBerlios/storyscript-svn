@@ -1,9 +1,9 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: Implementation of various creation function templates enumerated here.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
 #include "ScopeObject.hpp"

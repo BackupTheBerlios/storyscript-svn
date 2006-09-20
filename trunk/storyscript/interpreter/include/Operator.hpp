@@ -26,7 +26,7 @@ directory named "license".
  
  
 /**
-	\brief A conveniance macro for declaring operator derivatives' constructors.
+	\brief A convenience macro for declaring operator derivatives' constructors.
 	
 	\param x The name of the the new operator derivative.
 */
@@ -34,7 +34,7 @@ directory named "license".
 		 : Operator( SS_BASE_ARGS ){}
 
 /**
-	\brief A conveniance macro for declaring operator derivatives.
+	\brief A convenience macro for declaring operator derivatives.
 	
 	\param x The name of the the new operator derivative.
 */
@@ -77,13 +77,13 @@ public:
 	
 	Make new fancy functions by defining/overriding this.
 	
-	\param Params The paramater list that gets passed the operator. (See List)
+	\param Params The parameter list that gets passed the operator. (See List)
 	*/
 	virtual VariableBasePtr Operate( VariableBasePtr Params ) = 0;
 	
 
 private:
-	/// Used by the contructor to initialize private data.
+	/// Used by the constructor to initialize private data.
 	void RegisterPredefinedVars();
 
 };

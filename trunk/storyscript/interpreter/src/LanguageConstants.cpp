@@ -148,6 +148,7 @@ const SS::CHAR* LC_Negate = TXT("-");
 const SS::CHAR* LC_Import = TXT("use");
 const SS::CHAR* LC_UnImport = TXT("unuse");
 const SS::CHAR* LC_Return = TXT("return");
+const SS::CHAR* LC_Print = TXT("print");
 
 //Misc.
 const SS::CHAR* LC_Terminal = TXT(";");

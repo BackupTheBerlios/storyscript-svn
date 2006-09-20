@@ -10,7 +10,7 @@ directory named "license".
 #include "Variable.hpp"
 #include "DLLExport.hpp"
 #include "List.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 #include "LanguageConstants.hpp"
 #include "CreationFuncs.hpp"
 

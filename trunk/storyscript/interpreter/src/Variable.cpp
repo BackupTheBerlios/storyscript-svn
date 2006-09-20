@@ -1,9 +1,9 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: The variable interface and implementation.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
  
 
@@ -11,7 +11,7 @@ NOTES: The variable interface and implementation.
 #include <boost/lexical_cast.hpp>
 #include "ParserAnomaly.hpp"
 #include "LanguageConstants.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 //#include "BaseFuncs.hpp"
 #include "List.hpp"
 #include "CreationFuncs.hpp"
@@ -24,56 +24,71 @@ using namespace SS;
 
 
 
-//Defs for the mpfr_t mini-wrapper
+/*
+
+	DEFINITIONS FOR THE MPFR MINI-WRAPPER
+
+*/
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap::mpfr_t_wrap()
 {
 	mpfr_init(N);	
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap::mpfr_t_wrap( int prec )
 {
 	mpfr_init2( N, prec );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap::mpfr_t_wrap( const mpfr_t_wrap& X )
 {
 	mpfr_init(N);
 	mpfr_set( N, X.get(), LangOpts::Instance().RoundingMode );	
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap& mpfr_t_wrap::operator=( const mpfr_t_wrap& X )
 {
 	mpfr_set( N, X.get(), LangOpts::Instance().RoundingMode );
 	return *this;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap::~mpfr_t_wrap()
 {
 	mpfr_clear(N);	
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t& mpfr_t_wrap::get() const
 {
 	return N;	
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap& mpfr_t_wrap::set( int x )
 {
 	return set( (signed long)x );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap& mpfr_t_wrap::set( signed long x )
 {
 	mpfr_set_si( N, x, LangOpts::Instance().RoundingMode );
 	return *this;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap& mpfr_t_wrap::set( unsigned long x )
 {
 	mpfr_set_ui( N, x, LangOpts::Instance().RoundingMode );
 	return *this;	
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 mpfr_t_wrap& mpfr_t_wrap::set( double x )
 {
 	mpfr_set_d( N, x, LangOpts::Instance().RoundingMode );
@@ -81,12 +96,7 @@ mpfr_t_wrap& mpfr_t_wrap::set( double x )
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- NumType2StringType
- NOTES: Converts a GMP floating point number to a string.  I don't want to
-		take the trouble to make my only class when this is the only thing
-		that needs changing.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void SS::NumType2StringType( const NumType& In, StringType& Out )
 {
 	//Special Cases
@@ -160,6 +170,7 @@ void SS::NumType2StringType( const NumType& In, StringType& Out )
 	mpfr_free_str( TmpString );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 StringType SS::NumType2StringType( const NumType& In )
 {
 	StringType Out;
@@ -167,7 +178,7 @@ StringType SS::NumType2StringType( const NumType& In )
 	return Out;
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void SS::StringType2NumType( const StringType& In, NumType& Out )
 {
 	//We are trusting in mpfr to do The Right Thing.
@@ -178,6 +189,7 @@ void SS::StringType2NumType( const StringType& In, NumType& Out )
 	              LangOpts::Instance().RoundingMode );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NumType SS::StringType2NumType( const StringType& In )
 {
 	NumType Out;
@@ -189,57 +201,21 @@ NumType SS::StringType2NumType( const StringType& In )
 const VarType DEFAULT_VARTYPE = VARTYPE_BOOL;
 
 
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- VariableBase::VariableBase
- NOTES: constructors
-*/
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBase::VariableBase( SS_DECLARE_BASE_ARGS )
 : Scope( SS_BASE_ARGS )
 {
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- VariableBase::~VariableBase
- NOTES: Doesn't do anything
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBase::~VariableBase()
 {
 }
 
 
 
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- VariableBase::GetBlockListPtr
- NOTES: Throw an anomaly
-*/
-/*
-BlockListPtr VariableBase::GetBlockListPtr(){
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a VariableBase to a BlockList.");
-	throw ParserAnomaly( tmp, ANOMALY_NOCONVERSION, FILENAME, LINE, FUNC );
-}
-
-const BlockListPtr VariableBase::GetBlockListPtr() const{
-	SS::STRING tmp = TXT("Cannot convert the object \"");
-	tmp += mName;
-	tmp += TXT("\" from a VariableBase to a BlockList.");
-	throw ParserAnomaly( tmp, ANOMALY_NOCONVERSION, FILENAME, LINE, FUNC );
-}
-*/
-
-
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-VariableBase::GetVariableBasePtr
-NOTES: Overloaded to return itself rather than its name as other ScopeObjects do.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::CastToVariableBase(){
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<VariableBase>( ScopeObjectPtr( mpThis ) );
@@ -252,30 +228,19 @@ const VariableBasePtr VariableBase::CastToVariableBase() const{
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- VariableBase::AcceptVisitor
- NOTES: ...
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void VariableBase::AcceptVisitor( ScopeObjectVisitor& V ){
 	V.VisitVariableBase( this );
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- VariableBase::GetVariableType
- NOTES: This is the implementation for non-vars.  It should return the
-		prefered type.  Since non-vars just return their names, the prefered
-		type is a string.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VarType VariableBase::GetVariableType() const{
 	return VARTYPE_STRING;
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-VariableBase::GetListPtr
-NOTES: Converts the variable to a list holding itself.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ListPtr VariableBase::CastToList()
 {
 	AssertCastingAllowed();
@@ -285,6 +250,7 @@ ListPtr VariableBase::CastToList()
 	return pNewList;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const ListPtr VariableBase::CastToList() const
 {
 	AssertCastingAllowed();
@@ -296,41 +262,41 @@ const ListPtr VariableBase::CastToList() const
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- VariableBase::Get____Data
- NOTES: The default implementation.  GetStringData will return its name.
-		Everything else will just return 0/0.0/false
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NumType VariableBase::GetNumData() const{
 	NumType N;
 	return N;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BoolType VariableBase::GetBoolData() const{
 	return false;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 StringType VariableBase::GetStringData() const{
 	//return this->GetFullName();
 	return TXT("");
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NumType& VariableBase::GetNumData( NumType& Out ) const{
 	mpfr_set( Out.get(), GetNumData().get(), LangOpts::Instance().RoundingMode );
 	return Out;
 }
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BoolType& VariableBase::GetBoolData( BoolType& Out ) const{
 	Out = GetBoolData();
 	return Out;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 StringType& VariableBase::GetStringData( StringType& Out ) const{
 	Out = GetStringData();
 	return Out;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 CHAR* VariableBase::GetStringData( CHAR* Buffer, unsigned int BufferSize ) const
 {
 	SS::STRCPY( Buffer, GetStringData().c_str(), BufferSize );
@@ -338,13 +304,7 @@ CHAR* VariableBase::GetStringData( CHAR* Buffer, unsigned int BufferSize ) const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- VariableBase::UndefinedOp
- NOTES: All the errors messages thrown by the undefined operators are 
-		basically the same.  So I just put it under one function.
-
-		Just pass what operator is throwing.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::UndefinedOp( const SS::STRING& Op) const
 {
 	TypeCheckVisitor TypeChecker;
@@ -368,74 +328,88 @@ VariableBasePtr VariableBase::UndefinedOp( const SS::STRING& Op) const
 
 
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator+(const VariableBase&) const{
     return UndefinedOp( TXT("Addition") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator-(const VariableBase&) const{
 	return UndefinedOp( TXT("Subtraction") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator*(const VariableBase&) const{
 	return UndefinedOp( TXT("Multiplication") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator/(const VariableBase&) const{
 	return UndefinedOp( TXT("Division") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator_pow( const VariableBase& ) const{
 	return UndefinedOp( TXT("Exponentation") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator_concat( const VariableBase& ) const{
 	return UndefinedOp( TXT("Concatenation") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator=(const VariableBase&){
 	return UndefinedOp( TXT("Assignment") );
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator==(const VariableBase&) const{
 	return UndefinedOp( TXT("Equal") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator!=(const VariableBase&) const{
 	return UndefinedOp( TXT("Not-Equal") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator>=(const VariableBase&) const{
 	return UndefinedOp( TXT("Greater-Than-Or-Equal") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator<=(const VariableBase&) const{
 	return UndefinedOp( TXT("Less-Than-Or-Equal") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator>(const VariableBase&) const{
 	return UndefinedOp( TXT("Greater-Than") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator<(const VariableBase&) const{
 	return UndefinedOp( TXT("Less-Than") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator&&(const VariableBase&) const{
 	return UndefinedOp( TXT("Logical-And") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::operator||(const VariableBase&) const{
 	return UndefinedOp( TXT("Logical-Or") );
 }
 
 
-//Unary ops
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::op_not() const{
 	return UndefinedOp( TXT("Unary-Not") );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr VariableBase::op_neg() const{
 	return UndefinedOp( TXT("Negation") );
 }
@@ -444,10 +418,7 @@ VariableBasePtr VariableBase::op_neg() const{
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::Variable
- NOTES: 
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const Variable& X )
 	: VariableBase( SS_BASE_ARGS ), 
@@ -459,6 +430,7 @@ Variable::Variable( SS_DECLARE_BASE_ARGS,
 	mpfr_set( mNumPart.get(), X.mNumPart.get(), LangOpts::Instance().RoundingMode );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Variable::Variable( SS_DECLARE_BASE_ARGS )
 : VariableBase(SS_BASE_ARGS),
   mCurrentType( DEFAULT_VARTYPE ),
@@ -468,14 +440,8 @@ Variable::Variable( SS_DECLARE_BASE_ARGS )
  	RegisterPredefinedVars();
  }
 
-Variable::Variable()
-: mCurrentType( DEFAULT_VARTYPE ),
-  mNumPart( LangOpts::Instance().DefaultPrecision ),
-  mBoolPart( false )
-{
-	RegisterPredefinedVars();
-}
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const NumType& X )
 : VariableBase(SS_BASE_ARGS),
@@ -486,6 +452,7 @@ Variable::Variable( SS_DECLARE_BASE_ARGS,
 	RegisterPredefinedVars();
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const StringType& X )
 : VariableBase(SS_BASE_ARGS),
@@ -497,6 +464,7 @@ Variable::Variable( SS_DECLARE_BASE_ARGS,
 	RegisterPredefinedVars();
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const BoolType& X )
 : VariableBase(SS_BASE_ARGS),
@@ -519,10 +487,7 @@ VarType Variable::mTypeConversionTable[VARTYPE_STRING+1][VARTYPE_STRING+1] =
 };  
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Variable::RegisterPredefinedVars
- NOTES: Registers any special vars needed.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Variable::RegisterPredefinedVars()
 {
 	mPrecisionVarCreated = false;
@@ -530,9 +495,7 @@ void Variable::RegisterPredefinedVars()
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Hook to create precision magicvar.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Variable::GetScopeObjectHook( const STRING& Name )
 {
 	if( !mPrecisionVarCreated && Name == LC_Precision ){
@@ -543,10 +506,7 @@ ScopeObjectPtr Variable::GetScopeObjectHook( const STRING& Name )
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::AcceptVisitor
- NOTES: Accepts the ScopeObjectVisitors.  Part of the visitor design pattern.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Variable::AcceptVisitor( ScopeObjectVisitor& V )
 {
 	V.VisitVariable(this);
@@ -554,34 +514,26 @@ void Variable::AcceptVisitor( ScopeObjectVisitor& V )
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- NOTES: Overloaded to return itself rather than create a new variable.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariablePtr Variable::CastToVariable(){
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Variable>( ScopeObjectPtr(mpThis) );
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const VariablePtr Variable::CastToVariable() const{
 	AssertCastingAllowed();
 	return boost::dynamic_pointer_cast<Variable>( ScopeObjectPtr(mpThis) );
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- GetVariableType
- NOTES: Returns the prefered type of the variable.  Inherited from Variable Base.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VarType Variable::GetVariableType() const{
 	return mCurrentType;
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator+
- NOTES: Magical addition operator
-
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator+(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -618,10 +570,7 @@ VariableBasePtr Variable::operator+(const VariableBase& X) const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator-
- NOTES: Magical subtraction operator.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator-(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -657,41 +606,12 @@ VariableBasePtr Variable::operator-(const VariableBase& X) const
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator*
- NOTES: Magically delicious multiplication operator.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator*(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
 
-	//SPECIAL CASE: Strings multiplied by BigNums result in repeated strings.
-	/*
-	if( this->mCurrentType == VARTYPE_NUM && X.CastToVariable()->mCurrentType == VARTYPE_STRING )
-	{
-		StringType TempString;
-		NumType i;
-		for( i = 0; i < this->GetNumData(); i++ ){
-			TempString += X.GetStringData();            
-		}
-
-		return VariableBasePtr(	CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, TempString ) );
-	}
-	else
-	if( this->mCurrentType == VARTYPE_STRING && X.CastToVariable()->mCurrentType == VARTYPE_NUM ) 
-	{
-		StringType TempString;
-		NumType i;
-		for( i = 0; i < X.GetNumData(); i++ ){
-			TempString += this->GetStringData();
-		}   
-
-		return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, TempString ) );
-	}
-	*/
-
-
-	try{
+		try{
 		switch( ContextType )
 		{
 		case VARTYPE_STRING:
@@ -724,10 +644,7 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Variable::operator_pow
- NOTES: Exponent operator
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator_pow( const VariableBase& X ) const
 {
 	VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
@@ -739,9 +656,7 @@ VariableBasePtr Variable::operator_pow( const VariableBase& X ) const
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Concatenation operator
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator_concat( const VariableBase& X ) const
 {
 	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, 
@@ -751,10 +666,7 @@ VariableBasePtr Variable::operator_concat( const VariableBase& X ) const
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator/
- NOTES: ...
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator/(const VariableBase& X) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -788,10 +700,7 @@ VariableBasePtr Variable::operator/(const VariableBase& X) const
 	}
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator=
- NOTES: The assignments operator.  
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator=( const VariableBase& X )
 {
 	//Zero everything first.  Remember that if it is not zeroed it will
@@ -829,42 +738,28 @@ VariableBasePtr Variable::operator=( const VariableBase& X )
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator==
- NOTES: The equality operator.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator==( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
-
-	//SPECIAL CASE: Strings compared with integers, compares the size of the string.
-	/*
-	if( this->mCurrentType == VARTYPE_STRING ||
-		    X.mCurrentType == VARTYPE_NUM )
-	{
-		return Variable( TXT(""), (NumType)(this->GetStringData().length()) == X.GetNumData() );
-	}
-	else if( this->mCurrentType == VARTYPE_NUM &&
-				 X.mCurrentType == VARTYPE_STRING )
-	{
-		return Variable( TXT(""), (NumType)(X.GetStringData().length()) == this->GetNumData() );
-	}
-	*///NEGATIVE. I don't like this idea.
 
 	try{
 		switch( ContextType )
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 				
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() == X.GetStringData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetStringData() == X.GetStringData() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() == X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetBoolData() == X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -880,10 +775,7 @@ VariableBasePtr Variable::operator==( const VariableBase& X ) const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Variable::operator==
-NOTES: The equality operator.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -893,15 +785,18 @@ VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, !mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					!mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 			break;
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() != X.GetStringData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetStringData() != X.GetStringData() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() != X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetBoolData() != X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -917,10 +812,7 @@ VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator>=
- NOTES: blah.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -930,16 +822,18 @@ VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_greaterequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					mpfr_greaterequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >=
-										X.GetStringData().length() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetStringData().length() >= X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() >= X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetBoolData() >= X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -955,10 +849,7 @@ VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator<=
- NOTES: blah, vol 2.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -968,16 +859,18 @@ VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_lessequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					mpfr_lessequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <=
-				X.GetStringData().length() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetStringData().length() <= X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() <= X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetBoolData() <= X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -992,10 +885,7 @@ VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Variable::operator>
-NOTES: blah, 3rd edition
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator>( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -1005,16 +895,18 @@ VariableBasePtr Variable::operator>( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_greater_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					mpfr_greater_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() >
-				X.GetStringData().length() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetStringData().length() > X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() > X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetBoolData() > X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -1028,10 +920,7 @@ VariableBasePtr Variable::operator>( const VariableBase& X ) const
 	}
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Variable::operator<
-NOTES: blah, 4th movement.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator<( const VariableBase& X ) const
 {
 	VarType ContextType = mTypeConversionTable[this->mCurrentType][X.GetVariableType()];
@@ -1041,16 +930,19 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 		{
 		case VARTYPE_NUM:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, mpfr_less_p( GetNumData().get(), X.GetNumData().get() ) ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					mpfr_less_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
 		case VARTYPE_STRING:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData().length() <
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetStringData().length() <
 				X.GetStringData().length() ) );
 		case VARTYPE_BOOL:
 		default:
 			return VariableBasePtr(
-				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() < X.GetBoolData() ) );
+				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
+					this->GetBoolData() < X.GetBoolData() ) );
 			break;
 		}
 	}
@@ -1064,20 +956,14 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 	}	
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator&&
- NOTES: Logical AND operator
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator&&( const VariableBase& X ) const
 {
 	return VariableBasePtr( 
 		CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::operator||
- NOTES: Logical OR operator
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::operator||( const VariableBase& X ) const
 {
 	return VariableBasePtr( 
@@ -1086,19 +972,13 @@ VariableBasePtr Variable::operator||( const VariableBase& X ) const
 	
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::op_not
- NOTES: Unary Logical-NOT operator
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::op_not() const
 {
 	return VariableBasePtr( CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, !(this->GetBoolData()) ) );
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::op_neg
- NOTES: Unary negative operator
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr Variable::op_neg() const
 {
 	switch( mCurrentType )
@@ -1120,10 +1000,7 @@ VariableBasePtr Variable::op_neg() const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::ForceConversion( VarType )
- NOTES: 
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Variable::ForceConversion( VarType Type )
 {
 	//I'm not going to bother checking if it already is of that type.
@@ -1148,10 +1025,7 @@ void Variable::ForceConversion( VarType Type )
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::GetNumData
- NOTES: Returns a the value of the Variable in BigNum context
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NumType Variable::GetNumData() const
 {
 	if( ! mpfr_nan_p(mNumPart.get()) ) return mNumPart;
@@ -1170,10 +1044,7 @@ NumType Variable::GetNumData() const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::GetBoolData
- NOTES: Return the value of the Variable in bool context.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BoolType Variable::GetBoolData() const
 {
 	if( mBoolPart != false ) return mBoolPart;
@@ -1193,10 +1064,7 @@ BoolType Variable::GetBoolData() const
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Variable::GetStringData
- NOTES: Return the value of the Variable in string context.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 StringType Variable::GetStringData() const
 {
 	if( !mStringPart.empty() ) return mStringPart;
@@ -1214,10 +1082,7 @@ StringType Variable::GetStringData() const
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Variable::GetActualNumData
- NOTES: Returns a reference the actual data.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NumType& Variable::GetActualNumData()
 {
 	GetNumData(); //To make sure it has been converted.
@@ -1225,20 +1090,14 @@ NumType& Variable::GetActualNumData()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Variable::GetActualBoolData
- NOTES: Returns a reference to the bool data.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BoolType& Variable::GetActualBoolData()
 {
 	GetBoolData();
 	return mBoolPart;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Variable::GetActualStringData
- NOTES: Returns a reference to the string data.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 StringType& Variable::GetActualStringData()
 {
 	GetStringData();

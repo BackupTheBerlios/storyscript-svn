@@ -36,14 +36,14 @@ private:
  NOTES: Behavior:
  		Number of elements < 2 - Does Nothing, return null
  		Number of elements > 2 - Interprets first element as a list,
- 								 then removes the first occourance of
+ 								 then removes the first occurrence of
  								 all the other arguments from the list.
 */
 //SS_DECLARE_OPERATOR(Remove);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: Behavior: Same as Remove, but instead of removing just the first
- 				  occourance, it removes every occourance
+ 				  occurrence, it removes every occurrence
 */
 //SS_DECLARE_OPERATOR(RemoveAll);
 
@@ -62,7 +62,7 @@ private:
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: This is the default sorting function.  I'm using quicksort for this.
  		Please bear with me as this is (believe it or not) the first time
- 		I've ever written a sorting algorithim.
+ 		I've ever written a sorting algorithm.
 */
 class Sort : public Operator
 {

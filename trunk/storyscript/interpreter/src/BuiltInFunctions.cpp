@@ -34,7 +34,7 @@ ReturnOperator::ReturnOperator( Interpreter& I )
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 PrintOperator::PrintOperator( Interpreter& I )
-: Operator( TXT("print"), true ), mI(I)
+: Operator( LC_Print, true ), mI(I)
 {}
 
 
@@ -67,7 +67,7 @@ VariableBasePtr ReturnOperator::Operate( VariableBasePtr X )
 {
 	mI.GetCurrentStaticScope()->CastToBlock()->GetOutString() = 
 			X->GetStringData();
-	mI.Stop();
+	mI.EndBlock();
 	return X;
 }
 

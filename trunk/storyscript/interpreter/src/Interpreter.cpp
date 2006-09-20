@@ -1,10 +1,9 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: Contains definitions for the Interprer class which handles the bulk
-	of all the parsing.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
 #include "Interpreter.hpp"
@@ -15,7 +14,7 @@ NOTES: Contains definitions for the Interprer class which handles the bulk
 #include "Character.hpp"
 #include "List.hpp"
 #include "Variable.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 #include "DLLExport.hpp"
 #include "LanguageConstants.hpp"
 #include "CreationFuncs.hpp"
@@ -50,23 +49,7 @@ boost::shared_ptr<Interpreter> Interpreter::mpInstance;
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~
-// Interpreter::Instance
-// NOTES: Retrieves the single instance of Interpreter.
-//
-/*
-Interpreter& Interpreter::Instance(){
-	if( !mpInstance ) mpInstance.reset( new Interpreter );
-	
-	return *(mpInstance.get());	
-}
-*/
-
-
-//~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Interpreter::Interpreter
-// NOTES: ctor
-//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Interpreter::Interpreter()
 {
 	mpGlobalScope = CreateGeneric<Scope>();
@@ -75,30 +58,19 @@ Interpreter::Interpreter()
 	mStop = false;
 }
 
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Interpreter::~Interpreter
-NOTES: destructor
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Interpreter::~Interpreter()
 {
 }
 
 
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Interpreter::SetInterface
-NOTES: Sets the interface.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::SetInterface( Interface& SomeInterface )
 {
 	mpInterface = &SomeInterface;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::GetInterface
- NOTES: Retrieve a reference the the interface.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Interface& Interpreter::GetInterface()
 {
 	if( !mpInterface ){
@@ -110,11 +82,7 @@ Interface& Interpreter::GetInterface()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::RegisterSpecials
- NOTES: Registers all the unique special variables that only have one instance
-		which is in the global scope
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::RegisterSpecials()
 {
 	//The last two values are just bullshit.
@@ -142,38 +110,28 @@ void Interpreter::RegisterSpecials()
 	mpGlobalScope->Register( CreateGeneric<ReturnOperator>  ( *this ) );
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::GetCurrentScope
- NOTES: Returns a pointer the current scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopePtr Interpreter::GetCurrentScope()
 {
 	return mpCurrentScope;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns a pointer the current static scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopePtr Interpreter::GetCurrentStaticScope()
 {
 	return mpCurrentStaticScope;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns a pointer to the global scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopePtr Interpreter::GetGlobalScope()
 {
 	return mpGlobalScope;
 }
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::GetCurrentPos
- NOTES: Returns a Bookmark to the current position.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Bookmark Interpreter::GetCurrentPos()
 {
-	AssertFileOpen();
+	AssertSourceOpen();
 	Bookmark BM( mpCurrentSource->GetName(),
 				 mpCurrentSource->GetPos(),
 				 mpCurrentSource->GetLineNumber(),
@@ -183,20 +141,17 @@ Bookmark Interpreter::GetCurrentPos()
 	return BM;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::SetPos( Bookmark& NewPos )
 {
 	GetSource( NewPos );
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::GetFirstBlock
- NOTES: Returns the first block.  Often used by the Interface if no starting
-		block is set.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BlockPtr Interpreter::GetFirstBlock()
 {
-	AssertFileOpen();
+	AssertSourceOpen();
 
     if( mBlockOrder.size() > 0 ) return mBlockOrder[0];
 	else
@@ -206,28 +161,19 @@ BlockPtr Interpreter::GetFirstBlock()
 }
 
 
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::Verbose
- NOTES: true turns on verbose output.  False turns it off.  
-		No value just toggles back and forth.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::SetVerbose( bool flag /*=true*/ )
 {
 	mVerboseOutput = flag;
 }
 
-//And also
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool Interpreter::IsVerbose() const{
 	return mVerboseOutput;
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Sets the source to some other ReaderSource (ie. not a file).
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::SetSource( ReaderSource& Source )
 {
 	if( mSources.find( Source.GetName() ) != mSources.end() ){
@@ -255,11 +201,7 @@ void Interpreter::SetSource( ReaderSource& Source )
 }
 
 
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::LoadLevel
- NOTES: This is only for loading new files.  USE GetFile INSTEAD!!
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::LoadFile( const STRING& FileName )
 {
 	ReaderSourceFilePtr pNewFile( new ReaderSourceFile );
@@ -287,10 +229,7 @@ void Interpreter::LoadFile( const STRING& FileName )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::GetSource
- NOTES:  Call this whenever you need to go to a bookmark.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ReaderSource& Interpreter::GetSource( const Bookmark& Pos )
 {
 	if( Pos.IsVoid() ){
@@ -327,11 +266,8 @@ ReaderSource& Interpreter::GetSource( const Bookmark& Pos )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::Open
- NOTES: Closes the previous file and opens up a new one.  
-*/
-void Interpreter::Open( const SS::STRING& FileName )
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+void Interpreter::OpenFile( const SS::STRING& FileName )
 {
 	AssertAttachedInterface();
 	//Keep an eye on the following line.  Close wipes the global scope,
@@ -341,10 +277,7 @@ void Interpreter::Open( const SS::STRING& FileName )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::Close
- NOTES: Closes all open files.  Purges all registered variables.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::Close()
 {
 	mBlockOrder.clear();
@@ -356,14 +289,7 @@ void Interpreter::Close()
 
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::Parse
- NOTES: Parses the currently opened  (usually a header) to find characters and
-	    variables to add to the scope.  It ignores everything else.
-
-		First two versions just parses the block specified.  The third version
-		Parses everything (not including blocks).
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::Parse( const STRING& BlockName )
 {
 	//Attempt to find the block
@@ -376,8 +302,7 @@ void Interpreter::Parse( const STRING& BlockName )
 }
 
 
-
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 						 VariableBasePtr In /*= VariableBasePtr()*/ )
 {
@@ -495,7 +420,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 
 
 
-//REWRITE
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 						 bool OneStatement /*= false*/,
 						 bool IgnoreStatic /*= true*/ )
@@ -703,13 +628,13 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 	}	
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::ThrowUnexpectedEOF() const
 {
 	ThrowParserAnomaly( TXT("Unexpected end of file."), ANOMALY_EOF );
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySource )
 {
 	const Word* pTempWord;
@@ -753,15 +678,10 @@ Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySourc
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- interpreter::ParseIf
- NOTES: Parses if's.  Pass in the condition and a bookmark to the
-		beginning of the body, and it will do the rest.
-
-		It returns true if the body gets executed, and false otherwise.
-		(this is for the benifit of else)
-*/
-bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bool OneStatement /*= false*/ )
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+bool Interpreter::ParseIf( const Expression& Condition,
+                           const Bookmark& Body,
+                           bool OneStatement /*= false*/ )
 {
 	bool WasParsed = false;
 
@@ -796,12 +716,10 @@ bool Interpreter::ParseIf( const Expression& Condition, const Bookmark& Body, bo
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::ParseWhile
- NOTES: Parses while statements.  Read the notes for Interpreter::ParseIf, if
-		you still have questions.
-*/
-bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body, bool OneStatement /*= false*/ )
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+bool Interpreter::ParseWhile( const Expression& Condition,
+                              const Bookmark& Body,
+                              bool OneStatement /*= false*/ )
 {
 	bool WasParsed = false;
 
@@ -838,90 +756,7 @@ bool Interpreter::ParseWhile( const Expression& Condition, const Bookmark& Body,
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::BreakOffFirstID
- NOTES: In a ID such as "Charlie: Hello", it will remove the "Charlie: "
-		and return "Charlie".  It does nothing if the word is not an ID at all.
-*/
-/*
-Word Interpreter::BreakOffFirstID( Word& W )
-{
-	Word TempWord;
-
-	if( W.Type != WORDTYPE_IDENTIFIER )
-	{
-		TempWord.Type = WORDTYPE_UNKNOWN;
-		return TempWord;
-	}
-
-	TempWord.Type = WORDTYPE_IDENTIFIER;
-
-	while( !W.String.empty() && (IsAlpha(W.String[0]) ||
-				     W.String[0] == '_' ||
-				     IsNumber(W.String[0])) )
-	{
-		TempWord.String += W.String[0];
-		W.String.erase(0,1);
-	}
-
-	//remove the excess fat
-	while( !W.String.empty() && !(IsAlpha(W.String[0]) ||
-				      W.String[0] == '_' ||
-				      IsNumber(W.String[0])) )
-	{
-		W.String.erase(0,1);
-	}
-
-	return TempWord;
-}
-*/
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::BreakOffLastID
- NOTES: See "BreakOffFirstID" this its opposite.
-*/
-/*
-Word Interpreter::BreakOffLastID( Word& W )
-{
-	Word TempWord;
-
-	if( W.Type != WORDTYPE_IDENTIFIER )
-	{
-		TempWord.Type = WORDTYPE_UNKNOWN;
-		return TempWord;
-	}
-
-	TempWord.Type = WORDTYPE_IDENTIFIER;
-
-	while( !W.String.empty() && 
-		   (IsAlpha( W.String[W.String.length()-1] ) ||
-		    W.String[W.String.length()-1] == '_' ||
-		    IsNumber( W.String[W.String.length()-1] )) )
-	{
-		TempWord.String.insert(0, 1, W.String[W.String.length()-1]);
-		W.String.erase( W.String.length()-1, 1 );
-	}
-
-	//remove the excess fat
-	while( !W.String.empty() &&
-		   !(IsAlpha( W.String[W.String.length()-1] ) ||
-		     W.String[W.String.length()-1] == '_' ||
-		     IsNumber( W.String[W.String.length()-1] )) )
-	{
-		W.String.erase( W.String.length()-1, 1 );
-	}
-
-	return TempWord;
-}
-*/
-
-
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- NOTES: This is the universal function to register new ScopeObjects.  This is a more
-        intelligent solution than just calling mpCurrentScope.Register.  This will
-		figure out where the object really belongs.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const CompoundString& S,
 								   bool Static /*= false*/, bool Const /*= false*/ )
  {
@@ -980,17 +815,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
 }
 
 
-/*~~~~~~~FUNCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Interpreter::GetScopeObject
- NOTES: Sister function to RegisterScopeObject.  This will figure out the correct
-        scope to look in, and find the object you are looking for.
-        
-        WARNING: Don't confuse this with Scope::GetScopeObject which only
-        searches that scope and any scopes imported.
-        
-        This one searches in all the correct places taking into account the current
-        scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopeObjectPtr Interpreter::GetScopeObject( const CompoundString& Name )
 {
 	//Try the local scope first
@@ -1045,65 +870,57 @@ ScopeObjectPtr Interpreter::GetScopeObject( const CompoundString& Name )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: These are all shortcuts for the above.  Mainly just for used by
- 		external software.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+VariableBasePtr Interpreter::GetVariableBase( const STRING& Name ){
+	return GetScopeObject( MakeCompoundID( Name ) )->CastToVariableBase();
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ScopePtr Interpreter::GetScope( const STRING& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToScope();
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariablePtr Interpreter::GetVariable( const STRING& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToVariable();
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 BlockPtr Interpreter::GetBlock( const STRING& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToBlock();
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::TackOnScriptInfo
- NOTES: Adds information about the script currently being parsed
-		to the ParserAnomaly.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::TackOnScriptInfo( ParserAnomaly& E )
 {
-	AssertFileOpen();
+	AssertSourceOpen();
 
 	E.ScriptFile = mpCurrentSource->GetName();
 	E.ScriptLine = mpCurrentSource->GetLineNumber();
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::AssertFileOpen
- NOTES: Tests if the file is open and throws if it is not.
-*/
-void Interpreter::AssertFileOpen()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+void Interpreter::AssertSourceOpen()
 {
 	if( !mpCurrentSource ){
-		ThrowParserAnomaly( TXT("Cannot perform an operation due to no file being open. "
-								"This is probably due to a bug in the interpreter."), ANOMALY_PANIC );
+		ThrowParserAnomaly( 
+			TXT("No reader source has been loaded! "
+			"This is probably due to a bug in the interpreter."), ANOMALY_PANIC );
 	}
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: This is called whenever we need to ensure that a valid interface is
- 		attached.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::AssertAttachedInterface()
 {
 	if( !mpInterface ){
-		ThrowParserAnomaly( TXT("No interface attached to Interpreter!"), ANOMALY_PANIC );
+		ThrowParserAnomaly( 
+			TXT("No interface attached to Interpreter!"), ANOMALY_PANIC );
 	}
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- Interpreter::FastForwardToNextStatement
- NOTES: Simply skips over all the next words in the current file up
-		to (and including) the next terminal (;) it finds and stops.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::FastForwardToNextStatement( ReaderSource& MySource )
 {
 	const Word* pTempWord;
@@ -1137,10 +954,7 @@ void Interpreter::FastForwardToNextStatement( ReaderSource& MySource )
 	}
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Give it the name of a scope, and it will import it into the current
- 		scope.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::ImportIntoCurrentScope( const STRING& Name )
 {
 	if( mVerboseOutput ){
@@ -1151,10 +965,7 @@ void Interpreter::ImportIntoCurrentScope( const STRING& Name )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Give it the name of the file and it will import that file into
- 		the current scope, loading and parsing the file whenever necessary.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
 {
 	if( mVerboseOutput ){
@@ -1174,11 +985,8 @@ void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
 	mpCurrentScope->Import( pTmpObj );
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Tells the interpreter to return from the block when it finishes the
- 		expression its on.
-*/
-void Interpreter::Stop()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+void Interpreter::EndBlock()
 {
 	mStop = true;	
 }

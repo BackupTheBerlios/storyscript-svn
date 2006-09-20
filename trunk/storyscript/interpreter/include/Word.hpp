@@ -24,7 +24,7 @@ namespace SS{
 /** 
  * \brief A class for holding a number of a strings.
  * 
- * These are used for comples identifiers (foo:bar), to hold the individual
+ * These are used for complex identifiers (foo:bar), to hold the individual
  * identifiers.
  */
 typedef std::vector<SS::STRING> CompoundString;
@@ -60,7 +60,7 @@ public:
 	/**
 		\brief Set the compound string from an identifier string.
 		
-		Treats the string as an identifer and divides it into individual parts
+		Treats the string as an identifier and divides it into individual parts
 		before assigning it to the compound string.
 		
 		\param String The string being assigned.
@@ -119,8 +119,8 @@ SS::CompoundString MakeCompoundString( const SS::STRING& S );
 /**
 	\brief Make a CompoundString out of a simple string containing an ID.
 	
-	Breaks the identifier string into individual indentifiers
-	in the seperate elements of the CompoundString.
+	Breaks the identifier string into individual identifiers
+	in the separate elements of the CompoundString.
 	
 	\param S The string to be converted.
 */

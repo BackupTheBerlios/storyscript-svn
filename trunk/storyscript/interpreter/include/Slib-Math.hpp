@@ -11,7 +11,7 @@ NOTES: S-Lib functions/mvars that are used for more advanced math operations.
 
 #include "Scope.hpp"
 #include "Operator.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 
 namespace SS{
 namespace SLib{
@@ -106,7 +106,7 @@ SS_DECLARE_OPERATOR(min);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
- NOTES: Rounds to the nearest integer.  Rounds halfways away from 0.
+ NOTES: Rounds to the nearest integer.  Rounds .5's away from 0.
 */
 SS_DECLARE_OPERATOR(Int);
 
@@ -123,7 +123,7 @@ SS_DECLARE_OPERATOR(Floor);
  NOTES: Abstract Base Class that provides the basis for mathematical constant
  		magic vars.
 */
-class MathConst : public SpecialVarBase
+class MathConst : public MagicVarBase
 {
 public:
 	MathConst( SS_DECLARE_DEFAULTED_BASE_ARGS );
@@ -156,7 +156,7 @@ void Generate() const;\
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
  NOTES: A special version of precision made for MathConst.
 */
-class MathConstPrec : public SpecialVarBase
+class MathConstPrec : public MagicVarBase
 {
 	public:
 		MathConstPrec( const SS::STRING& Name, bool Const, MathConst& Parent );

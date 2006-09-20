@@ -49,8 +49,8 @@ public:
 	virtual STRING GetName() const { return STRING(); }
 
 private:
-	//This _should_ include newline/formfeed chars,
-	//and return an empty string to idicate EOF
+	//This _should_ include newline/form-feed chars,
+	//and return an empty string to indicate EOF
 	virtual STRING GetNextLine() = 0;
 	
 	bool SkipWhitespace();

@@ -42,17 +42,17 @@ enum AnomalyCode{
 	ANOMALY_BADDECLARATION, ///< Malformed syntax while declaring an object.
 	ANOMALY_UNKNOWNOP, ///< An undefined operator was used.
 	ANOMALY_IDNOTFOUND, ///< Referenced an id that doesn't exist.
-	ANOMALY_ALREADYEXISTS, ///< Tried to register an object with an name thats already in use
+	ANOMALY_ALREADYEXISTS, ///< Tried to register an object with an name that's already in use
 	ANOMALY_NOTASCOPE, ///< Tried to register a variable to a non-scope object
 	ANOMALY_NOCONVERSION, ///< Tried to do an operation involving to variable that can't be converted to the same type
 	ANOMALY_BADSTRINGOP, ///< Tried to use -, *, / or something with strings
 	ANOMALY_NOINTERFACE, ///< The Interpreter has no interface set.
 	ANOMALY_NOLISTELEMENT, ///< Tried to remove or access a list element that doesn't exist.
-	ANOMALY_UNDEFINEDOP, ///< The operator isn't defined for that type.  Like tring to divide a list.
+	ANOMALY_UNDEFINEDOP, ///< The operator isn't defined for that type.  Like trying to divide a list.
 	ANOMALY_CONSTASSIGN, ///< Someone tried to assign to constant
 	ANOMALY_LISTTOOBIG,
-	ANOMALY_BADPRECISION, //< Tried to set the precision of a variabl too high or too low.
-	ANOMALY_NOBLOCKS, //< No blocks were found in the file.  The interpeter doesn't know what to do.
+	ANOMALY_BADPRECISION, //< Tried to set the precision of a variable too high or too low.
+	ANOMALY_NOBLOCKS, //< No blocks were found in the file.  The interpreter doesn't know what to do.
 	ANOMALY_NOOPERATOR //< Cannot find any operator in the expression.
 
 };
@@ -61,7 +61,7 @@ enum AnomalyCode{
 /**
 	\brief A shorthand macro for throwing ParserAnomalys.
 	
-	This is the prefered way the throw the ParserAnomaly class, as it takes care of
+	This is the preferred way the throw the ParserAnomaly class, as it takes care of
 	setting the FILE, LINE, and FUNC, for you, as well as being easier to read.
 	
 	\param Desc A description of the error.
@@ -94,7 +94,7 @@ public:
 		\param Desc A description of the error.
 		\param Code The error code.
 		\param SourceFile Name of file where the error occoured.
-		\param SourceLine Line number where the error occoured.
+		\param SourceLine Line number where the error occurred.
 	*/
 	ParserAnomaly( const SS::STRING& Desc,
 				   AnomalyCode Code,
@@ -105,9 +105,9 @@ public:
 		Constructor	
 		\param Desc A description of the error.
 		\param Code The error code.
-		\param SourceFile Name of file where the error occoured.
-		\param SourceLine Line number where the error occoured.
-		\param FuncName Name of the function where the error occoured.
+		\param SourceFile Name of file where the error occurred.
+		\param SourceLine Line number where the error occurred.
+		\param FuncName Name of the function where the error occurred.
 	*/
 	ParserAnomaly( const SS::STRING& Desc,
 				   AnomalyCode Code,
@@ -119,11 +119,11 @@ public:
 		Constructor	
 		\param Desc A description of the error.
 		\param Code The error code.
-		\param SourceFile Name of file where the error occoured.
-		\param SourceLine Line number where the error occoured.
-		\param FuncName Name of the function where the error occoured.
-		\param ScriptFile Name of the storyscript file where the error occoured.
-		\param ScriptLine Line in the storyscript file where the error occoured.
+		\param SourceFile Name of file where the error occurred.
+		\param SourceLine Line number where the error occurred.
+		\param FuncName Name of the function where the error occurred.
+		\param ScriptFile Name of the storyscript file where the error occurred.
+		\param ScriptLine Line in the storyscript file where the error occurred.
 	*/
 	ParserAnomaly( const SS::STRING& Desc,
 				   AnomalyCode Code,
@@ -152,16 +152,16 @@ public:
 	/// The source file in which the exception occoured.
 	SS::STRING SourceFile;
 	
-	/// The function in which the exception occoured.
+	/// The function in which the exception occurred.
 	SS::STRING SourceFunction;
 	
-	/// The line in the the source file in which the exception occoured.
+	/// The line in the the source file in which the exception occurred.
 	unsigned int SourceLine;
 	
-	/// The storyscript file in which the error occoured.
+	/// The story script file in which the error occurred.
 	SS::STRING ScriptFile;
 	
-	/// The line in the storyscript file in which the error occoured.
+	/// The line in the storyscript file in which the error occurred.
 	unsigned int ScriptLine;
 };
 

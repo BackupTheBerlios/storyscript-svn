@@ -12,7 +12,7 @@ NOTES: The base Scope class.
 #include "Types.hpp"
 #include "HelperFuncs.hpp"
 #include "LanguageConstants.hpp"
-#include "SpecialVars.hpp"
+#include "MagicVars.hpp"
 
 using namespace SS;
 

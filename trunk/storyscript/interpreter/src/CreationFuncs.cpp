@@ -1,18 +1,15 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: Contains functions for safely creating derivatives of ScopeObject.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
 #include "CreationFuncs.hpp"
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Creation of generic objects that derive from ScopeObject.
-*/
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateBasic()
 {
@@ -22,7 +19,7 @@ boost::shared_ptr<T> SS::CreateBasic()
 	return pNewObj;
 }
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateGeneric( Interpreter& I )
 {
@@ -32,6 +29,7 @@ boost::shared_ptr<T> SS::CreateGeneric( Interpreter& I )
 	return pNewObj;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateGeneric( SS_DECLARE_BASE_ARGS )
 {
@@ -43,10 +41,7 @@ boost::shared_ptr<T> SS::CreateGeneric( SS_DECLARE_BASE_ARGS )
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Creation of objects that are initialized with the same interface as
- 		Block.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateBlock(  SS_DECLARE_BASE_ARGS,
 									Interpreter& I,
@@ -60,9 +55,7 @@ boost::shared_ptr<T> SS::CreateBlock(  SS_DECLARE_BASE_ARGS,
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Creation of variables and similar objects.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const Variable& Var )
 {
@@ -72,6 +65,7 @@ boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const Variable& V
 	return pNewVar;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T  >
 boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const NumType& Num )
 {
@@ -81,6 +75,7 @@ boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const NumType& Nu
 	return pNewVar;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const StringType& String )
 {
@@ -90,6 +85,7 @@ boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const StringType&
 	return pNewVar;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 template< typename T >
 boost::shared_ptr<T> SS::CreateVariable( SS_DECLARE_BASE_ARGS, const BoolType& Boolean )
 {

@@ -107,9 +107,9 @@ private:
 	mutable mpfr_t N;
 };
 
-typedef mpfr_t_wrap NumType; ///< Internal respresentation of storyscript's number type.
-typedef bool   BoolType; ///< Internal respresentation of storyscript's boolean type.
-typedef SS::STRING StringType; ///< Internal respresentation of storyscript's string type.
+typedef mpfr_t_wrap NumType; ///< Internal representation of storyscript's number type.
+typedef bool   BoolType; ///< Internal representation of storyscript's boolean type.
+typedef SS::STRING StringType; ///< Internal representation of story script's string type.
 
 typedef size_t BlockIndex;
 
@@ -168,7 +168,7 @@ enum ScopeObjectType
 };
 
 /**
-	Internal respresentation of storyscript lists.
+	Internal representation of storyscript lists.
 */
 #if defined(SS_USE_VECTOR_LISTS)
 typedef std::vector<VariableBasePtr> ListType;

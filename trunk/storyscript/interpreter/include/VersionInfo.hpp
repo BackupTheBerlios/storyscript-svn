@@ -4,13 +4,13 @@ Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
 This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
 
 NOTES: Just some quick defines for keeping track of the version.
-	My versioning system changes every few weeks it seems, but heres
+	My version system changes every few weeks it seems, but here's
 	what I use now:
 	
 	SSI_VERSION denotes the major revision.  This is incremented when
 	I have made significant modifications to the language that seem to
 	be stable.  I also give each major version a nickname.  For version
-	0 it is "Chernoby".  Don't ask me why.
+	0 it is "Chernobyl".  Don't ask me why.
 	
 	SSI_PLATFORM should say windows or linux (posix).
 	

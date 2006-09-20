@@ -8,7 +8,7 @@ directory named "license".
 
 /**
 	\file BuiltInFunctions.hpp
-	\breif Special functions that must be aware of Interpreter.  
+	\brief Special functions that must be aware of Interpreter.  
 */
 
 

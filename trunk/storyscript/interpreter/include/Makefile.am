@@ -15,6 +15,7 @@ Interpreter.hpp \
 LanguageConstants.hpp \
 List.hpp \
 Macros.hpp \
+MagicVars.hpp \
 Operator.hpp \
 ParserAnomaly.hpp \
 ReaderSource.hpp \
@@ -27,7 +28,6 @@ Slib-Common.hpp \
 Slib-List.hpp \
 Slib-Math.hpp \
 Slib-Time.hpp \
-SpecialVars.hpp \
 StoryScript.hpp \
 Types.hpp \
 Unicode.hpp \
