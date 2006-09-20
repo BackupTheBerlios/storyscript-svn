@@ -202,7 +202,7 @@ void Interpreter::SetSource( ReaderSource& Source )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Interpreter::LoadFile( const STRING& FileName )
+void Interpreter::LoadFile( const String& FileName )
 {
 	ReaderSourceFilePtr pNewFile( new ReaderSourceFile );
 
@@ -267,7 +267,7 @@ ReaderSource& Interpreter::GetSource( const Bookmark& Pos )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Interpreter::OpenFile( const SS::STRING& FileName )
+void Interpreter::OpenFile( const SS::String& FileName )
 {
 	AssertAttachedInterface();
 	//Keep an eye on the following line.  Close wipes the global scope,
@@ -290,7 +290,7 @@ void Interpreter::Close()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Interpreter::Parse( const STRING& BlockName )
+void Interpreter::Parse( const String& BlockName )
 {
 	//Attempt to find the block
 	ScopeObjectPtr pBlockHopeful = GetScopeObject( MakeCompoundID( BlockName ) );
@@ -309,10 +309,10 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	try{
 	if( mVerboseOutput )
 	{
-		STRING tmp = TXT("Trying to parse block \"");
+		String tmp = TXT("Trying to parse block \"");
 		tmp += pBlock->GetFullName();
 		tmp += TXT("\" at ");
-		tmp += boost::lexical_cast<STRING>(pBlock->GetFilePosition().Position);
+		tmp += boost::lexical_cast<String>(pBlock->GetFilePosition().Position);
 		tmp += TXT("\n");
 		mpInterface->LogMessage( tmp );
 	}
@@ -337,7 +337,7 @@ void Interpreter::Parse( BlockPtr pBlock, bool SayBlock /*=true*/,
 	//scope, which all non-statics get created on
 	ScopePtr pInstance = CreateGeneric<Scope>();
 	ListPtr InInstance = CreateGeneric<List>( LC_Input, false );
-	VariablePtr OutInstance = CreateVariable<Variable>( LC_Output, false, STRING() );
+	VariablePtr OutInstance = CreateVariable<Variable>( LC_Output, false, String() );
 	if( In ) *InInstance = *In;
 	pInstance->Register( InInstance );
 	pInstance->Register( OutInstance );
@@ -564,17 +564,17 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
  		//Block declarations
  		if( pTempWord->Type == WORDTYPE_IDENTIFIER )
  		{
- 			CompoundString Id = pTempWord->String;
+ 			CompoundString Id = pTempWord->Str;
  			
  			pTempWord = &MySource.GetNextWord();
  			if( pTempWord->Extra == EXTRA_BRACKET_Left )
  			{
  				pTempWord = &MySource.GetNextWord();
-				if( pTempWord->Type == WORDTYPE_DOCSTRING )
+				if( pTempWord->Type == WORDTYPE_DOCString )
 				{
 					ScopeObjectPtr pNewBlock =
 						MakeScopeObject( SCOPEOBJ_BLOCK, Id );
-					pNewBlock->CastToScope()->GetDocString() = pTempWord->String[0];		
+					pNewBlock->CastToScope()->GetDocString() = pTempWord->Str[0];		
 				}
 				else
 				{
@@ -583,7 +583,7 @@ void Interpreter::Parse( Bookmark Pos /*Bookmark()*/,
 				}
 				
 				if( mVerboseOutput ){
-					mpInterface->LogMessage( STRING(TXT("Registered new block: \'")) + CollapseCompoundString(Id) + STRING(TXT("\'.\n")) );
+					mpInterface->LogMessage( String(TXT("Registered new block: \'")) + CollapseCompoundString(Id) + String(TXT("\'.\n")) );
 				}
 				
 				//Now we have to skip to the end }
@@ -655,7 +655,7 @@ Interpreter::ExpressionPtr Interpreter::GetNextExpression( ReaderSource& MySourc
 		
 		if( pTempWord->Type == WORDTYPE_IDENTIFIER ||
 			pTempWord->Type == WORDTYPE_FLOATLITERAL ||
-			pTempWord->Type == WORDTYPE_STRINGLITERAL ||
+			pTempWord->Type == WORDTYPE_StringLITERAL ||
 			pTempWord->Type == WORDTYPE_BOOLLITERAL ||
 			pTempWord->Type == WORDTYPE_EMPTYLISTLITERAL ||
 			pTempWord->Type == WORDTYPE_BINARYOPERATOR ||
@@ -762,7 +762,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
  {
 	ScopeObjectPtr pNewObj;
 
-	const STRING& Name = S[S.size()-1];
+	const String& Name = S[S.size()-1];
 	CompoundString ScopeName( S.begin(), S.end() - 1 );
 
 	switch( Type )
@@ -778,7 +778,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
 	case SCOPEOBJ_VARIABLE:
 		pNewObj = CreateGeneric<Variable>( Name, Const );
 		break;
-	case SCOPEOBJ_CHARACTER:
+	case SCOPEOBJ_CharACTER:
 		pNewObj = CreateGeneric<Character>( Name, Const );
 		break;
 	case SCOPEOBJ_SCOPE:
@@ -788,7 +788,7 @@ ScopeObjectPtr Interpreter::MakeScopeObject( ScopeObjectType Type, const Compoun
 		pNewObj = CreateGeneric<List>( Name, Const );
 		break;
 	default:
-		SS::STRING tmp = TXT("Tried to register an object with an unknown type named: \'");
+		SS::String tmp = TXT("Tried to register an object with an unknown type named: \'");
 		tmp += CollapseCompoundString(S);
 		tmp += TXT("\'.");
 		ThrowParserAnomaly( tmp, ANOMALY_UNKNOWNTYPE );
@@ -856,14 +856,14 @@ ScopeObjectPtr Interpreter::GetScopeObject( const CompoundString& Name )
 	//Last chance!  Check the current file scope.  
 	//This is already checked if mpCurrentScope is a child of the current file,
 	//but not if it mpCurrentScope belongs to another scope that was imported.
-	STRING ScopeName( MakeScopeNameFromFileName( mpCurrentSource->GetName() ) );
+	String ScopeName( MakeScopeNameFromFileName( mpCurrentSource->GetName() ) );
 	
 	pObject = mpGlobalScope->GetScopeObject( MakeCompoundID( ScopeName ) )->CastToScope()->GetScopeObject_NoThrow( Name );
 	if( pObject ) return pObject;
 
 
 	//Nothing
-	STRING tmp = TXT("Cannot find an indentifier by the name \'");
+	String tmp = TXT("Cannot find an indentifier by the name \'");
 	tmp += CollapseCompoundString( Name );
 	tmp += TXT("\'.  Check your spelling.");
 	ThrowParserAnomaly( tmp, ANOMALY_IDNOTFOUND );
@@ -871,22 +871,22 @@ ScopeObjectPtr Interpreter::GetScopeObject( const CompoundString& Name )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-VariableBasePtr Interpreter::GetVariableBase( const STRING& Name ){
+VariableBasePtr Interpreter::GetVariableBase( const String& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToVariableBase();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopePtr Interpreter::GetScope( const STRING& Name ){
+ScopePtr Interpreter::GetScope( const String& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToScope();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-VariablePtr Interpreter::GetVariable( const STRING& Name ){
+VariablePtr Interpreter::GetVariable( const String& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToVariable();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-BlockPtr Interpreter::GetBlock( const STRING& Name ){
+BlockPtr Interpreter::GetBlock( const String& Name ){
 	return GetScopeObject( MakeCompoundID( Name ) )->CastToBlock();
 }
 
@@ -955,10 +955,10 @@ void Interpreter::FastForwardToNextStatement( ReaderSource& MySource )
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Interpreter::ImportIntoCurrentScope( const STRING& Name )
+void Interpreter::ImportIntoCurrentScope( const String& Name )
 {
 	if( mVerboseOutput ){
-		mpInterface->LogMessage( STRING(TXT("Importing \'")) + Name + STRING(TXT("\'.\n")) );
+		mpInterface->LogMessage( String(TXT("Importing \'")) + Name + String(TXT("\'.\n")) );
 	}
 	
 	mpCurrentScope->Import( GetScope( Name ) );
@@ -966,10 +966,10 @@ void Interpreter::ImportIntoCurrentScope( const STRING& Name )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Interpreter::ImportFileIntoCurrentScope( const STRING& FileName )
+void Interpreter::ImportFileIntoCurrentScope( const String& FileName )
 {
 	if( mVerboseOutput ){
-		mpInterface->LogMessage( STRING(TXT("Importing \'")) + FileName + STRING(TXT("\'.\n")) );
+		mpInterface->LogMessage( String(TXT("Importing \'")) + FileName + String(TXT("\'.\n")) );
 	}
 	
 	Bookmark OldPos = GetCurrentPos();

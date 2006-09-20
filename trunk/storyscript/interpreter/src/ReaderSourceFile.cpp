@@ -19,12 +19,12 @@ const int BUFFER_SIZE = 1024;
  NOTES: ctors
 */
 ReaderSourceFile::ReaderSourceFile()
-	: mpBuffer( new CHAR[BUFFER_SIZE] )
+	: mpBuffer( new Char[BUFFER_SIZE] )
 {
 }
 
-ReaderSourceFile::ReaderSourceFile( const STRING& FileName )
-	: mpBuffer( new CHAR[BUFFER_SIZE] )
+ReaderSourceFile::ReaderSourceFile( const String& FileName )
+	: mpBuffer( new Char[BUFFER_SIZE] )
 {
 	Open( FileName );
 }
@@ -42,7 +42,7 @@ ReaderSourceFile::~ReaderSourceFile()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Opens a file.  If a file is already open, it closes it.
 */
-void ReaderSourceFile::Open( const STRING& FileName )
+void ReaderSourceFile::Open( const String& FileName )
 {
 	if( IsOpen() ) Close();
 
@@ -50,7 +50,7 @@ void ReaderSourceFile::Open( const STRING& FileName )
 
 	if( !mFile )
 	{
-		STRING tmp = TXT("Cannot find file \'");
+		String tmp = TXT("Cannot find file \'");
 		tmp += FileName;
 		tmp += TXT("\'. Check your spelling.");
 		ThrowParserAnomaly( tmp, ANOMALY_BADFILE );
@@ -84,7 +84,7 @@ bool ReaderSourceFile::IsOpen()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Returns the current file name.  Or an empty string if no file is open.
 */
-STRING ReaderSourceFile::GetName() const
+String ReaderSourceFile::GetName() const
 {
 	return mFileName;
 }
@@ -94,13 +94,13 @@ STRING ReaderSourceFile::GetName() const
  NOTES: Returns the next line from the file including all
  		line-breaks/carriage-returns.  Returns a blank string if eof reached.
 */
-STRING ReaderSourceFile::GetNextLine()
+String ReaderSourceFile::GetNextLine()
 {
-	if( mFile.eof() ) return STRING();
+	if( mFile.eof() ) return String();
 	mFile.getline( mpBuffer, BUFFER_SIZE );
 
 	//I have to add the newline since getline won't store it.
-	return STRING( mpBuffer ) + STRING(TXT("\n"));
+	return String( mpBuffer ) + String(TXT("\n"));
 }
 
 

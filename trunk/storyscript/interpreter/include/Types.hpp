@@ -109,7 +109,7 @@ private:
 
 typedef mpfr_t_wrap NumType; ///< Internal representation of storyscript's number type.
 typedef bool   BoolType; ///< Internal representation of storyscript's boolean type.
-typedef SS::STRING StringType; ///< Internal representation of story script's string type.
+typedef SS::String StringType; ///< Internal representation of story script's string type.
 
 typedef size_t BlockIndex;
 
@@ -131,7 +131,7 @@ enum VarType
 {
 	VARTYPE_NUM = 0,
 	VARTYPE_BOOL = 1,
-	VARTYPE_STRING = 2
+	VARTYPE_String = 2
 };
 
 
@@ -151,6 +151,9 @@ typedef boost::weak_ptr<Block>        BlockPtrWeak;
 typedef boost::weak_ptr<VariableBase> VariableBasePtrWeak;
 typedef boost::weak_ptr<List>         ListPtrWeak;
 
+
+typedef std::vector<BlockPtr> BlockList;
+
 /**
 	\brief Enumeration of ScopeObject types.
 */
@@ -159,7 +162,7 @@ enum ScopeObjectType
 	SCOPEOBJ_NULL,
 	SCOPEOBJ_SCOPEOBJECT,
 	SCOPEOBJ_SCOPE,
-	SCOPEOBJ_CHARACTER,
+	SCOPEOBJ_CharACTER,
 	SCOPEOBJ_VARIABLEBASE,
 	SCOPEOBJ_VARIABLE,
 	SCOPEOBJ_BLOCK,
@@ -185,19 +188,19 @@ typedef std::deque<VariableBasePtr> ListType;
 	//There is no default hash function for strings, so I'm using my own.
 	struct StringHash
 	{ 
-		size_t operator()(const SS::STRING& s) const
+		size_t operator()(const SS::String& s) const
 		{ 
-			return STLHASH<const CHAR*>()(s.c_str()); 
+			return STLHASH<const Char*>()(s.c_str()); 
 		} 
 	};
 
-	typedef STDEXT::hash_map< SS::STRING, ScopeObjectPtr, StringHash > ScopeListType;
+	typedef STDEXT::hash_map< SS::String, ScopeObjectPtr, StringHash > ScopeListType;
 #else
-	typedef STDEXT::hash_map< SS::STRING, ScopeObjectPtr > ScopeListType;
+	typedef STDEXT::hash_map< SS::String, ScopeObjectPtr > ScopeListType;
 #endif
 
 #else
-	typedef std::map< SS::STRING, ScopeObjectPtr > ScopeListType;
+	typedef std::map< SS::String, ScopeObjectPtr > ScopeListType;
 #endif
 
 

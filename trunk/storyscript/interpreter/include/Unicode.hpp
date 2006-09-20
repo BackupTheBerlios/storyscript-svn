@@ -48,28 +48,28 @@ namespace SS{
 	\param src Source string.
 	\param dest_size Size of the destination string.
 */
-SS_API CHAR* STRCPY( CHAR* dest, const CHAR* src, unsigned int dest_size );
+SS_API Char* STRCPY( Char* dest, const Char* src, unsigned int dest_size );
 
 
 }
 	
 
 /*
-int STRLEN( const CHAR* Strng );
+int STRLEN( const Char* Strng );
 
-CHAR TOUPPER( const CHAR C );
-STRING TOUPPER( const CHAR* S );
-STRING TOUPPER( const STRING& S );
+Char TOUPPER( const Char C );
+String TOUPPER( const Char* S );
+String TOUPPER( const String& S );
 
-CHAR TOLOWER( const CHAR C );
-STRING TOLOWER( const CHAR* S );
-STRING TOLOWER( const STRING& S );
+Char TOLOWER( const Char C );
+String TOLOWER( const Char* S );
+String TOLOWER( const String& S );
 
-STRING SS_API STRINGCAST( const std::string& str );
-STRING SS_API STRINGCAST( const char* str );
+String SS_API StringCAST( const std::string& str );
+String SS_API StringCAST( const char* str );
 
-std::string SS_API stringCAST( const STRING& str );
-std::string SS_API stringCAST( const CHAR* str );
+std::string SS_API stringCAST( const String& str );
+std::string SS_API stringCAST( const Char* str );
 */
 
 #endif //!defined(SS_Unicode)

@@ -17,10 +17,10 @@ class ReadlineReaderSource : public ReaderSource
 public:
 	ReadlineReaderSource();
 	
-	STRING GetName() const;
+	String GetName() const;
 
 private:
-	STRING GetNextLine();
+	String GetNextLine();
 };
 	
 	

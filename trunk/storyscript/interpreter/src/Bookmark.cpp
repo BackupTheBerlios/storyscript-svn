@@ -15,7 +15,7 @@ Bookmark::Bookmark()
 {
 }
 
-Bookmark::Bookmark( const SS::STRING& FileName,
+Bookmark::Bookmark( const SS::String& FileName,
 					ReaderPos Position,
 				    unsigned long Line,
 					ScopePtr CurrentScope /*= ScopePtr()*/,

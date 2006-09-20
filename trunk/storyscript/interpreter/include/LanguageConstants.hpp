@@ -67,7 +67,7 @@ enum WordType
 	WORDTYPE_UNKNOWN,//
 	WORDTYPE_IDENTIFIER,
 	WORDTYPE_FLOATLITERAL,//
-	WORDTYPE_STRINGLITERAL,
+	WORDTYPE_StringLITERAL,
 	WORDTYPE_BOOLLITERAL,
 	WORDTYPE_EMPTYLISTLITERAL,
 	WORDTYPE_BINARYOPERATOR,//
@@ -77,7 +77,7 @@ enum WordType
 	WORDTYPE_PARENTHESIS,
 	WORDTYPE_CONTROL,
 	WORDTYPE_TERMINAL,
-	WORDTYPE_DOCSTRING
+	WORDTYPE_DOCString
 };
 
 /*
@@ -148,119 +148,119 @@ enum ExtraDesc
 };
 
 struct ltstr{
-	bool operator()( const SS::CHAR* a, const SS::CHAR* b ) const;
+	bool operator()( const SS::Char* a, const SS::Char* b ) const;
 };
 
-extern std::map< const SS::CHAR*, ExtraDesc, ltstr > gUnaryOperatorMap;
-extern std::map< const SS::CHAR*, ExtraDesc, ltstr > gBinaryOperatorMap;
-extern std::map< const SS::CHAR*, ExtraDesc, ltstr > gAmbigOperatorMap;
+extern std::map< const SS::Char*, ExtraDesc, ltstr > gUnaryOperatorMap;
+extern std::map< const SS::Char*, ExtraDesc, ltstr > gBinaryOperatorMap;
+extern std::map< const SS::Char*, ExtraDesc, ltstr > gAmbigOperatorMap;
 
-extern std::map< ExtraDesc, const SS::CHAR* > gUnaryOperatorReverseMap;
-extern std::map< ExtraDesc, const SS::CHAR* > gBinaryOperatorReverseMap;
-extern std::map< ExtraDesc, const SS::CHAR* > gAmbigOperatorReverseMap;
+extern std::map< ExtraDesc, const SS::Char* > gUnaryOperatorReverseMap;
+extern std::map< ExtraDesc, const SS::Char* > gBinaryOperatorReverseMap;
+extern std::map< ExtraDesc, const SS::Char* > gAmbigOperatorReverseMap;
 
 
 //Special Variable Names
-extern const SS::CHAR* LC_Precision;
+extern const SS::Char* LC_Precision;
 
 
-extern const SS::CHAR* LC_Length;
-extern const SS::CHAR* LC_Name;
-extern const SS::CHAR* LC_FullName;
-extern const SS::CHAR* LC_EndBlock;
-extern const SS::CHAR* LC_Static;
-extern const SS::CHAR* LC_BeenSaid;
-extern const SS::CHAR* LC_Input;
-extern const SS::CHAR* LC_Output;
-extern const SS::CHAR* LC_NextBlock;
-extern const SS::CHAR* LC_UniqueID;
-extern const SS::CHAR* LC_Doc;
+extern const SS::Char* LC_Length;
+extern const SS::Char* LC_Name;
+extern const SS::Char* LC_FullName;
+extern const SS::Char* LC_EndBlock;
+extern const SS::Char* LC_Static;
+extern const SS::Char* LC_BeenSaid;
+extern const SS::Char* LC_Input;
+extern const SS::Char* LC_Output;
+extern const SS::Char* LC_NextBlock;
+extern const SS::Char* LC_UniqueID;
+extern const SS::Char* LC_Doc;
 
 //Control Statements
-extern const SS::CHAR* LC_While;
-extern const SS::CHAR* LC_If;
-extern const SS::CHAR* LC_Else;
-extern const SS::CHAR* LC_Do;
-extern const SS::CHAR* LC_Then;
+extern const SS::Char* LC_While;
+extern const SS::Char* LC_If;
+extern const SS::Char* LC_Else;
+extern const SS::Char* LC_Do;
+extern const SS::Char* LC_Then;
 
 //Declarators
-extern const SS::CHAR* LC_Var;
-extern const SS::CHAR* LC_Character;
-extern const SS::CHAR* LC_Player;
-extern const SS::CHAR* LC_List;
+extern const SS::Char* LC_Var;
+extern const SS::Char* LC_Character;
+extern const SS::Char* LC_Player;
+extern const SS::Char* LC_List;
 
 //Boolean constants
-extern const SS::CHAR* LC_True;
-extern const SS::CHAR* LC_False;
+extern const SS::Char* LC_True;
+extern const SS::Char* LC_False;
 
 //Binary Operators
-extern const SS::CHAR* LC_ListSeperator;
-extern const SS::CHAR* LC_Assign;
-extern const SS::CHAR* LC_Equals;
-extern const SS::CHAR* LC_NotEquals;
-extern const SS::CHAR* LC_Minus;
-extern const SS::CHAR* LC_MinusAssign;
-extern const SS::CHAR* LC_Plus;
-extern const SS::CHAR* LC_PlusAssign;
-extern const SS::CHAR* LC_Times;
-extern const SS::CHAR* LC_TimesAssign;
-extern const SS::CHAR* LC_Divide;
-extern const SS::CHAR* LC_DivideAssign;
-extern const SS::CHAR* LC_Exponent;
-extern const SS::CHAR* LC_ExponentAssign;
-//extern const SS::STRING LC_Mod;
-//extern const SS::STRING LC_ModAssign;
-extern const SS::CHAR* LC_Concat;
-extern const SS::CHAR* LC_ConcatAssign;
-extern const SS::CHAR* LC_LargerThan;
-extern const SS::CHAR* LC_LargerThanOrEqual;
-extern const SS::CHAR* LC_LessThan;
-extern const SS::CHAR* LC_LessThanOrEqual;
-extern const SS::CHAR* LC_ScopeResolution;
-extern const SS::CHAR* LC_LogicalOr;
-extern const SS::CHAR* LC_LogicalOrAlt;
-extern const SS::CHAR* LC_LogicalAnd;
-extern const SS::CHAR* LC_LogicalAndAlt;
+extern const SS::Char* LC_ListSeperator;
+extern const SS::Char* LC_Assign;
+extern const SS::Char* LC_Equals;
+extern const SS::Char* LC_NotEquals;
+extern const SS::Char* LC_Minus;
+extern const SS::Char* LC_MinusAssign;
+extern const SS::Char* LC_Plus;
+extern const SS::Char* LC_PlusAssign;
+extern const SS::Char* LC_Times;
+extern const SS::Char* LC_TimesAssign;
+extern const SS::Char* LC_Divide;
+extern const SS::Char* LC_DivideAssign;
+extern const SS::Char* LC_Exponent;
+extern const SS::Char* LC_ExponentAssign;
+//extern const SS::String LC_Mod;
+//extern const SS::String LC_ModAssign;
+extern const SS::Char* LC_Concat;
+extern const SS::Char* LC_ConcatAssign;
+extern const SS::Char* LC_LargerThan;
+extern const SS::Char* LC_LargerThanOrEqual;
+extern const SS::Char* LC_LessThan;
+extern const SS::Char* LC_LessThanOrEqual;
+extern const SS::Char* LC_ScopeResolution;
+extern const SS::Char* LC_LogicalOr;
+extern const SS::Char* LC_LogicalOrAlt;
+extern const SS::Char* LC_LogicalAnd;
+extern const SS::Char* LC_LogicalAndAlt;
 
 //Unary Operators
-extern const SS::CHAR* LC_Not1;
-extern const SS::CHAR* LC_Not2;
-extern const SS::CHAR* LC_Negate;
-extern const SS::CHAR* LC_Import;
-extern const SS::CHAR* LC_UnImport;
-extern const SS::CHAR* LC_Return;
-extern const SS::CHAR* LC_Print;
+extern const SS::Char* LC_Not1;
+extern const SS::Char* LC_Not2;
+extern const SS::Char* LC_Negate;
+extern const SS::Char* LC_Import;
+extern const SS::Char* LC_UnImport;
+extern const SS::Char* LC_Return;
+extern const SS::Char* LC_Print;
 
 //Misc.
-extern const SS::CHAR* LC_Terminal;
-extern const SS::CHAR* LC_NameOfBracket;
+extern const SS::Char* LC_Terminal;
+extern const SS::Char* LC_NameOfBracket;
 
 
-extern const SS::CHAR* LC_DecimalPoint;
-extern const SS::CHAR* LC_ThousandsSep;
+extern const SS::Char* LC_DecimalPoint;
+extern const SS::Char* LC_ThousandsSep;
 
 
 //List built-ins
-extern const SS::CHAR* LC_LIST_Pop;
-extern const SS::CHAR* LC_LIST_Push;
-extern const SS::CHAR* LC_LIST_RemoveAll;
-extern const SS::CHAR* LC_LIST_Remove;
+extern const SS::Char* LC_LIST_Pop;
+extern const SS::Char* LC_LIST_Push;
+extern const SS::Char* LC_LIST_RemoveAll;
+extern const SS::Char* LC_LIST_Remove;
 
 
 //SLib Stuff
-extern const SS::CHAR* LC_SL_Time;
-extern const SS::CHAR* LC_SL_Time_Time;
-extern const SS::CHAR* LC_SL_Time_ElapsedSeconds;
-extern const SS::CHAR* LC_SL_Time_TimeZone;
-extern const SS::CHAR* LC_SL_Time_Date;
+extern const SS::Char* LC_SL_Time;
+extern const SS::Char* LC_SL_Time_Time;
+extern const SS::Char* LC_SL_Time_ElapsedSeconds;
+extern const SS::Char* LC_SL_Time_TimeZone;
+extern const SS::Char* LC_SL_Time_Date;
 
-extern const SS::CHAR* LC_SL_Math;
+extern const SS::Char* LC_SL_Math;
 
-extern const SS::CHAR* LC_SL_Common;
+extern const SS::Char* LC_SL_Common;
 
-extern const SS::CHAR* LC_SL_List;
+extern const SS::Char* LC_SL_List;
 
-extern const SS::CHAR* LC_SL_LangOpts;
+extern const SS::Char* LC_SL_LangOpts;
 
 
 }

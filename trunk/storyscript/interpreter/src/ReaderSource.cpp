@@ -16,7 +16,7 @@ NOTES: The abstract base class that is responsible for reading from the script
 using namespace SS;
 
 
-const CHAR EOF_CHAR = 3; //ETX Character (I'm not exactly sure what to use here)
+const Char EOF_Char = 3; //ETX Character (I'm not exactly sure what to use here)
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -70,15 +70,15 @@ const Word& ReaderSource::GetNextWord()
 	}
 
 
-	CHAR TempChar;
-	STRING TempString;
+	Char TempChar;
+	String TempString;
 
 	FastForward();
 	//UpdateCurrentLine();
 	
 	TempChar = Get();
 
-	if( TempChar == EOF_CHAR )
+	if( TempChar == EOF_Char )
 	{
 		return PushWord( EOF_WORD );
 	}	
@@ -135,12 +135,12 @@ const Word& ReaderSource::GetNextWord()
 			return PushWord( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Right ) );
 		}
 	}
-	//STRING LITERAL
+	//String LITERAL
 	else if( TempChar == '\"' || TempChar == '`' || TempChar == '\'' )
 	{
-		CHAR TerminalChar = TempChar;
+		Char TerminalChar = TempChar;
 		
-		while( (TempChar = Get()) != EOF_CHAR  )
+		while( (TempChar = Get()) != EOF_Char  )
 		{
 			if( TempChar == TerminalChar )
 			{
@@ -168,16 +168,16 @@ const Word& ReaderSource::GetNextWord()
 	
 						QueuedWords.push( Word( LC_Output, WORDTYPE_IDENTIFIER ) );
 						QueuedWords.push( Word( WORDTYPE_BINARYOPERATOR, EXTRA_BINOP_PlusAssign ) );
-						QueuedWords.push( Word( TempString, WORDTYPE_STRINGLITERAL ) );
+						QueuedWords.push( Word( TempString, WORDTYPE_StringLITERAL ) );
 						QueuedWords.push( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Right ) );
 						
 						return PushWord( Word( WORDTYPE_PARENTHESIS, EXTRA_PARENTHESIS_Left ) );						
 					}
 					else if( TerminalChar == '\'' )
 					{
-						return PushWord( Word( TempString, WORDTYPE_DOCSTRING ) );						
+						return PushWord( Word( TempString, WORDTYPE_DOCString ) );						
 					}
-					else return PushWord( Word( TempString, WORDTYPE_STRINGLITERAL ) );
+					else return PushWord( Word( TempString, WORDTYPE_StringLITERAL ) );
 				}
 			}
 			//Handle backslash character codes
@@ -185,7 +185,7 @@ const Word& ReaderSource::GetNextWord()
 			{
 				char CharCode = Get();
 
-				if( CharCode == EOF_CHAR ){
+				if( CharCode == EOF_Char ){
 					ThrowParserAnomaly( TXT("Unexpected end of file."), ANOMALY_EOF );
 				}
 				
@@ -287,7 +287,7 @@ const Word& ReaderSource::GetNextWord()
 		//Infinate loop.  This one may be dangerous.  Watch it.
 		while( true )
 		{
-			CHAR TempChar = Get();
+			Char TempChar = Get();
 
 			if( ExpectScopeResOp && !IsWhitespace(TempChar) && TempChar != LC_ScopeResolution[0] )
 			{
@@ -319,7 +319,7 @@ const Word& ReaderSource::GetNextWord()
 			else
 				if( TempChar == LC_ScopeResolution[0] )
 			{
-				NewID.String.push_back( TempString );
+				NewID.Str.push_back( TempString );
 				TempString.clear();
 				IDBeginning = true;
 				if( ExpectScopeResOp ) ExpectScopeResOp = false;
@@ -331,7 +331,7 @@ const Word& ReaderSource::GetNextWord()
 			}
 		}
 		
-		if( TempString.length() != 0 ) NewID.String.push_back( TempString );
+		if( TempString.length() != 0 ) NewID.Str.push_back( TempString );
 		
 		return PushWord( NewID );
 	}
@@ -356,7 +356,7 @@ const Word& ReaderSource::GetNextWord()
 
 		//Match greedily
 		//NOTE: This is not very good greedy matching.  In fact it is very very bad greedy matching.
-		while( IsBinaryOperator( TempString + (CHAR)Peek() ) ) TempString += Get();
+		while( IsBinaryOperator( TempString + (Char)Peek() ) ) TempString += Get();
 
 		if( gBinaryOperatorMap.find( TempString.c_str() ) != gBinaryOperatorMap.end() ) {
 
@@ -367,7 +367,7 @@ const Word& ReaderSource::GetNextWord()
 			else return PushWord( Word( WORDTYPE_BINARYOPERATOR, gBinaryOperatorMap[TempString.c_str()] ) );
 		}
 		else{
-			STRING TmpError = TXT("Cannot figure out what type of binary operator \'");
+			String TmpError = TXT("Cannot figure out what type of binary operator \'");
 			TmpError += TempString;
 			TmpError += TXT("\' is.");
 			ThrowParserAnomaly( TmpError, ANOMALY_UNKNOWNOP );
@@ -378,13 +378,13 @@ const Word& ReaderSource::GetNextWord()
 	{
 		TempString += TempChar;
 
-		while( IsUnaryOperator( TempString + (CHAR)Peek() ) ) TempString += Get();
+		while( IsUnaryOperator( TempString + (Char)Peek() ) ) TempString += Get();
 
 		if( gUnaryOperatorMap.find( TempString.c_str() ) != gUnaryOperatorMap.end() ) {
 			return PushWord( Word( WORDTYPE_UNARYOPERATOR, gUnaryOperatorMap[TempString.c_str()] ) );
 		}
 		else{
-			STRING TmpError = TXT("Cannot figure out what type of unary operator \'");
+			String TmpError = TXT("Cannot figure out what type of unary operator \'");
 			TmpError += TempString;
 			TmpError += TXT("\' is.");
 			ThrowParserAnomaly( TmpError, ANOMALY_UNKNOWNOP );
@@ -394,7 +394,7 @@ const Word& ReaderSource::GetNextWord()
 
 	//Oops.  It shouldn't make it this far down.
 
-	STRING Temp = TXT("Cannot figure out what kind of word this is.\n  TempChar: ");
+	String Temp = TXT("Cannot figure out what kind of word this is.\n  TempChar: ");
 	Temp += TempChar;
 	Temp += TXT("\nTempString:");
 	Temp += TempString;
@@ -514,7 +514,7 @@ bool ReaderSource::FastForward()
 	//The almighty infinite loop
 	while( true ) 
 	{
-		CHAR TempChar = Get();
+		Char TempChar = Get();
 		
 		//all line comments
 		if( TempChar == '/' &&
@@ -572,7 +572,7 @@ bool ReaderSource::FastForward()
  		Also note that this and Peek do not care what the current position is
  		they will just return the next character on the stream.
 */
-const CHAR& ReaderSource::Get()
+const Char& ReaderSource::Get()
 {
 	if( mReadStringPos >= mReadString.size() )
 	{
@@ -587,10 +587,10 @@ const CHAR& ReaderSource::Get()
 		}
 	}
 	
-	if( mReadString.empty() ) return EOF_CHAR;
+	if( mReadString.empty() ) return EOF_Char;
 	
 	
-	const CHAR& R = mReadString[mReadStringPos];
+	const Char& R = mReadString[mReadStringPos];
 	mReadStringPos++;
 	
 	if( R == '\n' || R == '\r' ){
@@ -629,13 +629,13 @@ const void ReaderSource::UnGet()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Returns one character from the stream put does NOT advance the position.
 */
-const CHAR& ReaderSource::Peek()
+const Char& ReaderSource::Peek()
 {
 	if( mReadStringPos >= mReadString.size() )
 	{
 		if( mPeekString.empty() ) mPeekString = GetNextLine();
 		
-		if( mPeekString.empty() ) return EOF_CHAR;		
+		if( mPeekString.empty() ) return EOF_Char;		
 		else return mPeekString[0];		
 	}
 	else return mReadString[mReadStringPos];

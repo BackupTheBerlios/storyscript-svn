@@ -20,18 +20,18 @@ ReadlineReaderSource::ReadlineReaderSource()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Uses realine to get feed user input into the interpreter.
 */
-STRING ReadlineReaderSource::GetNextLine()
+String ReadlineReaderSource::GetNextLine()
 {
 	char* Buffer = 0;
 
 	//Gotta love that python prompt.
 	Buffer = readline("\n>>> ");
 	
-	if( Buffer == 0 ) return STRING();
+	if( Buffer == 0 ) return String();
 	
 	add_history( Buffer );
 	
-	STRING StringizedBuffer = NormalizeString( Buffer );
+	String StringizedBuffer = NormalizeString( Buffer );
 	
 	//if( StringizedBuffer.size() != 0 ) add_history( Buffer );
 	free( Buffer );
@@ -44,8 +44,8 @@ STRING ReadlineReaderSource::GetNextLine()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Returns a name, one that cannot be confused with a file.
 */
-STRING ReadlineReaderSource::GetName() const
+String ReadlineReaderSource::GetName() const
 {
-	return STRING( TXT("*stdin*") );
+	return String( TXT("*stdin*") );
 }
 

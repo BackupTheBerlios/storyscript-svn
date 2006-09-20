@@ -80,7 +80,7 @@ CursesConsole::~CursesConsole()
 CursesConsole::operator<<
 NOTES: The standard output operator.  Returns a reference to itself.
 */
-Console& CursesConsole::operator<<( const SS::STRING& s )
+Console& CursesConsole::operator<<( const SS::String& s )
 {
 	//TODO: Wide character compatibility
 	for( unsigned int i = 0; i < s.length(); ++i ){
@@ -94,27 +94,27 @@ Console& CursesConsole::operator<<( const SS::STRING& s )
 
 Console& CursesConsole::operator<<( int i )
 {
-	return *this << boost::lexical_cast<SS::STRING>( i );
+	return *this << boost::lexical_cast<SS::String>( i );
 }
 
 Console& CursesConsole::operator<<( unsigned int ui )
 {
-	return *this << boost::lexical_cast<SS::STRING>( ui );
+	return *this << boost::lexical_cast<SS::String>( ui );
 }
 
 Console& CursesConsole::operator<<( long l )
 {
-	return *this << boost::lexical_cast<SS::STRING>( l );
+	return *this << boost::lexical_cast<SS::String>( l );
 }
 
 Console& CursesConsole::operator<<( unsigned long ul )
 {
-	return *this << boost::lexical_cast<SS::STRING>( ul );
+	return *this << boost::lexical_cast<SS::String>( ul );
 }
 
 Console& CursesConsole::operator<<( float f )
 {
-	return *this << boost::lexical_cast<SS::STRING>( f );
+	return *this << boost::lexical_cast<SS::String>( f );
 }
 
 
@@ -122,7 +122,7 @@ Console& CursesConsole::operator<<( float f )
  CursesConsole::operator>>
  NOTES: Standard input operator.  Asks the user for input and write it to the string.
 */
-Console& CursesConsole::operator>>( SS::STRING& s )
+Console& CursesConsole::operator>>( SS::String& s )
 {
 	echo();
 	getnstr( mpInputBuffer, InputBufferSize );
@@ -133,7 +133,7 @@ Console& CursesConsole::operator>>( SS::STRING& s )
 
 Console& CursesConsole::operator>>( int& i )
 {
-	SS::STRING Input;
+	SS::String Input;
 	*this >> Input;
 
 	i = boost::lexical_cast<int>( Input );
@@ -144,7 +144,7 @@ Console& CursesConsole::operator>>( int& i )
 
 Console& CursesConsole::operator>>( unsigned int& ui )
 {
-	SS::STRING Input;
+	SS::String Input;
 	*this >> Input;
 
 	ui = boost::lexical_cast<unsigned int>( Input );
@@ -155,7 +155,7 @@ Console& CursesConsole::operator>>( unsigned int& ui )
 
 Console& CursesConsole::operator>>( long& l )
 {
-	SS::STRING Input;
+	SS::String Input;
 	*this >> Input;
 
 	l = boost::lexical_cast<long>( Input );
@@ -166,7 +166,7 @@ Console& CursesConsole::operator>>( long& l )
 
 Console& CursesConsole::operator>>( unsigned long& ul )
 {
-	SS::STRING Input;
+	SS::String Input;
 	*this >> Input;
 
 	ul = boost::lexical_cast<unsigned long>( Input );
@@ -177,7 +177,7 @@ Console& CursesConsole::operator>>( unsigned long& ul )
 
 Console& CursesConsole::operator>>( float& f )
 {
-	SS::STRING Input;
+	SS::String Input;
 	*this >> Input;
 
 	f = boost::lexical_cast<float>( Input );
@@ -357,7 +357,7 @@ unsigned int CursesConsole::GetCursesColorPair( ColorPair Pair )
  StdConsole::operator<<
  NOTES: Standard output.
 */
-Console& StdConsole::operator<<( const SS::STRING& s ){
+Console& StdConsole::operator<<( const SS::String& s ){
 	STD_COUT << s;
 	return *this;
 }
@@ -391,8 +391,8 @@ Console& StdConsole::operator<<( float f ){
  StdConsole::operator>>
  NOTES: Standard input.
 */
-Console& StdConsole::operator>>( SS::STRING& s ){
-	SS::CHAR StringBuf[256];
+Console& StdConsole::operator>>( SS::String& s ){
+	SS::Char StringBuf[256];
 	STD_CIN.getline( StringBuf, 256 );
 	s = StringBuf;
 	return *this;

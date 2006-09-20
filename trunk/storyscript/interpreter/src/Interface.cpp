@@ -56,7 +56,7 @@ void Interface::CheckInterpreter()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Interface::StartConversation( const STRING& FileName, const STRING& BlockName )
+void Interface::StartConversation( const String& FileName, const String& BlockName )
 {
 	try{
 		//CheckInterpreter();
@@ -96,7 +96,7 @@ void NullInterface::HandleParserAnomaly()
 		exit(1);
 }
 
-void NullInterface::LogMessage( const SS::STRING&, bool )
+void NullInterface::LogMessage( const SS::String&, bool )
 {
 }
 

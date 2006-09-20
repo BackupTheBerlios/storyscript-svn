@@ -62,7 +62,7 @@ public:
 	void VisitOperator    (Operator*);
 
 	ScopeObjectType ReturnType() const;
-	SS::STRING ReturnTypeString() const;
+	SS::String ReturnTypeString() const;
 
 private:
 	ScopeObjectType mType;

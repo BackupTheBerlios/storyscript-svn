@@ -20,17 +20,17 @@ class ReaderSourceString
 {
 public:
 	ReaderSourceString();
-	ReaderSourceString( const STRING& );
+	ReaderSourceString( const String& );
 	
-	void Reset( const STRING& );
+	void Reset( const String& );
 	
-	STRING GetName() const;
+	String GetName() const;
 	
 private:
-	STRING GetNextLine();
-	STRING::iterator mPos;
+	String GetNextLine();
+	String::iterator mPos;
 	
-	STRING mString;	
+	String mString;	
 };
 
 }

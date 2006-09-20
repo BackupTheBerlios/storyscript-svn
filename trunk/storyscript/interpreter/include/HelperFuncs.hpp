@@ -16,38 +16,38 @@ NOTES: Contains misc. functions that I haven't found a better place for yet.
 namespace SS{
 	enum CharType
 	{
-		CHARTYPE_DEFAULT,
-		CHARTYPE_ALPHABETICAL,
-		CHARTYPE_NUMERICAL,
-		CHARTYPE_OPERATOR,
-		CHARTYPE_WHITESPACE,
-		CHARTYPE_SPECIAL,
-		CHARTYPE_STRING,
-		CHARTYPE_PUNCTUATION
+		CharTYPE_DEFAULT,
+		CharTYPE_ALPHABETICAL,
+		CharTYPE_NUMERICAL,
+		CharTYPE_OPERATOR,
+		CharTYPE_WHITESPACE,
+		CharTYPE_SPECIAL,
+		CharTYPE_String,
+		CharTYPE_PUNCTUATION
 	};
 	
 	
-	SS::STRING MakeScopeNameFromFileName( const SS::STRING& FileName );
+	SS::String MakeScopeNameFromFileName( const SS::String& FileName );
 
 
-	SS::STRING SS_API BreakOffFirstID( SS::STRING& );
-	SS::STRING SS_API BreakOffFirstID( const SS::STRING& Original, SS::STRING& Remainder );
-	SS::STRING SS_API BreakOffLastID ( SS::STRING& ); 
+	SS::String SS_API BreakOffFirstID( SS::String& );
+	SS::String SS_API BreakOffFirstID( const SS::String& Original, SS::String& Remainder );
+	SS::String SS_API BreakOffLastID ( SS::String& ); 
 
-	void SS_API BreakOffLastID( const SS::STRING& src, CHAR* dest, unsigned int DestSize );
-	void SS_API BreakOffFirstID( const SS::STRING& src, CHAR* dest, unsigned int DestSize );
+	void SS_API BreakOffLastID( const SS::String& src, Char* dest, unsigned int DestSize );
+	void SS_API BreakOffFirstID( const SS::String& src, Char* dest, unsigned int DestSize );
 
-	bool IsNewline( SS::CHAR );
-	bool IsNumber( SS::CHAR );
-	bool IsBinaryOperator( SS::CHAR );
-	bool IsBinaryOperator( const SS::STRING& );
-	bool IsUnaryOperator( SS::CHAR );
-	bool IsUnaryOperator( const SS::STRING& );
-	bool IsSpecial( SS::CHAR );
-	bool IsWhitespace( SS::CHAR );
-	bool IsAlpha( SS::CHAR );
+	bool IsNewline( SS::Char );
+	bool IsNumber( SS::Char );
+	bool IsBinaryOperator( SS::Char );
+	bool IsBinaryOperator( const SS::String& );
+	bool IsUnaryOperator( SS::Char );
+	bool IsUnaryOperator( const SS::String& );
+	bool IsSpecial( SS::Char );
+	bool IsWhitespace( SS::Char );
+	bool IsAlpha( SS::Char );
 
-	CharType GetCharType( SS::CHAR );
+	CharType GetCharType( SS::Char );
 
 
 	//bool IsSingleListStatement( const Expression& );

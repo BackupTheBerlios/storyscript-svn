@@ -21,7 +21,7 @@ public:
 	~ConsoleInterface();
 	
 	void StartConversation();
-	void StartConversation(  const SS::STRING& FileName, const SS::STRING& BlockName = SS::STRING() );
+	void StartConversation(  const SS::String& FileName, const SS::String& BlockName = SS::String() );
 	
 	void SetGCCStyleErrors( bool Flag = true );
 	
@@ -29,7 +29,7 @@ public:
 	unsigned int PresentChoice( const std::vector<SS::BlockPtr>& Choices );
 
 	void HandleParserAnomaly( SS::ParserAnomaly );
-	void LogMessage( const SS::STRING&, bool UserOutput = false );
+	void LogMessage( const SS::String&, bool UserOutput = false );
 
 private:
 	Console& CON;

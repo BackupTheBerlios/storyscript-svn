@@ -30,14 +30,14 @@ Anomaly::Anomaly( const Anomaly& A )
   ErrorCode     ( A.ErrorCode )
 {}
 
-Anomaly::Anomaly( const SS::STRING& Desc, unsigned int Flags = 0 )
+Anomaly::Anomaly( const SS::String& Desc, unsigned int Flags = 0 )
 : ErrorDesc( Desc ),
   ErrorCode( Flags )
 {}
 
-Anomaly::Anomaly( const SS::STRING& Desc, unsigned int Flags, 
-				  const SS::STRING& FileName, unsigned int Line,
-				  const SS::STRING& FuncName )
+Anomaly::Anomaly( const SS::String& Desc, unsigned int Flags, 
+				  const SS::String& FileName, unsigned int Line,
+				  const SS::String& FuncName )
 : ErrorDesc     ( Desc ),
   SourceFunction( FuncName ),
   SourceFile    ( FileName ),

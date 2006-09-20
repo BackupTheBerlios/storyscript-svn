@@ -45,7 +45,7 @@ enum AnomalyCode{
 	ANOMALY_ALREADYEXISTS, ///< Tried to register an object with an name that's already in use
 	ANOMALY_NOTASCOPE, ///< Tried to register a variable to a non-scope object
 	ANOMALY_NOCONVERSION, ///< Tried to do an operation involving to variable that can't be converted to the same type
-	ANOMALY_BADSTRINGOP, ///< Tried to use -, *, / or something with strings
+	ANOMALY_BADStringOP, ///< Tried to use -, *, / or something with strings
 	ANOMALY_NOINTERFACE, ///< The Interpreter has no interface set.
 	ANOMALY_NOLISTELEMENT, ///< Tried to remove or access a list element that doesn't exist.
 	ANOMALY_UNDEFINEDOP, ///< The operator isn't defined for that type.  Like trying to divide a list.
@@ -96,9 +96,9 @@ public:
 		\param SourceFile Name of file where the error occoured.
 		\param SourceLine Line number where the error occurred.
 	*/
-	ParserAnomaly( const SS::STRING& Desc,
+	ParserAnomaly( const SS::String& Desc,
 				   AnomalyCode Code,
-				   const SS::STRING& SourceFile,
+				   const SS::String& SourceFile,
 				   unsigned int SourceLine );
 
 	/**
@@ -109,11 +109,11 @@ public:
 		\param SourceLine Line number where the error occurred.
 		\param FuncName Name of the function where the error occurred.
 	*/
-	ParserAnomaly( const SS::STRING& Desc,
+	ParserAnomaly( const SS::String& Desc,
 				   AnomalyCode Code,
-				   const SS::STRING& SourceFile,
+				   const SS::String& SourceFile,
 				   unsigned int SourceLine,
-				   const SS::STRING& FuncName );
+				   const SS::String& FuncName );
 
 	/**
 		Constructor	
@@ -125,12 +125,12 @@ public:
 		\param ScriptFile Name of the storyscript file where the error occurred.
 		\param ScriptLine Line in the storyscript file where the error occurred.
 	*/
-	ParserAnomaly( const SS::STRING& Desc,
+	ParserAnomaly( const SS::String& Desc,
 				   AnomalyCode Code,
-				   const SS::STRING& SourceFile,
+				   const SS::String& SourceFile,
 				   unsigned int SourceLine,
-				   const SS::STRING& FuncName,
-				   const SS::STRING& ScriptFile,
+				   const SS::String& FuncName,
+				   const SS::String& ScriptFile,
 				   unsigned int ScriptLine );
 
 	/// Destructor
@@ -140,7 +140,7 @@ public:
 	virtual const char* what() const throw();
 
 	/// A description of the error.
-	SS::STRING ErrorDesc;
+	SS::String ErrorDesc;
 	
 	/**
 		The error code.
@@ -150,16 +150,16 @@ public:
 	AnomalyCode ErrorCode;
 
 	/// The source file in which the exception occoured.
-	SS::STRING SourceFile;
+	SS::String SourceFile;
 	
 	/// The function in which the exception occurred.
-	SS::STRING SourceFunction;
+	SS::String SourceFunction;
 	
 	/// The line in the the source file in which the exception occurred.
 	unsigned int SourceLine;
 	
 	/// The story script file in which the error occurred.
-	SS::STRING ScriptFile;
+	SS::String ScriptFile;
 	
 	/// The line in the storyscript file in which the error occurred.
 	unsigned int ScriptLine;

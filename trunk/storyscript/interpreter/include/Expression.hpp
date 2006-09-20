@@ -259,10 +259,10 @@ private:
 	bool StripOutlyingParenthesis() const;
 	
 	/// Throws a specially formatted expression anomaly.
-	void ThrowExpressionAnomaly( const SS::STRING& Desc, AnomalyCode Code ) const;
+	void ThrowExpressionAnomaly( const SS::String& Desc, AnomalyCode Code ) const;
 	
 	/// Converts the expression to a (hopefully) human readable form.
-	SS::STRING DumpToString() const;
+	SS::String DumpToString() const;
 	
 	/**
 		\brief Convert a local index to a absolute index.

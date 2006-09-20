@@ -101,7 +101,7 @@ void ConsoleInterface::StartConversation()
 	}
 }
 
-void ConsoleInterface::StartConversation(  const SS::STRING& FileName, const SS::STRING& BlockName )
+void ConsoleInterface::StartConversation(  const SS::String& FileName, const SS::String& BlockName )
 {
 	if( FileName.empty() ) StartConversation();
 	else Interface::StartConversation( FileName, BlockName );
@@ -131,7 +131,7 @@ unsigned int ConsoleInterface::PresentChoice( const std::vector<SS::BlockPtr>& C
 		CON << i;
 		CON << TXT(")  ");
 
-		SS::STRING tmp;
+		SS::String tmp;
 		if( (tmp = Choices[i]->GetDocString()).empty() ){
 			CON << Choices[i]->GetFullName();
 		}
@@ -190,7 +190,7 @@ void ConsoleInterface::HandleParserAnomaly( SS::ParserAnomaly E )
  ConsoleInterface::LogMessage
  NOTES: Prints a message to the screen.
 */
-void ConsoleInterface::LogMessage( const SS::STRING& Msg, bool UserOutput /*=false*/ )
+void ConsoleInterface::LogMessage( const SS::String& Msg, bool UserOutput /*=false*/ )
 {
 	static bool LastWasUserOutput = false;
 
@@ -229,8 +229,8 @@ void ConsoleInterface::LogMessage( const SS::STRING& Msg, bool UserOutput /*=fal
 */
 void ConsoleInterface::SayBlock( const SS::BlockPtr pBlock )
 {
-	const SS::STRING& Line = pBlock->GetScopeObjectLocal( SS::LC_Output )->CastToVariable()->GetStringData();
-	const SS::STRING& ParentName = pBlock->GetParent()->GetName();
+	const SS::String& Line = pBlock->GetScopeObjectLocal( SS::LC_Output )->CastToVariable()->GetStringData();
+	const SS::String& ParentName = pBlock->GetParent()->GetName();
 	
 	//Get and print name.
 	if( Line.empty() )  return;

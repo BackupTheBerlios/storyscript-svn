@@ -14,8 +14,8 @@ namespace SS{
 
 //A little shortcut, considering this may soon change.
 //This allows me the treat the base arguments for ScopeObject constructors as one thing.
-#define SS_DECLARE_DEFAULTED_BASE_ARGS const SS::STRING& BaseName = SS::STRING(), bool IsConst = false
-#define SS_DECLARE_BASE_ARGS const SS::STRING& BaseName, bool IsConst
+#define SS_DECLARE_DEFAULTED_BASE_ARGS const SS::String& BaseName = SS::String(), bool IsConst = false
+#define SS_DECLARE_BASE_ARGS const SS::String& BaseName, bool IsConst
 #define SS_BASE_ARGS BaseName, IsConst
 #define SS_BASE_ARGS_DEFAULTS UNNAMMED, false
 

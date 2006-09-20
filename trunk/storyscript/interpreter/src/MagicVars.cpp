@@ -48,7 +48,7 @@ VariablePtr MagicVarBase::MakeVariable() const
 		case VARTYPE_NUM:
 			return CreateVariable<Variable>( UNNAMMED, true, GetNumData() );
 
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return CreateVariable<Variable>( UNNAMMED, true, GetStringData() );
 
 		case VARTYPE_BOOL:
@@ -126,7 +126,7 @@ VariableBasePtr MagicVarBase::operator/(const VariableBase& X) const{
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr MagicVarBase::operator=(const VariableBase& X){
-	STRING tmp = TXT("Cannot assign to magic variable: \'");
+	String tmp = TXT("Cannot assign to magic variable: \'");
 	tmp += this->GetFullName();
 	tmp += TXT("\'.");
 	ThrowParserAnomaly( tmp, ANOMALY_CONSTASSIGN );
@@ -217,7 +217,7 @@ BoolType BoundFlagVar::GetBoolData() const{
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-BoundStringVar::BoundStringVar( SS_DECLARE_BASE_ARGS, STRING& String )
+BoundStringVar::BoundStringVar( SS_DECLARE_BASE_ARGS, String& String )
 	: MagicVarBase( SS_BASE_ARGS ), mString(String)
 {
 }
@@ -233,7 +233,7 @@ VariableBasePtr BoundStringVar::operator=( const VariableBase& X )
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VarType BoundStringVar::GetVariableType() const{
-	return VARTYPE_STRING;
+	return VARTYPE_String;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -450,7 +450,7 @@ FullNameVar::FullNameVar( SS_DECLARE_BASE_ARGS, const ScopeObject& Parent )
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VarType FullNameVar::GetVariableType() const{
-	return VARTYPE_STRING;
+	return VARTYPE_String;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -513,7 +513,7 @@ BoolType ListLengthVar::GetBoolData() const
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-PrecisionVar::PrecisionVar( const STRING& Name, Variable& Parent )
+PrecisionVar::PrecisionVar( const String& Name, Variable& Parent )
 	: MagicVarBase( Name, Parent.IsConst() ), mParent(Parent)
 {}
 
@@ -528,20 +528,20 @@ VariableBasePtr PrecisionVar::operator=(const VariableBase& X )
 
 	if( mpfr_less_p( X.GetNumData().get(), MinPrecision.get() ) )
 	{
-		STRING tmp = TXT("Tried to set precision to \'");
+		String tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
 		tmp += TXT("\'.  Can't handle lower than \'");
-		tmp += boost::lexical_cast<STRING>( MPFR_PREC_MIN );
+		tmp += boost::lexical_cast<String>( MPFR_PREC_MIN );
 		tmp += TXT("\'.");
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}
 	
 	if( mpfr_greater_p( X.GetNumData().get(), MaxPrecision.get() ) )
 	{
-		STRING tmp = TXT("Tried to set precision to \'");
+		String tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
 		tmp += TXT("\'.  Can't handle higher than \'");
-		tmp += boost::lexical_cast<STRING>( MPFR_PREC_MAX );
+		tmp += boost::lexical_cast<String>( MPFR_PREC_MAX );
 		tmp += TXT("\'.");
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}

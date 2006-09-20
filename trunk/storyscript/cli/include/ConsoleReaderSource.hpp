@@ -23,13 +23,13 @@ class ConsoleReaderSource : public ReaderSource
 public:
 	ConsoleReaderSource( Console* pCon );
 
-	STRING GetName() const;
+	String GetName() const;
 
 private:
 	Console* mpCon;
 
 	ConsoleReaderSource();
-	STRING GetNextLine();
+	String GetNextLine();
 };
 
 }

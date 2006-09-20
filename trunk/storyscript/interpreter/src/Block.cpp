@@ -42,9 +42,9 @@ void Block::RegisterPredefinedVars()
 	//This is dangerous to create here (it break recursion), so instead it get done in each instance.
 	//Register( ScopeObjectPtr( CreateGeneric<List>( LC_Input, true, false ) ) );
 	
-	Register( CreateVariable<Variable>( LC_Output, false, STRING() ) );
+	Register( CreateVariable<Variable>( LC_Output, false, String() ) );
 
-	//The STRING(TXT("")) is probably not necessary.  I just want to make sure it
+	//The String(TXT("")) is probably not necessary.  I just want to make sure it
 	//gets created as a string.  Not that it matters.
 
 	//The nextline.
@@ -113,7 +113,7 @@ const BlockPtr Block::CastToBlock() const{
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-STRING& Block::GetOutString()
+String& Block::GetOutString()
 {
 	return GetScopeObjectLocal( LC_Output )->CastToVariable()->GetActualStringData();
 }

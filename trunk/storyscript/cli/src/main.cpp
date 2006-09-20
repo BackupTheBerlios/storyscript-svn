@@ -99,14 +99,14 @@ int main( int argc, char* argv[] )
 	}
 	
 	//Test for block name
-	SS::STRING BlockName;
+	SS::String BlockName;
 	if( cl.search( 2, "--block", "-b" ) )
 	{
 		BlockName = SS::NormalizeString( cl.next("") );
 	}
 	
 	//Try to get a file name
-	SS::STRING FileName;
+	SS::String FileName;
 	if( cl.size() > 1 ){
 		const char* Temp = cl[ cl.size() - 1];
 		if( Temp[0] != '-' ) FileName = SS::NormalizeString( Temp );
@@ -138,7 +138,7 @@ int main( int argc, char* argv[] )
 		//This is ridiculous that I need this much code for something so trivial.
 		CON << TXT("Press [Enter] to continue...");
 		if( UseCurses ){
-			SS::STRING Dummy;
+			SS::String Dummy;
 			CON >> Dummy;
 		}
 		else{

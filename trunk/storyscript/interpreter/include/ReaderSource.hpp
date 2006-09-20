@@ -46,21 +46,21 @@ public:
 	unsigned long GetLineNumber() const;
 	
 	//Not required, but strongly advised that you declare this.
-	virtual STRING GetName() const { return STRING(); }
+	virtual String GetName() const { return String(); }
 
 private:
 	//This _should_ include newline/form-feed chars,
 	//and return an empty string to indicate EOF
-	virtual STRING GetNextLine() = 0;
+	virtual String GetNextLine() = 0;
 	
 	bool SkipWhitespace();
 	bool FastForward();
 	
-	const CHAR&  Get();
-	const CHAR&  Peek();
+	const Char&  Get();
+	const Char&  Peek();
 	const void   UnGet();
-	STRING mReadString;
-	STRING mPeekString;
+	String mReadString;
+	String mPeekString;
 	size_t mReadStringPos;
 	
 	const Word& PushWord( const Word& );

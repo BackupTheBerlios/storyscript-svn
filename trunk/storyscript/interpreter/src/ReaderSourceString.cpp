@@ -17,7 +17,7 @@ using namespace SS;
 ReaderSourceString::ReaderSourceString()
 {}
 
-ReaderSourceString::ReaderSourceString( const STRING& InitString )
+ReaderSourceString::ReaderSourceString( const String& InitString )
 	: mString(InitString)
 {
 	mPos = mString.begin();
@@ -27,7 +27,7 @@ ReaderSourceString::ReaderSourceString( const STRING& InitString )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: To reinitialize or to initialize in the first place if ctor wasn't called.
 */
-void ReaderSourceString::Reset( const STRING& InitString )
+void ReaderSourceString::Reset( const String& InitString )
 {
 	mString = InitString;
 	mPos = mString.begin();
@@ -37,9 +37,9 @@ void ReaderSourceString::Reset( const STRING& InitString )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Where the work is done.
 */
-STRING ReaderSourceString::GetNextLine()
+String ReaderSourceString::GetNextLine()
 {
-	STRING Buffer;
+	String Buffer;
 	
 	while( mPos != mString.end() )
 	{
@@ -79,9 +79,9 @@ STRING ReaderSourceString::GetNextLine()
  		that are illegal in pretty much any filesystem I know of.  That way
  		it isn't confused with a file.
 */
-STRING ReaderSourceString::GetName() const
+String ReaderSourceString::GetName() const
 {
-	return STRING( TXT("*external-string*") );
+	return String( TXT("*external-string*") );
 }
 
 

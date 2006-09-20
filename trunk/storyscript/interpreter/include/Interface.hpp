@@ -55,7 +55,7 @@ public:
 		\param BlockName The optional name of the block to begin on.
 		
 	*/ 
-	virtual void StartConversation( const SS::STRING& FileName, const SS::STRING& BlockName = SS::STRING() );
+	virtual void StartConversation( const SS::String& FileName, const SS::String& BlockName = SS::String() );
 
 	/// Return a reference to the Interpreter that the interface is attached to.
 	Interpreter&	   GetInterpreter();
@@ -75,7 +75,7 @@ public:
 			
 		\return The index to the chosen block.
 	*/
-	virtual unsigned int PresentChoice( const std::vector<BlockPtr>& Choices ) = 0;
+	virtual unsigned int PresentChoice( const BlockList& Choices ) = 0;
 	
 	/**
 		\brief Handles anomalies (ie. exceptions) thrown by the interpreter.
@@ -97,7 +97,7 @@ public:
 		\param UserOutput This is true if the output if from the 'print' command.
 			Otherwise it is unnecessary extra information.
 	*/		
-	virtual void LogMessage( const SS::STRING& S, bool UserOutput = false ) = 0;
+	virtual void LogMessage( const SS::String& S, bool UserOutput = false ) = 0;
 	
 	friend class Interpreter; 
 
@@ -143,7 +143,7 @@ public:
 	
 	virtual void HandleParserAnomaly();
 	
-	virtual void LogMessage( const SS::STRING&, bool = false );
+	virtual void LogMessage( const SS::String&, bool = false );
 	
 protected:
 	virtual void SayBlock( const BlockPtr );

@@ -25,9 +25,9 @@ ParserAnomaly::ParserAnomaly()
 {}
 
 
-ParserAnomaly::ParserAnomaly( const STRING& Desc,
+ParserAnomaly::ParserAnomaly( const String& Desc,
 							  AnomalyCode Code,
-							  const STRING& SourceFile,
+							  const String& SourceFile,
 							  unsigned int SourceLine )
 : ErrorDesc( Desc ),
   ErrorCode( Code ),
@@ -36,11 +36,11 @@ ParserAnomaly::ParserAnomaly( const STRING& Desc,
 {}
 
 
-ParserAnomaly::ParserAnomaly( const STRING& Desc,
+ParserAnomaly::ParserAnomaly( const String& Desc,
 							  AnomalyCode Code,
-							  const STRING& SourceFile,
+							  const String& SourceFile,
 							  unsigned int SourceLine,
-							  const STRING& FuncName )
+							  const String& FuncName )
 : ErrorDesc( Desc ),
   ErrorCode( Code ),
   SourceFile( SourceFile ),
@@ -49,12 +49,12 @@ ParserAnomaly::ParserAnomaly( const STRING& Desc,
 {}
 
 
-ParserAnomaly::ParserAnomaly( const STRING& Desc,
+ParserAnomaly::ParserAnomaly( const String& Desc,
 							  AnomalyCode Code,
-							  const STRING& SourceFile,
+							  const String& SourceFile,
 							  unsigned int SourceLine,
-							  const STRING& FuncName,
-							  const STRING& ScriptFile,
+							  const String& FuncName,
+							  const String& ScriptFile,
 							  unsigned int ScriptLine )
 : ErrorDesc( Desc ),
   ErrorCode( Code ),

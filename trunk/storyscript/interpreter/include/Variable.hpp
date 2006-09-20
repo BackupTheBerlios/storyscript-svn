@@ -8,7 +8,7 @@ directory named "license".
 
 /**
 	\file Variable.hpp
-	\Declarations for VariableBase and Variable.  
+	\brief Declarations for VariableBase and Variable.  
 */
 
 #if !defined(SS_Variable)
@@ -103,7 +103,7 @@ protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(VariableBase);
 	
 	///Constructor
-	VariableBase( const SS::STRING& Name = SS::STRING(), bool Const = false );
+	VariableBase( const SS::String& Name = SS::String(), bool Const = false );
 
 public:
 	
@@ -211,7 +211,7 @@ public:
 		\param BufferSize The size of the provided buffer.
 		\return The Buffer parameter
 	*/
-	CHAR* GetStringData( CHAR* Buffer, unsigned int BufferSize ) const;
+	Char* GetStringData( Char* Buffer, unsigned int BufferSize ) const;
 
 private:
 	/**
@@ -221,7 +221,7 @@ private:
 		\return Nothing.  The exception is thrown before it returns.
 			This is just a way to make the compiles happy.
 	*/
-	VariableBasePtr UndefinedOp(const SS::STRING& Op) const;
+	VariableBasePtr UndefinedOp(const SS::String& Op) const;
 
 };
 
@@ -244,22 +244,22 @@ protected:
 	SS_FRIENDIFY_GENERIC_CREATOR(Variable);
 
 	///Constructor
-	Variable( const SS::STRING& Name = SS::STRING(), bool Const = false );
+	Variable( const SS::String& Name = SS::String(), bool Const = false );
 	
 	///Constructor
-	Variable( const SS::STRING& Name, bool Const,
+	Variable( const SS::String& Name, bool Const,
 			  const Variable& );
 	
 	///Constructor
-	Variable( const SS::STRING& Name, bool Const,
+	Variable( const SS::String& Name, bool Const,
 			  const NumType& );
 	
 	///Constructor
-	Variable( const SS::STRING& Name, bool Const,
+	Variable( const SS::String& Name, bool Const,
 			  const StringType& );
 	
 	///Constructor
-	Variable( const SS::STRING& Name, bool Const,
+	Variable( const SS::String& Name, bool Const,
 			  const BoolType& );
 public:
 
@@ -334,7 +334,7 @@ public:
 	StringType& GetActualStringData();
 	
 protected:
-	virtual ScopeObjectPtr GetScopeObjectHook( const SS::STRING& );
+	virtual ScopeObjectPtr GetScopeObjectHook( const SS::String& );
 
 private:
 	///Called by constructors to handle any common initialization.

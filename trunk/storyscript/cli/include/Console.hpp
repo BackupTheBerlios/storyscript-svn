@@ -56,14 +56,14 @@ public:
 	virtual ~Console() {}
 
 	//These ones must be defined.
-	virtual Console& operator << ( const SS::STRING& s ) = 0;
+	virtual Console& operator << ( const SS::String& s ) = 0;
 	virtual Console& operator << ( int i ) = 0;
 	virtual Console& operator << ( unsigned int ui ) = 0;
 	virtual Console& operator << ( long l ) = 0;
 	virtual Console& operator << ( unsigned long ul ) = 0;
 	virtual Console& operator << ( float f ) = 0;
 	
-	virtual Console& operator >> ( SS::STRING& s ) = 0;
+	virtual Console& operator >> ( SS::String& s ) = 0;
 	virtual Console& operator >> ( int& i ) = 0;
 	virtual Console& operator >> ( unsigned int& ui ) = 0;
 	virtual Console& operator >> ( long& l ) = 0;
@@ -99,14 +99,14 @@ public:
 	StdConsole() : mBold(false), mUnderline(false), mCurrentColor(ColorBlack) {}
 	~StdConsole() {}
 
-	Console& operator << ( const SS::STRING& s );
+	Console& operator << ( const SS::String& s );
 	Console& operator << ( int i );
 	Console& operator << ( unsigned int ui );
 	Console& operator << ( long l );
 	Console& operator << ( unsigned long ul );
 	Console& operator << ( float f );
 	
-	Console& operator >> ( SS::STRING& s );
+	Console& operator >> ( SS::String& s );
 	Console& operator >> ( int& i );
 	Console& operator >> ( unsigned int& ui );
 	Console& operator >> ( long& l );
@@ -137,14 +137,14 @@ public:
 	CursesConsole();
 	~CursesConsole();
 
-	Console& operator << ( const SS::STRING& s );
+	Console& operator << ( const SS::String& s );
 	Console& operator << ( int i );
 	Console& operator << ( unsigned int ui );
 	Console& operator << ( long l );
 	Console& operator << ( unsigned long ul );
 	Console& operator << ( float f );
 	
-	Console& operator >> ( SS::STRING& s );
+	Console& operator >> ( SS::String& s );
 	Console& operator >> ( int& i );
 	Console& operator >> ( unsigned int& ui );
 	Console& operator >> ( long& l );

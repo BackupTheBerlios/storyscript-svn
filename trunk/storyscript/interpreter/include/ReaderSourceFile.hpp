@@ -24,24 +24,24 @@ class ReaderSourceFile : public ReaderSource
 {
 public:
 	ReaderSourceFile();
-	ReaderSourceFile( const SS::STRING& );
+	ReaderSourceFile( const SS::String& );
 	
 	~ReaderSourceFile();
 	
 	
-	void Open( const SS::STRING& );
+	void Open( const SS::String& );
 	void Close();
 	bool IsOpen();
 	
-	//const SS::STRING& GetFileName() const;
-	STRING GetName() const;
+	//const SS::String& GetFileName() const;
+	String GetName() const;
 	
 private:
-	SS::STRING GetNextLine();
-	SS::STRING mFileName;
+	SS::String GetNextLine();
+	SS::String mFileName;
 	
 	IFSTREAM mFile;
-	CHAR* mpBuffer;
+	Char* mpBuffer;
 };
 
 

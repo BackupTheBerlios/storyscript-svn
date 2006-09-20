@@ -47,7 +47,7 @@ struct SS_API Bookmark
 		\param CurrentStaticScope The current static scope at the given position.
 		(Take a peek at Interpreter to learn what a "static" scope is.)
 	*/
-	Bookmark( const SS::STRING& FileName, ReaderPos Position,
+	Bookmark( const SS::String& FileName, ReaderPos Position,
 			  unsigned long Line, ScopePtr CurrentScope = ScopePtr(),
 			  ScopePtr CurrentStaticScope = ScopePtr() );
 
@@ -61,7 +61,7 @@ struct SS_API Bookmark
 	Bookmark& operator=( const Bookmark& );
 
 	/// FileName The name of the file or stream.
-	SS::STRING FileName;
+	SS::String FileName;
 	/// The offset (in "Word"'s) into the stream.
 	ReaderPos Position;
 	/// The line number at the given position.

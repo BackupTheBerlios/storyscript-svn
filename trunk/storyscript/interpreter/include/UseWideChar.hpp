@@ -22,12 +22,12 @@ directory named "license".
 namespace SS{
 
 /// The standard character type.
-typedef wchar_t CHAR;
-typedef std::wstring STRING;
+typedef wchar_t Char;
+typedef std::wstring String;
 typedef std::wfstream FSTREAM;
 typedef std::wifstream IFSTREAM;
 typedef std::wofstream OFSTREAM;
-typedef std::wstringstream STRINGSTREAM;
+typedef std::wstringstream StringSTREAM;
 
 
 //Text macro for strings literals
@@ -35,7 +35,7 @@ typedef std::wstringstream STRINGSTREAM;
 #define WIDEN(x) TXT(x)
 #define TXT(quote) L ## quote
 
-inline unsigned int STRLEN( const CHAR* s ){
+inline unsigned int STRLEN( const Char* s ){
 	return wcslen( s );
 }
 
@@ -47,20 +47,20 @@ std::wstring WidenString( const char* narrow );
 
 
 
-inline SS::STRING NormalizeString( const std::string& x ){
+inline SS::String NormalizeString( const std::string& x ){
 	return WidenString( x.c_str() );
 }
 
-inline SS::STRING NormalizeString( const char* x ){
+inline SS::String NormalizeString( const char* x ){
 	return WidenString( x );
 }
 
 
-inline std::string NarrowizeString( const SS::STRING& x ){
+inline std::string NarrowizeString( const SS::String& x ){
 	return NarrowString( x.c_str() );
 }
 
-inline std::string NarrowizeString( const CHAR* x ){
+inline std::string NarrowizeString( const Char* x ){
 	return NarrowString( x );
 	
 	

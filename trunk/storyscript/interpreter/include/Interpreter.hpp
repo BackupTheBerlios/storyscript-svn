@@ -40,9 +40,9 @@ directory named "license".
 ///public:
 ///	MyInterface( SS::Interpreter& I ) : Interface(I) {}
 ///
-///	unsigned int PresentChoice( const std::vector<BlockPtr>& Choices );
+///	unsigned int PresentChoice( const BlockList& Choices );
 ///	void HandleParserAnomaly( ParserAnomaly A );
-///	void LogMessage( const SS::STRING& S, bool UserOutput = false );
+///	void LogMessage( const SS::String& S, bool UserOutput = false );
 ///
 ///private:
 ///	void SayBlock( const BlockPtr );
@@ -50,10 +50,10 @@ directory named "license".
 ///};
 ///
 ///
-///unsigned int MyInterface::PresentChoice( const std::vector<BlockPtr>& Choices )
+///unsigned int MyInterface::PresentChoice( const BlockList& Choices )
 ///{
 ///	size_t i;
-///	SS::STRING BlockTitle;
+///	SS::String BlockTitle;
 ///	for( i = 0; i< Choices.size(); i++ )
 ///	{
 ///		BlockTitle = Choices[0]->GetDocString();
@@ -78,7 +78,7 @@ directory named "license".
 ///	exit(1);
 ///}
 ///
-///void MyInterface::LogMessage( const SS::STRING& Msg, bool UserOutput )
+///void MyInterface::LogMessage( const SS::String& Msg, bool UserOutput )
 ///{
 ///	if( UserOutput )
 ///	{
@@ -97,10 +97,10 @@ directory named "license".
 ///void MyInterface::SayBlock( BlockPtr B )
 ///{
 ///	//You may not need all of these.
-///	STRING Character  = B->GetParent()->GetName();
-///	STRING Line       = B->GetOutString();
-///	STRING BlockTitle = B->GetDocString();
-///	STRING BlockName  = B->GetName();
+///	String Character  = B->GetParent()->GetName();
+///	String Line       = B->GetOutString();
+///	String BlockTitle = B->GetDocString();
+///	String BlockName  = B->GetName();
 ///
 ///	/*
 ///		Do some fancy graphics and animation.
@@ -112,7 +112,7 @@ directory named "license".
 ///		then play a file based off the Character and BlockName.  The downside
 ///		is that you have to make sure to name all your blocks.
 ///	*/
-///	STRING AudioFile = Character + SS::STRING(TXT(".")) + BlockName + SS::STRING(TXT(".mp3"));
+///	String AudioFile = Character + SS::String(TXT(".")) + BlockName + SS::String(TXT(".mp3"));
 ///
 ///	/*
 ///		Another way to do audio files with blocks is to simply have a static var
@@ -247,7 +247,7 @@ public:
 		
 		\param FileName Name of the file to execute.
 	*/
-	void OpenFile( const SS::STRING& FileName );
+	void OpenFile( const SS::String& FileName );
 	
 	/**
 		\brief Executes a given block.
@@ -257,7 +257,7 @@ public:
 		
 		\param The identifier name of the block.
 	*/
-	void Parse( const SS::STRING& BlockName );
+	void Parse( const SS::String& BlockName );
 	
 	/**
 		\brief Executes a given block.
@@ -318,28 +318,28 @@ public:
 		
 		This is a shortcut for simply calling GetScopeObject and casting it.
 	*/
-	VariableBasePtr GetVariableBase( const SS::STRING& Name );
+	VariableBasePtr GetVariableBase( const SS::String& Name );
 	
 	/**
 		\brief Find a Variable object of a given name.
 		
 		This is a shortcut for simply calling GetScopeObject and casting it.
 	*/
-	VariablePtr     GetVariable    ( const SS::STRING& Name );
+	VariablePtr     GetVariable    ( const SS::String& Name );
 	
 	/**
 		\brief Find a Block object of a given name.
 		
 		This is a shortcut for simply calling GetScopeObject and casting it.
 	*/
-	BlockPtr        GetBlock       ( const SS::STRING& Name );
+	BlockPtr        GetBlock       ( const SS::String& Name );
 	
 	/**
 		\brief Find a Scope object of a given name.
 		
 		This is a shortcut for simply calling GetScopeObject and casting it.
 	*/
-	ScopePtr 	    GetScope       ( const SS::STRING& Name );
+	ScopePtr 	    GetScope       ( const SS::String& Name );
 
 	///Return a reference to the current interface.
 	Interface& GetInterface();
@@ -352,7 +352,7 @@ public:
 		
 		\param ScopeName Name of the scope to import.
 	*/
-	void ImportIntoCurrentScope    ( const SS::STRING& ScopeName );
+	void ImportIntoCurrentScope    ( const SS::String& ScopeName );
 	
 	/**
 		\brief Imports a file's scope into the current one.
@@ -362,7 +362,7 @@ public:
 		
 		\param FileName Name of the file to import.
 	*/
-	void ImportFileIntoCurrentScope( const SS::STRING& FileName );
+	void ImportFileIntoCurrentScope( const SS::String& FileName );
 
 	/**
 		I don't think Interpreter befriending Interface constitutes bad design.
@@ -427,7 +427,7 @@ private:
 		
 		\param FileName Name of the file to load.
 	*/
-	void LoadFile( const SS::STRING& FileName );
+	void LoadFile( const SS::String& FileName );
 	
 	///Called by the constructor to create built-in and special objects.
 	void RegisterSpecials();
@@ -490,7 +490,7 @@ private:
 	std::vector<BlockPtr> mBlockOrder;
 
 	///A map where all the loaded ReaderSources are kept.
-	std::map< SS::STRING, ReaderSourcePtr > mSources;
+	std::map< SS::String, ReaderSourcePtr > mSources;
 
 	///A pointer to the current scope.
 	ReaderSourcePtr mpCurrentSource;

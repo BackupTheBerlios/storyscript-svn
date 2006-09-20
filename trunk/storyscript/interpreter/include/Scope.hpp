@@ -49,7 +49,7 @@ public:
 		
 		\return The Scope's doc(ument) string.
 	*/
-	STRING& GetDocString();
+	String& GetDocString();
 
 	virtual void AcceptVisitor( ScopeObjectVisitor& );
 
@@ -86,7 +86,7 @@ public:
 		\param Name The name of the the object to un-register.
 		\return A pointer to the object that was un-registered.
 	*/
-	ScopeObjectPtr UnRegister( const SS::STRING& Name );
+	ScopeObjectPtr UnRegister( const SS::String& Name );
 
 	/// Unregister all object from the scope.
 	void Clear();
@@ -100,7 +100,7 @@ public:
 		\param ID A simple (non-compound) object name.
 		\return True if the object is in the scope, false otherwise.
 	*/ 
-	bool Exists( const SS::STRING& ID );
+	bool Exists( const SS::String& ID );
 	
 	/**
 		\brief Retrieve a named object from the scope.
@@ -140,7 +140,7 @@ public:
 		\param Name The name of the the object to be retrieved.
 		\return A pointer to the retrieved object.
 	*/
-	ScopeObjectPtr GetScopeObjectLocal( const SS::STRING& Name );
+	ScopeObjectPtr GetScopeObjectLocal( const SS::String& Name );
 	
 	
 	/**
@@ -156,7 +156,7 @@ public:
 		\param Name The name of the the object to be retrieved.
 		\return A pointer to the retrieved object.
 	*/
-	ScopeObjectPtr GetScopeObjectLocal_NoThrow( const SS::STRING& Name );
+	ScopeObjectPtr GetScopeObjectLocal_NoThrow( const SS::String& Name );
 	
 	/**
 		\brief Import a scope into the current scope.
@@ -189,7 +189,7 @@ public:
 protected:
 
 	/// Constructor
-	Scope( const SS::STRING& Name = SS::STRING(), bool Const = false );
+	Scope( const SS::String& Name = SS::String(), bool Const = false );
 	
 	/**
 		\brief Overridable hook function for GetScopeObject
@@ -204,17 +204,17 @@ protected:
 		call the parents version when you version is done, or your
 		dog will get hit by a truck.
 	*/
-	virtual ScopeObjectPtr GetScopeObjectHook( const STRING& );
+	virtual ScopeObjectPtr GetScopeObjectHook( const String& );
 
 
 private:
 	/// Used by the constructor to initialize private data.
 	void RegisterPredefinedVars();
 	
-	//typedef boost::shared_ptr<const STRING> StringPtr;
+	//typedef boost::shared_ptr<const String> StringPtr;
 	//typedef std::vector<StringPtr> TokenizedID;
 	//ScopeObjectPtr GetScopeObjectInternal( const CompoundString& Identifier, unsigned long Level = 0 );
-	//void SplitUpID( const STRING& ID, TokenizedID& TokenizedID );
+	//void SplitUpID( const String& ID, TokenizedID& TokenizedID );
 
 
 	/**

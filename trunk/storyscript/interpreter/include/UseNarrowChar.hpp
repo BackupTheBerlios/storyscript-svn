@@ -22,16 +22,16 @@ directory named "license".
 namespace SS{
 
 /// The standard character type.
-typedef char CHAR;
+typedef char Char;
 
 /// Typedef for STL Strings.
-typedef std::string STRING;
+typedef std::string String;
 
 /// Typedef for 
 typedef std::fstream FSTREAM;
 typedef std::ifstream IFSTREAM;
 typedef std::ofstream OFSTREAM;
-typedef std::stringstream STRINGSTREAM;
+typedef std::stringstream StringSTREAM;
 	
 
 
@@ -49,7 +49,7 @@ typedef std::stringstream STRINGSTREAM;
 #define SS_LINE       __LINE__
 
 
-inline unsigned int STRLEN( const CHAR* s ){
+inline unsigned int STRLEN( const Char* s ){
 	return (unsigned int)strlen( s );
 }
 
@@ -61,28 +61,28 @@ normal characters.  These functions don't really do anything
 when we too are using normal characters.
 */
 
-inline const SS::STRING& NormalizeString( const std::string& x ){
+inline const SS::String& NormalizeString( const std::string& x ){
 	return x;
 }
 
-inline SS::STRING& NormalizeString( std::string& x ){
+inline SS::String& NormalizeString( std::string& x ){
 	return x;
 }
 
-inline SS::STRING NormalizeString( const char* x ){
-	return SS::STRING( x );
+inline SS::String NormalizeString( const char* x ){
+	return SS::String( x );
 }
 
 
-inline const std::string& NarrowizeString( const SS::STRING& x ){
+inline const std::string& NarrowizeString( const SS::String& x ){
 	return x;
 }
 
-inline std::string& NarrowizeString( SS::STRING& x ){
+inline std::string& NarrowizeString( SS::String& x ){
 	return x;
 }
 
-inline std::string NarrowizeString( const CHAR* x ){
+inline std::string NarrowizeString( const Char* x ){
 	return std::string(x);
 }
 

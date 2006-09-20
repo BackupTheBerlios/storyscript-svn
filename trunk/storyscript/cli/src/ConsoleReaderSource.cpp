@@ -26,10 +26,10 @@ ConsoleReaderSource::ConsoleReaderSource()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NOTES: Uses realine to get feed user input into the interpreter.
 */
-STRING ConsoleReaderSource::GetNextLine()
+String ConsoleReaderSource::GetNextLine()
 {
 	*mpCon << TXT("\n>>> ");
-	STRING Buf;
+	String Buf;
 	*mpCon >> Buf;
 	Buf += TXT("\n");
 
@@ -40,8 +40,8 @@ STRING ConsoleReaderSource::GetNextLine()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 NOTES: Returns a name, one that cannot be confused with a file.
 */
-STRING ConsoleReaderSource::GetName() const
+String ConsoleReaderSource::GetName() const
 {
-	return STRING( TXT("*stdin*") );
+	return String( TXT("*stdin*") );
 }
 

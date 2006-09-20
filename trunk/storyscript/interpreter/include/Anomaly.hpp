@@ -45,14 +45,14 @@ public:
 		Constructor	
 		\param Desc A description of the error.
 	*/
-	Anomaly( const SS::STRING& Desc );
+	Anomaly( const SS::String& Desc );
 
 	/**
 		Constructor	
 		\param Desc A description of the error.
 		\param Flags User define error code.
 	*/
-	Anomaly( const SS::STRING& Desc,
+	Anomaly( const SS::String& Desc,
 			 unsigned int Flags );
 
 	/**
@@ -63,11 +63,11 @@ public:
 		\param Line Line number where the error occurred.
 		\param FuncName Name of the function where the error occurred.
 	*/
-	Anomaly( const SS::STRING& Desc,
+	Anomaly( const SS::String& Desc,
 			 unsigned int Flags,
-			 const SS::STRING& FileName,
+			 const SS::String& FileName,
 			 unsigned int Line,
-			 const SS::STRING& FuncName );
+			 const SS::String& FuncName );
 
 	///Destructor
 	virtual ~Anomaly() throw();
@@ -76,13 +76,13 @@ public:
 	virtual const char* what() const throw();
 			 
 	/// A description of the error.
-	STRING ErrorDesc;
+	String ErrorDesc;
 	
 	/// The function in which the exception occurred.
-	STRING SourceFunction;
+	String SourceFunction;
 	
 	/// The source file in which the exception occurred.
-	STRING SourceFile;
+	String SourceFile;
 	
 	/// The line in the the source file in which the exception occurred.
 	unsigned int SourceLine;

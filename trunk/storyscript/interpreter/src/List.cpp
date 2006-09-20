@@ -20,7 +20,7 @@ using namespace SS;
 //The global empty list variable
 ListPtr SS::gpEmptyList;
 
-//const ListPtr SS::gpEmptyList( new List( SS::STRING(), true, true ) );
+//const ListPtr SS::gpEmptyList( new List( SS::String(), true, true ) );
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -72,7 +72,7 @@ void List::Resize( const NumType& NewSize )
 
 	if( iNewSize > mList.max_size() )
 	{
-		STRING tmp = TXT("Cannot resize list \'");
+		String tmp = TXT("Cannot resize list \'");
 		tmp += this->GetFullName();
 		tmp += TXT("\' to \'");
 		tmp += NumType2StringType(NewSize);
@@ -109,7 +109,7 @@ VariableBasePtr List::Push( VariableBasePtr pNewElement )
 */
 VariableBasePtr List::Pop(){
 	if( mList.size() == 0 )	{		
-		SS::STRING tmp = mName;
+		SS::String tmp = mName;
 		tmp += TXT(" has no element to remove.");
 		ThrowParserAnomaly( tmp, ANOMALY_NOLISTELEMENT );
 	}
@@ -223,8 +223,8 @@ unsigned int List::DetermineRealIndex( const VariableBase& Index )
 		{
 			if( LangOpts::Instance().UseStrictLists )
 			{
-				SS::STRING tmp = TXT("Cannot access element ");
-				tmp += boost::lexical_cast<SS::STRING>(GoodIndex);
+				SS::String tmp = TXT("Cannot access element ");
+				tmp += boost::lexical_cast<SS::String>(GoodIndex);
 				tmp += TXT(" of list ");
 				tmp += mName;
 				tmp += TXT(".");
@@ -396,7 +396,7 @@ ListType& List::GetInternalList(){
 */
 VariablePtr List::MakeVariable() const
 {
-	STRING TheBigString;
+	String TheBigString;
 	
 	unsigned int i;
 	for( i = 0; i < mList.size(); i++ )
@@ -440,7 +440,7 @@ const VariablePtr List::CastToVariable() const{
  		on the fly.  Otherwise there is lot of overhead for stuff you probably
  		won't even use.
 */
-ScopeObjectPtr List::GetScopeObjectHook( const STRING& Name )
+ScopeObjectPtr List::GetScopeObjectHook( const String& Name )
 {
 	if( !mPopCreated && Name == LC_LIST_Pop ){
 		mPopCreated = true;

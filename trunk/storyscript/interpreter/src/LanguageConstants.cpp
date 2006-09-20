@@ -62,119 +62,119 @@ LangOpts::LangOpts()
 
 namespace SS{
 	
-bool ltstr::operator()( const SS::CHAR* a, const SS::CHAR* b ) const
+bool ltstr::operator()( const SS::Char* a, const SS::Char* b ) const
 {
 	return strcmp( a, b ) < 0;	
 }
 	
-std::map< const SS::CHAR*, ExtraDesc, ltstr > gUnaryOperatorMap;
-std::map< const SS::CHAR*, ExtraDesc, ltstr > gBinaryOperatorMap;
-std::map< const SS::CHAR*, ExtraDesc, ltstr > gAmbigOperatorMap;
+std::map< const SS::Char*, ExtraDesc, ltstr > gUnaryOperatorMap;
+std::map< const SS::Char*, ExtraDesc, ltstr > gBinaryOperatorMap;
+std::map< const SS::Char*, ExtraDesc, ltstr > gAmbigOperatorMap;
 
-std::map< ExtraDesc, const SS::CHAR* > gUnaryOperatorReverseMap;
-std::map< ExtraDesc, const SS::CHAR* > gBinaryOperatorReverseMap;
-std::map< ExtraDesc, const SS::CHAR* > gAmbigOperatorReverseMap;
+std::map< ExtraDesc, const SS::Char* > gUnaryOperatorReverseMap;
+std::map< ExtraDesc, const SS::Char* > gBinaryOperatorReverseMap;
+std::map< ExtraDesc, const SS::Char* > gAmbigOperatorReverseMap;
 
 //Default Values (i.e. They may be overridden by InitConstants)
-const SS::CHAR* LC_DecimalPoint = TXT(".");
-const SS::CHAR* LC_ThousandsSep = TXT(",");
+const SS::Char* LC_DecimalPoint = TXT(".");
+const SS::Char* LC_ThousandsSep = TXT(",");
 
 //Special Variable Names
-const SS::CHAR* LC_Precision = TXT("precision");
+const SS::Char* LC_Precision = TXT("precision");
 
 
-const SS::CHAR* LC_Length = TXT("size");
-const SS::CHAR* LC_Name( TXT("name") );
-const SS::CHAR* LC_FullName( TXT("fullname") );
-const SS::CHAR* LC_EndBlock = TXT("end");
-const SS::CHAR* LC_Static = TXT("static");
-const SS::CHAR* LC_BeenSaid = TXT("beensaid");
-const SS::CHAR* LC_Input = TXT("in");
-const SS::CHAR* LC_Output = TXT("out");
-const SS::CHAR* LC_NextBlock = TXT("next");
-const SS::CHAR* LC_UniqueID = TXT("_id_");
-const SS::CHAR* LC_Doc = TXT("doc");
+const SS::Char* LC_Length = TXT("size");
+const SS::Char* LC_Name( TXT("name") );
+const SS::Char* LC_FullName( TXT("fullname") );
+const SS::Char* LC_EndBlock = TXT("end");
+const SS::Char* LC_Static = TXT("static");
+const SS::Char* LC_BeenSaid = TXT("beensaid");
+const SS::Char* LC_Input = TXT("in");
+const SS::Char* LC_Output = TXT("out");
+const SS::Char* LC_NextBlock = TXT("next");
+const SS::Char* LC_UniqueID = TXT("_id_");
+const SS::Char* LC_Doc = TXT("doc");
 
 //Control Statements
-const SS::CHAR* LC_While = TXT("while");
-const SS::CHAR* LC_If    = TXT("if");
-const SS::CHAR* LC_Else  = TXT("else");
-const SS::CHAR* LC_Do    = TXT("do");
-const SS::CHAR* LC_Then  = TXT("then");
+const SS::Char* LC_While = TXT("while");
+const SS::Char* LC_If    = TXT("if");
+const SS::Char* LC_Else  = TXT("else");
+const SS::Char* LC_Do    = TXT("do");
+const SS::Char* LC_Then  = TXT("then");
 
 //Declarators
-const SS::CHAR* LC_Var = TXT("var");
-const SS::CHAR* LC_Character = TXT("character");
-const SS::CHAR* LC_Player = TXT("player");
-const SS::CHAR* LC_List = TXT("list");
+const SS::Char* LC_Var = TXT("var");
+const SS::Char* LC_Character = TXT("character");
+const SS::Char* LC_Player = TXT("player");
+const SS::Char* LC_List = TXT("list");
 
 //Boolean constants
-const SS::CHAR* LC_True = TXT("true");
-const SS::CHAR* LC_False = TXT("false");
+const SS::Char* LC_True = TXT("true");
+const SS::Char* LC_False = TXT("false");
 
 //Binary Operators
-const SS::CHAR* LC_ListSeperator     = TXT(",");
-const SS::CHAR* LC_Assign            = TXT("=");
-const SS::CHAR* LC_Equals            = TXT("==");
-const SS::CHAR* LC_NotEquals         = TXT("!=");
-const SS::CHAR* LC_Minus             = TXT("-");
-const SS::CHAR* LC_MinusAssign       = TXT("-=");
-const SS::CHAR* LC_Plus              = TXT("+");
-const SS::CHAR* LC_PlusAssign        = TXT("+=");
-const SS::CHAR* LC_Times             = TXT("*");
-const SS::CHAR* LC_TimesAssign       = TXT("*=");
-const SS::CHAR* LC_Divide            = TXT("/");
-const SS::CHAR* LC_DivideAssign      = TXT("/=");
-const SS::CHAR* LC_Exponent          = TXT("^");
-const SS::CHAR* LC_ExponentAssign    = TXT("^=");
-//const SS::CHAR* LC_Mod               = TXT("%");
-//const SS::CHAR* LC_ModAssign         = TXT("%=");
-const SS::CHAR* LC_Concat            = TXT(".");
-const SS::CHAR* LC_ConcatAssign      = TXT(".=");
-const SS::CHAR* LC_LargerThan        = TXT(">");
-const SS::CHAR* LC_LargerThanOrEqual = TXT(">=");
-const SS::CHAR* LC_LessThan          = TXT("<");
-const SS::CHAR* LC_LessThanOrEqual   = TXT("<=");
-const SS::CHAR* LC_ScopeResolution   = TXT(":");
-const SS::CHAR* LC_LogicalOr         = TXT("||");
-const SS::CHAR* LC_LogicalOrAlt      = TXT("or");
-const SS::CHAR* LC_LogicalAnd        = TXT("&&");
-const SS::CHAR* LC_LogicalAndAlt     = TXT("and");
+const SS::Char* LC_ListSeperator     = TXT(",");
+const SS::Char* LC_Assign            = TXT("=");
+const SS::Char* LC_Equals            = TXT("==");
+const SS::Char* LC_NotEquals         = TXT("!=");
+const SS::Char* LC_Minus             = TXT("-");
+const SS::Char* LC_MinusAssign       = TXT("-=");
+const SS::Char* LC_Plus              = TXT("+");
+const SS::Char* LC_PlusAssign        = TXT("+=");
+const SS::Char* LC_Times             = TXT("*");
+const SS::Char* LC_TimesAssign       = TXT("*=");
+const SS::Char* LC_Divide            = TXT("/");
+const SS::Char* LC_DivideAssign      = TXT("/=");
+const SS::Char* LC_Exponent          = TXT("^");
+const SS::Char* LC_ExponentAssign    = TXT("^=");
+//const SS::Char* LC_Mod               = TXT("%");
+//const SS::Char* LC_ModAssign         = TXT("%=");
+const SS::Char* LC_Concat            = TXT(".");
+const SS::Char* LC_ConcatAssign      = TXT(".=");
+const SS::Char* LC_LargerThan        = TXT(">");
+const SS::Char* LC_LargerThanOrEqual = TXT(">=");
+const SS::Char* LC_LessThan          = TXT("<");
+const SS::Char* LC_LessThanOrEqual   = TXT("<=");
+const SS::Char* LC_ScopeResolution   = TXT(":");
+const SS::Char* LC_LogicalOr         = TXT("||");
+const SS::Char* LC_LogicalOrAlt      = TXT("or");
+const SS::Char* LC_LogicalAnd        = TXT("&&");
+const SS::Char* LC_LogicalAndAlt     = TXT("and");
 
 //Unary Operators
-const SS::CHAR* LC_Not1   = TXT("not");
-const SS::CHAR* LC_Not2   = TXT("!");
-const SS::CHAR* LC_Negate = TXT("-");
-const SS::CHAR* LC_Import = TXT("use");
-const SS::CHAR* LC_UnImport = TXT("unuse");
-const SS::CHAR* LC_Return = TXT("return");
-const SS::CHAR* LC_Print = TXT("print");
+const SS::Char* LC_Not1   = TXT("not");
+const SS::Char* LC_Not2   = TXT("!");
+const SS::Char* LC_Negate = TXT("-");
+const SS::Char* LC_Import = TXT("use");
+const SS::Char* LC_UnImport = TXT("unuse");
+const SS::Char* LC_Return = TXT("return");
+const SS::Char* LC_Print = TXT("print");
 
 //Misc.
-const SS::CHAR* LC_Terminal = TXT(";");
-const SS::CHAR* LC_NameOfBracket  = TXT("|");
+const SS::Char* LC_Terminal = TXT(";");
+const SS::Char* LC_NameOfBracket  = TXT("|");
 
 //List built-ins
-const SS::CHAR* LC_LIST_Pop = TXT("pop");
-const SS::CHAR* LC_LIST_Push = TXT("push");
-const SS::CHAR* LC_LIST_RemoveAll = TXT("removeall");
-const SS::CHAR* LC_LIST_Remove = TXT("remove");
+const SS::Char* LC_LIST_Pop = TXT("pop");
+const SS::Char* LC_LIST_Push = TXT("push");
+const SS::Char* LC_LIST_RemoveAll = TXT("removeall");
+const SS::Char* LC_LIST_Remove = TXT("remove");
 
 
 //SLib Stuff
-const SS::CHAR* LC_SL_Time = TXT("SSTime");
-const SS::CHAR* LC_SL_Time_Time = TXT("time");
-const SS::CHAR* LC_SL_Time_ElapsedSeconds = TXT("elapsed_seconds");
-const SS::CHAR* LC_SL_Time_TimeZone = TXT("timezone");
-const SS::CHAR* LC_SL_Time_Date = TXT("date");
+const SS::Char* LC_SL_Time = TXT("SSTime");
+const SS::Char* LC_SL_Time_Time = TXT("time");
+const SS::Char* LC_SL_Time_ElapsedSeconds = TXT("elapsed_seconds");
+const SS::Char* LC_SL_Time_TimeZone = TXT("timezone");
+const SS::Char* LC_SL_Time_Date = TXT("date");
 
-const SS::CHAR* LC_SL_Math = TXT("SSMath");
+const SS::Char* LC_SL_Math = TXT("SSMath");
 
-const SS::CHAR* LC_SL_Common = TXT("SSCommon");
+const SS::Char* LC_SL_Common = TXT("SSCommon");
 
-const SS::CHAR* LC_SL_List = TXT("SSList");
+const SS::Char* LC_SL_List = TXT("SSList");
 
-const SS::CHAR* LC_SL_LangOpts = TXT("SSLangOpts");
+const SS::Char* LC_SL_LangOpts = TXT("SSLangOpts");
 
 } //end namespace SS
 
@@ -207,7 +207,7 @@ void SS::InitConstants(){
 	gpNegInfinityConst->ForceConversion( VARTYPE_NUM );
 	gpNegInfinityConst->SetConst();
 	
-	gpNewLineConst = CreateVariable<Variable>( TXT("endl"), true, STRING(TXT("\n")) );
+	gpNewLineConst = CreateVariable<Variable>( TXT("endl"), true, String(TXT("\n")) );
 
 
 	//The below part sets the decimal point and thousands seperator to
@@ -226,7 +226,7 @@ void SS::InitConstants(){
 	
 	
 	//VERY IMPORTANT THAT THIS GETS SET
-	gpEmptyList = CreateGeneric<List>( STRING(), true );
+	gpEmptyList = CreateGeneric<List>( String(), true );
 
 
 

@@ -20,32 +20,32 @@ const Word SS::NULL_WORD;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Smushes the CompoundString into one simple string and returns it.
 */
-SS::STRING SS::CollapseCompoundString( const SS::CompoundString& String )
+SS::String SS::CollapseCompoundString( const SS::CompoundString& S )
 {
-	STRING tmp;
+	String tmp;
 	size_t i = 0;
-	for( i = 0; i < String.size(); i++ )
+	for( i = 0; i < S.size(); i++ )
 	{
-			tmp += String[i];
-			if( i != String.size() - 1 ) tmp += LC_ScopeResolution;
+			tmp += S[i];
+			if( i != S.size() - 1 ) tmp += LC_ScopeResolution;
 	}
 	
 	return tmp;	
 }
 
 
-SS::CompoundString SS::MakeCompoundString( const SS::STRING& S )
+SS::CompoundString SS::MakeCompoundString( const SS::String& S )
 {
 	return CompoundString( 1, S );	
 }
 
-SS::CompoundString SS::MakeCompoundID( const SS::STRING& S )
+SS::CompoundString SS::MakeCompoundID( const SS::String& S )
 {
 	
 	if( S.length() == 0 ) return CompoundString();
 	
-	CompoundString String;
-	STRING tmp;
+	CompoundString Out;
+	String tmp;
 	
 	size_t i;
 	for( i = 0; i < S.length(); i++ )
@@ -53,14 +53,14 @@ SS::CompoundString SS::MakeCompoundID( const SS::STRING& S )
 		if( S[i] != LC_ScopeResolution[0] ) tmp += S[i];
 		else
 		{
-			String.push_back( tmp );
+			Out.push_back( tmp );
 			tmp.clear();
 		}	
 	}
 	
-	String.push_back( tmp );
+	Out.push_back( tmp );
 	
-	return String;
+	return Out;
 }
 
 
@@ -73,12 +73,12 @@ Word::Word()
 {
 }
 
-Word::Word( const SS::STRING& S,
+Word::Word( const SS::String& S,
 		    WordType Type,
 			ExtraDesc Extra /*=EXTRA_NULL*/ )
 	: Type(Type), Extra(Extra)
 {
-	String.push_back(S);
+	Str.push_back(S);
 }
 
 
@@ -88,7 +88,7 @@ Word::Word( WordType Type, ExtraDesc Extra /*=EXTRA_NULL*/ )
 }
 
 Word::Word( const Word& SomeWord )
-	: String(SomeWord.String), Type(SomeWord.Type), Extra(SomeWord.Extra)
+	: Str(SomeWord.Str), Type(SomeWord.Type), Extra(SomeWord.Extra)
 {
 }
 
@@ -96,7 +96,7 @@ Word::Word( const Word& SomeWord )
 */
 Word& Word::operator=( const Word& W )
 {
-	String = W.String;
+	Str = W.Str;
 	Type = W.Type;
 	Extra = W.Extra;
 
@@ -107,7 +107,7 @@ Word& Word::operator=( const Word& W )
 */
 bool Word::operator==( const Word& W ) const
 {
-	if( Type == W.Type && Extra == W.Extra && String == W.String )
+	if( Type == W.Type && Extra == W.Extra && Str == W.Str )
 	{
 		return true;
 	}
@@ -124,7 +124,7 @@ bool Word::operator==( const Word& W ) const
 */
 bool Word::IsLiteral() const
 {
-	if( Type == WORDTYPE_STRINGLITERAL ||
+	if( Type == WORDTYPE_StringLITERAL ||
 		Type == WORDTYPE_BOOLLITERAL ||
 		Type == WORDTYPE_FLOATLITERAL ||
 		Type == WORDTYPE_EMPTYLISTLITERAL )
@@ -179,11 +179,11 @@ void Word::InterpretAsUnaryOp() const
  		Word's identifier.  This function expects a well formed compound
  		identifier.  GIGO.
 */
-void Word::DivideAndAssignString( const SS::STRING& S )
+void Word::DivideAndAssignString( const SS::String& S )
 {
 	if( S.length() == 0 ) return;
-	String.clear();
-	STRING tmp;
+	Str.clear();
+	String tmp;
 	
 	size_t i;
 	for( i = 0; i < S.length(); i++ )
@@ -192,7 +192,7 @@ void Word::DivideAndAssignString( const SS::STRING& S )
 		else
 		{
 			if( tmp.length() ){
-				String.push_back( tmp );
+				Str.push_back( tmp );
 				tmp.clear();
 			} 	
 		}	
@@ -202,8 +202,8 @@ void Word::DivideAndAssignString( const SS::STRING& S )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Smushes the CompoundString into one simple string and returns it.
 */
-SS::STRING Word::GetSimpleString() const
+SS::String Word::GetSimpleString() const
 {
-	return CollapseCompoundString( String );
+	return CollapseCompoundString( Str );
 }
 

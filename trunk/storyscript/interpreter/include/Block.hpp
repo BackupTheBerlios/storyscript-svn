@@ -51,7 +51,7 @@ protected:
 		\param ListIndex The order of the block in relation to others.  (So the
 		next block an be auto-called
 	*/
-	Block( const SS::STRING& Name, bool Const,
+	Block( const SS::String& Name, bool Const,
 		   Interpreter& I, const Bookmark& Position, BlockIndex ListIndex );
 
 public:
@@ -68,7 +68,7 @@ public:
 	VariableBasePtr Operate( VariableBasePtr Params );
 	
 	/// Returns the "out" string.
-	STRING& GetOutString();
+	String& GetOutString();
 	
 	/// Returns true if the block has been "said" or executed at least once.
 	bool HasBeenSaid() const;
@@ -117,7 +117,7 @@ private:
 	
 	Interpreter* mpI;
 
-	//SS::STRING mSpeechFileName;
+	//SS::String mSpeechFileName;
 };
 
 

@@ -15,7 +15,7 @@ using namespace SS;
 
 //This one is common
 
-CHAR* SS::STRCPY( CHAR* dest, const CHAR* src, unsigned int dest_size )
+Char* SS::STRCPY( Char* dest, const Char* src, unsigned int dest_size )
 {
 	if( dest_size == 0 ) return dest;
 	

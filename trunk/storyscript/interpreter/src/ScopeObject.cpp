@@ -18,10 +18,10 @@ NOTES: Anything that can reside in a scope derives from this (Scope).
 
 using namespace SS;
 
-const STRING SS::UNNAMMED;
+const String SS::UNNAMMED;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObject::ScopeObject( const STRING& Name /*= STRING()*/,
+ScopeObject::ScopeObject( const String& Name /*= String()*/,
 						  bool Const /*= false*/ )
 {
 	mName = Name;
@@ -74,7 +74,7 @@ ScopePtr ScopeObject::GetParent() const
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void ScopeObject::SetName( const STRING& NewName )
+void ScopeObject::SetName( const String& NewName )
 {
 	mName = NewName;
 
@@ -93,23 +93,23 @@ void ScopeObject::SetName( const STRING& NewName )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-const STRING& ScopeObject::GetName() const
+const String& ScopeObject::GetName() const
 {
 	return mName;
 }
 
-SS::CHAR* ScopeObject::GetName( SS::CHAR* Buffer, unsigned int BufferSize ) const
+SS::Char* ScopeObject::GetName( SS::Char* Buffer, unsigned int BufferSize ) const
 {
 	return SS::STRCPY( Buffer, mName.c_str(), BufferSize );	
 }
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-STRING ScopeObject::GetFullName() const
+String ScopeObject::GetFullName() const
 {
     if( mpParent != NULL )
 	{
-		STRING Temp = mpParent->GetFullName();
+		String Temp = mpParent->GetFullName();
 		Temp += ':' ;
 		Temp += mName;
 		
@@ -122,7 +122,7 @@ STRING ScopeObject::GetFullName() const
 }
 
 
-SS::CHAR* ScopeObject::GetFullName( SS::CHAR* Buffer, unsigned int BufferSize ) const
+SS::Char* ScopeObject::GetFullName( SS::Char* Buffer, unsigned int BufferSize ) const
 {
 	return SS::STRCPY( Buffer, GetFullName().c_str(), BufferSize );
 }
@@ -157,7 +157,7 @@ void ScopeObject::AssertCastingAllowed() const
 {
 	if( mpThis.expired() )
 	{
-		STRING tmp = TXT("Cannot cast \'");
+		String tmp = TXT("Cannot cast \'");
 		tmp += GetFullName();
 		tmp += TXT("\'.  Probably a bug in the interpreter.");
 		ThrowParserAnomaly( tmp, ANOMALY_NOCONVERSION );
@@ -247,9 +247,9 @@ const OperatorPtr ScopeObject::CastToOperator() const{
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void ScopeObject::ThrowBadConversion( const STRING& Type, const STRING& Addendum /*= STRING()*/ ) const
+void ScopeObject::ThrowBadConversion( const String& Type, const String& Addendum /*= String()*/ ) const
 {
-	STRING m = TXT("Cannot cast \'");
+	String m = TXT("Cannot cast \'");
 	m += mName;
 	m += TXT("\' to a ");
 	m += Type;

@@ -49,13 +49,13 @@ public:
 	}
 	
 	const CompoundString& GetLooseIDName(){ return LooseID; }
-	const STRING GetLooseIDNameSimple(){ return CollapseCompoundString(LooseID); }
+	const String GetLooseIDNameSimple(){ return CollapseCompoundString(LooseID); }
 	
 				
 private:
 	void ThrowError() const
 	{
-		STRING Tmp = TXT("Cannot find object named \'");
+		String Tmp = TXT("Cannot find object named \'");
 		Tmp += CollapseCompoundString(LooseID);
 		Tmp += TXT("\'.");
 		ThrowParserAnomaly( Tmp, ANOMALY_IDNOTFOUND );
@@ -290,11 +290,11 @@ VariableBasePtr Expression::InternalEvaluate(
 		else if( FirstWord.Extra == EXTRA_BOOLLITERAL_False ) {
 			return CreateVariable<Variable>( UNNAMMED, true, false );
 		}
-		else if( FirstWord.Type == WORDTYPE_STRINGLITERAL ||
+		else if( FirstWord.Type == WORDTYPE_StringLITERAL ||
 				 FirstWord.Type == WORDTYPE_FLOATLITERAL )
 		{
 			//Here is where the effectiveness of my autoconversions get tested.
-			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, true, (*this)[0].String[0] ) );
+			VariablePtr pTempVar( CreateVariable<Variable>( UNNAMMED, true, (*this)[0].Str[0] ) );
 
 			if( FirstWord.Type == WORDTYPE_FLOATLITERAL ) {
 				pTempVar->ForceConversion( VARTYPE_NUM );
@@ -611,9 +611,9 @@ bool Expression::StripOutlyingParenthesis() const
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-void Expression::ThrowExpressionAnomaly( const STRING& Desc, AnomalyCode Code ) const
+void Expression::ThrowExpressionAnomaly( const String& Desc, AnomalyCode Code ) const
 {
-	STRING FullDesc = TXT("Bad expression: \'");
+	String FullDesc = TXT("Bad expression: \'");
 	FullDesc += DumpToString();
 	FullDesc += TXT("\' --- ");
 	FullDesc += Desc;
@@ -623,9 +623,9 @@ void Expression::ThrowExpressionAnomaly( const STRING& Desc, AnomalyCode Code ) 
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-STRING Expression::DumpToString() const
+String Expression::DumpToString() const
 {
-	STRING Out;
+	String Out;
 	unsigned int i;
 	for( i = 0; i < size(); i++ )
 	{
@@ -644,9 +644,9 @@ STRING Expression::DumpToString() const
 			Out += gUnaryOperatorReverseMap[ Temp.Extra ];
 			break;
 
-		case WORDTYPE_STRINGLITERAL:
+		case WORDTYPE_StringLITERAL:
 			Out += TXT("\"");
-			Out += Temp.String[0];
+			Out += Temp.Str[0];
 			Out += TXT("\"");
 			break;
 
@@ -668,7 +668,7 @@ STRING Expression::DumpToString() const
 			break;
 
 		default:
-			Out += Temp.String[0];
+			Out += Temp.Str[0];
 		}
 
 		Out += TXT(" ");
@@ -963,7 +963,7 @@ void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 			//Just returns a LooseID.				
 			if( i > 0 && (*mpWordList)[ i-1 ].Extra == EXTRA_BINOP_ScopeResolution )
 			{
-				ScopeObjectPtr pTmpPtr( new LooseIdentifier( (*mpWordList)[i].String ) );
+				ScopeObjectPtr pTmpPtr( new LooseIdentifier( (*mpWordList)[i].Str ) );
 				pTmpPtr->SetSharedPtr( pTmpPtr );
 				
 				(*pCache)[i] = pTmpPtr;
@@ -974,7 +974,7 @@ void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 			
 			try{
 				ScopeObjectPtr pTmpPtr =
-				mI.GetScopeObject( (*mpWordList)[i].String );
+				mI.GetScopeObject( (*mpWordList)[i].Str );
 				
 				(*pCache)[i] = pTmpPtr;
 			}
@@ -984,7 +984,7 @@ void Expression::CacheIdentifierObjects( ObjectCachePtr pCache ) const
 				{
 					//We don't throw an error yet, because this may be a variable/block/character
 					//declaration.  Just create a LooseID and it will get taken care of later.
-					ScopeObjectPtr pTmpPtr( new LooseIdentifier( (*mpWordList)[i].String ) );
+					ScopeObjectPtr pTmpPtr( new LooseIdentifier( (*mpWordList)[i].Str ) );
 					pTmpPtr->SetSharedPtr( pTmpPtr );
 					
 					(*pCache)[i] = pTmpPtr;
@@ -1039,13 +1039,13 @@ VariableBasePtr Expression::EvaluateUnaryOp ( ExtraDesc Op, VariableBasePtr pRig
 				//		At this point there is no spereation between players and characters.
 				return
 					mI.MakeScopeObject( 
-					SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
+					SCOPEOBJ_CharACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 			}
 			else if( Op == EXTRA_UNOP_Character )
 			{
 				return
 					mI.MakeScopeObject( 
-					SCOPEOBJ_CHARACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
+					SCOPEOBJ_CharACTER, pLooseID->GetLooseIDName(), IsStatic() )->CastToVariableBase();
 			}
 			else
 			{
@@ -1237,7 +1237,7 @@ VariableBasePtr Expression::EvaluateBinaryOp( ExtraDesc Op, VariableBasePtr pLef
 	//No operator found!
 	else
 	{
-		STRING tmp = TXT("Binary operator \'");
+		String tmp = TXT("Binary operator \'");
 		tmp += Op;
 		tmp += TXT("\' is unknown.");
 		ThrowParserAnomaly( tmp, ANOMALY_UNKNOWNOP );

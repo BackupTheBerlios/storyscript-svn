@@ -19,9 +19,9 @@ using namespace SS;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: Mangles a file name into a valid scope name.
 */
-SS::STRING SS::MakeScopeNameFromFileName( const SS::STRING& FileName )
+SS::String SS::MakeScopeNameFromFileName( const SS::String& FileName )
 {
-	STRING ScopeName;
+	String ScopeName;
 
 	unsigned int i;
 	for( i = 0; i < FileName.length(); i++ )
@@ -50,9 +50,9 @@ SS::STRING SS::MakeScopeNameFromFileName( const SS::STRING& FileName )
  BreakOffFirstID
  NOTES:  With something like :Foo:Bar, it will return "Foo" and S will be "Bar".
 */
-SS::STRING SS::BreakOffFirstID( SS::STRING& S )
+SS::String SS::BreakOffFirstID( SS::String& S )
 {
-	SS::STRING TempString;
+	SS::String TempString;
 	
 	size_t i = 0;
 
@@ -76,9 +76,9 @@ SS::STRING SS::BreakOffFirstID( SS::STRING& S )
 }
 
 //This version should be faster, I think
-SS::STRING SS::BreakOffFirstID( const SS::STRING& S, SS::STRING& Remainder )
+SS::String SS::BreakOffFirstID( const SS::String& S, SS::String& Remainder )
 {
-	SS::STRING TempString;
+	SS::String TempString;
 	
 	size_t i = 0;
 
@@ -106,17 +106,17 @@ SS::STRING SS::BreakOffFirstID( const SS::STRING& S, SS::STRING& Remainder )
  NOTES: This version is different.  Besides it taking a c-style string, it doesn't
 		modify the source.  This version is safe for strange linking stuff.
 */
-void SS::BreakOffLastID( const SS::STRING& src, CHAR* dest, unsigned int DestSize )
+void SS::BreakOffLastID( const SS::String& src, Char* dest, unsigned int DestSize )
 {
-	SS::STRING SrcCpy = src;
+	SS::String SrcCpy = src;
 	BreakOffFirstID( SrcCpy );
 
 	SS::STRCPY( dest, SrcCpy.c_str(), DestSize );
 }
 
-void SS::BreakOffFirstID( const SS::STRING& src, CHAR* dest, unsigned int DestSize )
+void SS::BreakOffFirstID( const SS::String& src, Char* dest, unsigned int DestSize )
 {
-	SS::STRING SrcCpy = src;
+	SS::String SrcCpy = src;
 	BreakOffFirstID( SrcCpy );
 
 	SS::STRCPY( dest, SrcCpy.c_str(), DestSize );
@@ -127,9 +127,9 @@ void SS::BreakOffFirstID( const SS::STRING& src, CHAR* dest, unsigned int DestSi
  BreakOffLastID
  NOTES: 
 */
-SS::STRING SS::BreakOffLastID( SS::STRING& S )
+SS::String SS::BreakOffLastID( SS::String& S )
 {
-	SS::STRING TempString;
+	SS::String TempString;
 
 	while( !S.empty() && 
 		(IsAlpha( S[S.length()-1] ) || IsNumber( S[S.length()-1] ) || S[S.length()-1] == '_') )
@@ -154,24 +154,24 @@ SS::STRING SS::BreakOffLastID( SS::STRING& S )
  GetCharType
  NOTES: 
 */
-CharType SS::GetCharType( CHAR c )
+CharType SS::GetCharType( Char c )
 {
-	if( IsNumber( c ) )       return CHARTYPE_NUMERICAL;
-	else if( IsBinaryOperator( c ) || IsUnaryOperator( c ) )   return CHARTYPE_OPERATOR;
-	else if( IsWhitespace( c ) ) return CHARTYPE_WHITESPACE;
-	else if( IsAlpha( c ) ) return CHARTYPE_ALPHABETICAL;
-	else                         return CHARTYPE_SPECIAL;
+	if( IsNumber( c ) )       return CharTYPE_NUMERICAL;
+	else if( IsBinaryOperator( c ) || IsUnaryOperator( c ) )   return CharTYPE_OPERATOR;
+	else if( IsWhitespace( c ) ) return CharTYPE_WHITESPACE;
+	else if( IsAlpha( c ) ) return CharTYPE_ALPHABETICAL;
+	else                         return CharTYPE_SPECIAL;
 }
 
 
 
 
-bool SS::IsNewline( CHAR c )
+bool SS::IsNewline( Char c )
 {
 	return (c == '\n' || c == '\r') ? true : false;
 }
 
-bool SS::IsNumber( CHAR c )
+bool SS::IsNumber( Char c )
 {
 	if( (('0' <= c) && (c <= '9')) /*|| c == '.'*/ ) return true;
 	else return false;
@@ -184,16 +184,16 @@ bool SS::IsNumber( CHAR c )
 		The version that takes a single char returns true if that character is 
 		a character that appears in the first char of an operator.
 */
-bool SS::IsBinaryOperator( const SS::STRING& c )
+bool SS::IsBinaryOperator( const SS::String& c )
 {
 	if( gBinaryOperatorMap.find( c.c_str() ) != gBinaryOperatorMap.end() ) return true;
 	else return false;
 }
 
 //Checks single characters
-bool SS::IsBinaryOperator( CHAR c )
+bool SS::IsBinaryOperator( Char c )
 {
-	std::map< ExtraDesc, const SS::CHAR* >::iterator i;
+	std::map< ExtraDesc, const SS::Char* >::iterator i;
 	
 	for( i = gBinaryOperatorReverseMap.begin(); i != gBinaryOperatorReverseMap.end(); i++ )	{
 		if( c == (*i).second[0] ) return true;
@@ -207,15 +207,15 @@ bool SS::IsBinaryOperator( CHAR c )
  IsUnaryOperator
  NOTES: See the above (IsBinaryOperator)
 */
-bool SS::IsUnaryOperator( const SS::STRING& c )
+bool SS::IsUnaryOperator( const SS::String& c )
 {
 	if( gUnaryOperatorMap.find( c.c_str() ) != gUnaryOperatorMap.end() ) return true;
 	else return false;
 }
 
-bool SS::IsUnaryOperator( CHAR c )
+bool SS::IsUnaryOperator( Char c )
 {
-	std::map< ExtraDesc, const SS::CHAR* >::iterator i;
+	std::map< ExtraDesc, const SS::Char* >::iterator i;
 	
 	for( i = gUnaryOperatorReverseMap.begin(); i != gUnaryOperatorReverseMap.end(); i++ )	{
 		if( (*i).second[0] == c ) return true;	
@@ -226,7 +226,7 @@ bool SS::IsUnaryOperator( CHAR c )
 
 
 
-bool SS::IsSpecial( CHAR c )
+bool SS::IsSpecial( Char c )
 {
 	switch( c )
 	{
@@ -240,14 +240,14 @@ bool SS::IsSpecial( CHAR c )
 	}
 }
 
-bool SS::IsWhitespace( CHAR c )
+bool SS::IsWhitespace( Char c )
 {
 	if( IsNewline(c) || c == ' ' || c == '\t' ) return true;
 	else return false;
 
 }
 
-bool SS::IsAlpha( CHAR c )
+bool SS::IsAlpha( Char c )
 {
 	if( ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') ) return true;
 	else return false;
@@ -271,8 +271,8 @@ bool SS::IsSingleListStatement( const Expression& ExpressionBuffer )
 
 	if( ExpressionBuffer.size() >= 3 &&
 		ExpressionBuffer[0].Type == WORDTYPE_IDENTIFIER &&
-		ExpressionBuffer[1].SS::STRING == TXT("[") &&
-		ExpressionBuffer.back().SS::STRING == TXT("]") )
+		ExpressionBuffer[1].SS::String == TXT("[") &&
+		ExpressionBuffer.back().SS::String == TXT("]") )
 	{
 		//if there are no other ]'s, than return true
 		int i;

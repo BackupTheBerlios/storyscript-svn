@@ -27,7 +27,7 @@ namespace SS{
  * These are used for complex identifiers (foo:bar), to hold the individual
  * identifiers.
  */
-typedef std::vector<SS::STRING> CompoundString;
+typedef std::vector<SS::String> CompoundString;
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
@@ -49,7 +49,7 @@ public:
 	Word();
 	
 	/// Constructor
-	Word( const SS::STRING& String, WordType Type, ExtraDesc Extra = EXTRA_NULL );
+	Word( const SS::String& String, WordType Type, ExtraDesc Extra = EXTRA_NULL );
 	
 	/// Constructor
 	Word( WordType Type, ExtraDesc Extra = EXTRA_NULL );
@@ -66,10 +66,10 @@ public:
 		\param String The string being assigned.
 	
 	*/
-	void DivideAndAssignString( const SS::STRING& String );
+	void DivideAndAssignString( const SS::String& String );
 	
 	/// Returns the compound string smushed into a single string.
-	SS::STRING GetSimpleString() const;
+	SS::String GetSimpleString() const;
 	
 	/// Destructor
 	virtual ~Word() {}
@@ -95,7 +95,7 @@ public:
 	void InterpretAsUnaryOp() const;
 
 	/// The compound string that hold the identifier name or a literal.
-	CompoundString String;
+	CompoundString Str;
 	
 	/// The simple type.
 	mutable WordType Type;
@@ -114,7 +114,7 @@ public:
 	
 	\param S The string to be converted.
 */
-SS::CompoundString MakeCompoundString( const SS::STRING& S );
+SS::CompoundString MakeCompoundString( const SS::String& S );
 
 /**
 	\brief Make a CompoundString out of a simple string containing an ID.
@@ -124,7 +124,7 @@ SS::CompoundString MakeCompoundString( const SS::STRING& S );
 	
 	\param S The string to be converted.
 */
-SS::CompoundString MakeCompoundID( const SS::STRING& S);
+SS::CompoundString MakeCompoundID( const SS::String& S);
 
 /**
 	\brief Collapses a compound string into a simple string.
@@ -134,7 +134,7 @@ SS::CompoundString MakeCompoundID( const SS::STRING& S);
 	
 	\param CS The CompoundString you would like converted.
 */
-SS::STRING CollapseCompoundString( const SS::CompoundString& CS );
+SS::String CollapseCompoundString( const SS::CompoundString& CS );
 
 //Defined in Word.cpp:
 

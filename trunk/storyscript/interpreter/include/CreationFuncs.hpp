@@ -119,7 +119,7 @@ boost::shared_ptr<T> CreateGeneric( Interpreter& I );
 	\sa CreationFuncs
 */
 template <typename T > extern
-boost::shared_ptr<T> CreateGeneric( const SS::STRING& Name = SS::STRING(),
+boost::shared_ptr<T> CreateGeneric( const SS::String& Name = SS::String(),
                                     bool Const = false );
 /**
 	\brief Create new instances of ScopeObject derivatives.
@@ -143,7 +143,7 @@ template <typename T > extern boost::shared_ptr<T> CreateBasic( );
 	\sa CreationFuncs
 */
 template <typename T > extern
-boost::shared_ptr<T> CreateVariable( const SS::STRING& Name = SS::STRING,
+boost::shared_ptr<T> CreateVariable( const SS::String& Name,
                                      bool Const, const Variable& V );
 
 /**

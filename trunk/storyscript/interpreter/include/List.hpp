@@ -71,7 +71,7 @@ public:
 	//virtual VariableBasePtr op_not() const;
 
 protected:
-	virtual ScopeObjectPtr GetScopeObjectHook( const SS::STRING& );
+	virtual ScopeObjectPtr GetScopeObjectHook( const SS::String& );
 
 private:
 	void RegisterPredefinedVars();
@@ -92,7 +92,7 @@ private:
 	class InternalListFunc : public Operator
 	{
 		public:
-		InternalListFunc( const STRING& Name, List& Parent )
+		InternalListFunc( const String& Name, List& Parent )
 		: Operator( Name, true ), mParentList( Parent )
 		{}
 		

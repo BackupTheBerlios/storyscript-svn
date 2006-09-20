@@ -57,7 +57,7 @@ class Interpreter;
 
 
 
-extern SS_API const STRING UNNAMMED;
+extern SS_API const String UNNAMMED;
 
 //
 //There are certain classes that should not cast.  Because it is unsafe to do
@@ -160,7 +160,7 @@ protected:
 		\param Const Whether the object is constant (modifiable) or not. 
 		
 	*/
-	ScopeObject( const SS::STRING& Name = SS::STRING(), bool Const = false );
+	ScopeObject( const SS::String& Name = SS::String(), bool Const = false );
 
 public:
 	/// Destructor
@@ -215,19 +215,19 @@ public:
 		
 		\param S The new name for the oject.
 	*/
-	void          SetName(const SS::STRING& S);
+	void          SetName(const SS::String& S);
 	
 	/**
 		\brief Returns the name of the object.
 	*/
-	const SS::STRING& GetName() const;
+	const SS::String& GetName() const;
 	
 	/**
 		\brief Returns the full name of the object.
 		
 		For instance, ":test_ssconv:foo:bar".
 	*/
-	SS::STRING        GetFullName() const;
+	SS::String        GetFullName() const;
 	
 	/**
 		\brief Overloaded GetName for c-style strings.
@@ -239,7 +239,7 @@ public:
 		\param BufferSize The size of the output buffer.
 		\return The Buffer
 	*/
-	SS::CHAR* GetName( SS::CHAR* Buffer, unsigned int BufferSize ) const;
+	SS::Char* GetName( SS::Char* Buffer, unsigned int BufferSize ) const;
 	
 	/**
 		\brief Overloaded GetFullName for c-style strings.
@@ -251,7 +251,7 @@ public:
 		\param BufferSize The size of the output buffer.
 		\return The Buffer
 	*/
-	SS::CHAR* GetFullName( SS::CHAR* Buffer, unsigned int BufferSize ) const;
+	SS::Char* GetFullName( SS::Char* Buffer, unsigned int BufferSize ) const;
 
 	/**
 		\brief Set the internal shared_ptr of itself.
@@ -334,7 +334,7 @@ protected:
 	void AssertCastingAllowed() const;
 
 	/// The object's name.
-	SS::STRING mName;
+	SS::String mName;
 	
 	/**
 		\brief This internal this shared_ptr.
@@ -353,7 +353,7 @@ private:
 		
 		This is called by the CastTo function when the cast is impossible.  
 	*/
-	void ThrowBadConversion( const STRING& Type, const STRING& Addendum = STRING()  ) const;
+	void ThrowBadConversion( const SS::String& Type, const SS::String& Addendum = SS::String()  ) const;
 
 	/// Used by the constructors to set internals to their initial values.
 	void ZeroVars();

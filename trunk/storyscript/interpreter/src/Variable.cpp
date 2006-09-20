@@ -236,7 +236,7 @@ void VariableBase::AcceptVisitor( ScopeObjectVisitor& V ){
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VarType VariableBase::GetVariableType() const{
-	return VARTYPE_STRING;
+	return VARTYPE_String;
 }
 
 
@@ -297,7 +297,7 @@ StringType& VariableBase::GetStringData( StringType& Out ) const{
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-CHAR* VariableBase::GetStringData( CHAR* Buffer, unsigned int BufferSize ) const
+Char* VariableBase::GetStringData( Char* Buffer, unsigned int BufferSize ) const
 {
 	SS::STRCPY( Buffer, GetStringData().c_str(), BufferSize );
 	return Buffer;
@@ -305,14 +305,14 @@ CHAR* VariableBase::GetStringData( CHAR* Buffer, unsigned int BufferSize ) const
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-VariableBasePtr VariableBase::UndefinedOp( const SS::STRING& Op) const
+VariableBasePtr VariableBase::UndefinedOp( const SS::String& Op) const
 {
 	TypeCheckVisitor TypeChecker;
 
 	//This is safe, because TypeChekcer doesn't modify anything.
 	const_cast<VariableBase*>(this)->AcceptVisitor( TypeChecker );
 
-	STRING tmp = TXT("\'");
+	String tmp = TXT("\'");
 	tmp += Op;
 	tmp += TXT("\' operator not defined by \'");
 	tmp += TypeChecker.ReturnTypeString();
@@ -456,7 +456,7 @@ Variable::Variable( SS_DECLARE_BASE_ARGS,
 Variable::Variable( SS_DECLARE_BASE_ARGS,
 					const StringType& X )
 : VariableBase(SS_BASE_ARGS),
-  mCurrentType( VARTYPE_STRING ),
+  mCurrentType( VARTYPE_String ),
   mNumPart( LangOpts::Instance().DefaultPrecision ),
   mBoolPart(false),
   mStringPart( X )
@@ -479,11 +479,11 @@ Variable::Variable( SS_DECLARE_BASE_ARGS,
 
 
 
-VarType Variable::mTypeConversionTable[VARTYPE_STRING+1][VARTYPE_STRING+1] =
+VarType Variable::mTypeConversionTable[VARTYPE_String+1][VARTYPE_String+1] =
 {    //Num            Bool           String
 	{VARTYPE_NUM,    VARTYPE_NUM,      VARTYPE_NUM }, //Num
 	{VARTYPE_BOOL,   VARTYPE_BOOL,     VARTYPE_BOOL   }, //Bool
-	{VARTYPE_NUM,    VARTYPE_STRING,    VARTYPE_STRING }  //String
+	{VARTYPE_NUM,    VARTYPE_String,    VARTYPE_String }  //String
 };  
 
 
@@ -496,7 +496,7 @@ void Variable::RegisterPredefinedVars()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObjectPtr Variable::GetScopeObjectHook( const STRING& Name )
+ScopeObjectPtr Variable::GetScopeObjectHook( const String& Name )
 {
 	if( !mPrecisionVarCreated && Name == LC_Precision ){
 		mPrecisionVarCreated = true;
@@ -553,7 +553,7 @@ VariableBasePtr Variable::operator+(const VariableBase& X) const
 		case VARTYPE_BOOL:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 		default:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetStringData() + X.GetStringData() ) );
@@ -592,13 +592,13 @@ VariableBasePtr Variable::operator-(const VariableBase& X) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 			break;
 		default:
-			ThrowParserAnomaly( TXT("Can't subtract two strings."), ANOMALY_BADSTRINGOP ); 
+			ThrowParserAnomaly( TXT("Can't subtract two strings."), ANOMALY_BADStringOP ); 
 		}
 	}
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			ThrowParserAnomaly( TXT("Can't subtract two strings."), ANOMALY_BADSTRINGOP ); 
+			ThrowParserAnomaly( TXT("Can't subtract two strings."), ANOMALY_BADStringOP ); 
 		}
 		else throw;
 	}
@@ -614,7 +614,7 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 		try{
 		switch( ContextType )
 		{
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 		case VARTYPE_NUM:
 		{
 			VariablePtr tmp = CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, false );
@@ -628,13 +628,13 @@ VariableBasePtr Variable::operator*(const VariableBase& X) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() || X.GetBoolData() ) );
 			break;
 		default:
-			ThrowParserAnomaly( TXT("Can't multiply two strings."), ANOMALY_BADSTRINGOP ); 
+			ThrowParserAnomaly( TXT("Can't multiply two strings."), ANOMALY_BADStringOP ); 
 		}
 	}
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			ThrowParserAnomaly( TXT("Can't multiply two strings."), ANOMALY_BADSTRINGOP ); 
+			ThrowParserAnomaly( TXT("Can't multiply two strings."), ANOMALY_BADStringOP ); 
 		}
 		else throw;
 	}
@@ -688,13 +688,13 @@ VariableBasePtr Variable::operator/(const VariableBase& X) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS, this->GetBoolData() && X.GetBoolData() ) );
 			break;
 		default:
-			ThrowParserAnomaly( TXT("Can't divide two strings."), ANOMALY_BADSTRINGOP ); 
+			ThrowParserAnomaly( TXT("Can't divide two strings."), ANOMALY_BADStringOP ); 
 		}
 	}
 	catch( ParserAnomaly E )
 	{
 		if( E.ErrorCode == ANOMALY_NOCONVERSION ){
-			ThrowParserAnomaly( TXT("Can't divide two strings."), ANOMALY_BADSTRINGOP ); 
+			ThrowParserAnomaly( TXT("Can't divide two strings."), ANOMALY_BADStringOP ); 
 		}
 		else throw;
 	}
@@ -710,9 +710,9 @@ VariableBasePtr Variable::operator=( const VariableBase& X )
 	this->mBoolPart = false;
 
 	switch( X.GetVariableType() ){
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			this->mStringPart = X.GetStringData();
-			this->mCurrentType = VARTYPE_STRING;
+			this->mCurrentType = VARTYPE_String;
 			break;
 		case VARTYPE_NUM:
 			mpfr_set( mNumPart.get(), X.GetNumData().get(), LangOpts::Instance().RoundingMode );
@@ -751,7 +751,7 @@ VariableBasePtr Variable::operator==( const VariableBase& X ) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 				
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					this->GetStringData() == X.GetStringData() ) );
@@ -788,7 +788,7 @@ VariableBasePtr Variable::operator!=( const VariableBase& X ) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					!mpfr_equal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 			break;
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					this->GetStringData() != X.GetStringData() ) );
@@ -825,7 +825,7 @@ VariableBasePtr Variable::operator>=( const VariableBase& X ) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					mpfr_greaterequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					this->GetStringData().length() >= X.GetStringData().length() ) );
@@ -862,7 +862,7 @@ VariableBasePtr Variable::operator<=( const VariableBase& X ) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					mpfr_lessequal_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					this->GetStringData().length() <= X.GetStringData().length() ) );
@@ -898,7 +898,7 @@ VariableBasePtr Variable::operator>( const VariableBase& X ) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					mpfr_greater_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					this->GetStringData().length() > X.GetStringData().length() ) );
@@ -933,7 +933,7 @@ VariableBasePtr Variable::operator<( const VariableBase& X ) const
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					mpfr_less_p( GetNumData().get(), X.GetNumData().get() ) ) );
 
-		case VARTYPE_STRING:
+		case VARTYPE_String:
 			return VariableBasePtr(
 				CreateVariable<Variable>( SS_BASE_ARGS_DEFAULTS,
 					this->GetStringData().length() <
@@ -986,7 +986,7 @@ VariableBasePtr Variable::op_neg() const
 	case VARTYPE_BOOL:
 		return this->op_not();
 		
-	case VARTYPE_STRING:
+	case VARTYPE_String:
 	case VARTYPE_NUM:
 	default:
 	{
@@ -1016,9 +1016,9 @@ void Variable::ForceConversion( VarType Type )
 		GetBoolData();
 		mCurrentType = VARTYPE_BOOL;
 		break;
-	case VARTYPE_STRING:
+	case VARTYPE_String:
 		GetStringData();
-		mCurrentType = VARTYPE_STRING;
+		mCurrentType = VARTYPE_String;
 		break;
 	}
 }
@@ -1035,7 +1035,7 @@ NumType Variable::GetNumData() const
 		if( mBoolPart ) mNumPart.set( 1 ); //I'm not sure if this a good idea, or what.
 		else mNumPart = gpNANConst->mNumPart;
 	}
-	else if( mCurrentType == VARTYPE_STRING )
+	else if( mCurrentType == VARTYPE_String )
 	{
 		StringType2NumType( mStringPart, mNumPart );
 	}
@@ -1055,7 +1055,7 @@ BoolType Variable::GetBoolData() const
 		if( mpfr_nan_p( mNumPart.get() ) ) mBoolPart = false;
 		else                              mBoolPart = true;
 	}
-	else if( mCurrentType == VARTYPE_STRING )
+	else if( mCurrentType == VARTYPE_String )
 	{
 		mBoolPart = mStringPart.empty() ? false : true;
 	}

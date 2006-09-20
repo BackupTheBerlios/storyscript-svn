@@ -12,8 +12,7 @@ making the api easier and more intutive.  Once I get it to a point that
 I am (somewhat) happy with I will feature un-lock it.
 
 Here is what I currently have planned.
--Change SS::STRING to SS::String for consitency.
--Change SS::CHAR to SS::Char for consitency.
+-Interface::PresentChoice should not bass around vectors.  At the very least, typedef the thing.
 -Doxygen documentation!!
 
 

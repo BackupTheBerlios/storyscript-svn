@@ -65,7 +65,7 @@ void TypeCheckVisitor::VisitBlock(Block* pO){
 }
 
 void TypeCheckVisitor::VisitCharacter(Character*){
-	mType = SCOPEOBJ_CHARACTER;
+	mType = SCOPEOBJ_CharACTER;
 }
 
 void TypeCheckVisitor::VisitList( List* ){
@@ -90,9 +90,9 @@ ScopeObjectType TypeCheckVisitor::ReturnType() const
  TypeCheckVisitor::ReturnTypeString
  NOTES: Returns a string with the name of the type.  Useful for error output and stuff.
 */
-SS::STRING TypeCheckVisitor::ReturnTypeString() const
+SS::String TypeCheckVisitor::ReturnTypeString() const
 {
-	SS::STRING S;
+	SS::String S;
 
 
 	//I could just use a list with the type as an index, but this is much safer.
@@ -102,7 +102,7 @@ SS::STRING TypeCheckVisitor::ReturnTypeString() const
 		case SCOPEOBJ_SCOPEOBJECT:  S = TXT("ScopeObject");  break;
 		case SCOPEOBJ_SCOPE:	    S = TXT("Scope");        break;
 		case SCOPEOBJ_BLOCK:	    S = TXT("Block");        break;
-		case SCOPEOBJ_CHARACTER:    S = TXT("Character");    break;
+		case SCOPEOBJ_CharACTER:    S = TXT("Character");    break;
 		case SCOPEOBJ_VARIABLEBASE: S = TXT("VariableBase"); break;
 		case SCOPEOBJ_VARIABLE:		S = TXT("Variable");     break;
 		case SCOPEOBJ_LIST:	        S = TXT("List");         break;

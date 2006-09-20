@@ -256,7 +256,7 @@ VariableBasePtr Floor::Operate( VariableBasePtr X )
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
  NOTES: ctor
 */
-MathConstPrec::MathConstPrec( const SS::STRING& Name, bool Const, MathConst& Parent )
+MathConstPrec::MathConstPrec( const SS::String& Name, bool Const, MathConst& Parent )
 	: MagicVarBase( Name, Const ),
 	  mParent(Parent)
 {
@@ -274,20 +274,20 @@ VariableBasePtr MathConstPrec::operator=( const VariableBase& X )
 
 	if( mpfr_less_p( X.GetNumData().get(), MinPrecision.get() ) )
 	{
-		STRING tmp = TXT("Tried to set precision to \'");
+		String tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
 		tmp += TXT("\'.  Can't handle lower than \'");
-		tmp += boost::lexical_cast<STRING>( MPFR_PREC_MIN );
+		tmp += boost::lexical_cast<String>( MPFR_PREC_MIN );
 		tmp += TXT("\'.");
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}
 	
 	if( mpfr_greater_p( X.GetNumData().get(), MaxPrecision.get() ) )
 	{
-		STRING tmp = TXT("Tried to set precision to \'");
+		String tmp = TXT("Tried to set precision to \'");
 		tmp += X.GetStringData();
 		tmp += TXT("\'.  Can't handle higher than \'");
-		tmp += boost::lexical_cast<STRING>( MPFR_PREC_MAX );
+		tmp += boost::lexical_cast<String>( MPFR_PREC_MAX );
 		tmp += TXT("\'.");
 		ThrowParserAnomaly( tmp, ANOMALY_BADPRECISION );
 	}

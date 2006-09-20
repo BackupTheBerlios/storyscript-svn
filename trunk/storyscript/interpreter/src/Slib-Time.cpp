@@ -79,7 +79,7 @@ NOTES: The timer prefers returning itself as a string.  But if that not the,
 case its ok.
 */
 VarType TimeVar::GetVariableType() const{
-	return VARTYPE_STRING;
+	return VARTYPE_String;
 }
 
 
@@ -142,7 +142,7 @@ DateVar::GetVariableType
 NOTES: Returns the prefered type, in this case a string.
 */
 VarType DateVar::GetVariableType() const{
-	return VARTYPE_STRING;
+	return VARTYPE_String;
 }
 
 
@@ -244,7 +244,7 @@ TimeZoneVar::GetVariableType
 NOTES: It prefers string.
 */
 VarType TimeZoneVar::GetVariableType() const{
-	return VARTYPE_STRING;
+	return VARTYPE_String;
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

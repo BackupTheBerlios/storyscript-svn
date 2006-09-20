@@ -113,7 +113,7 @@ protected:
 class BoundFlagVar : public MagicVarBase
 {
 public:
-	BoundFlagVar( const SS::STRING& Name, bool Const, bool& Flag );
+	BoundFlagVar( const SS::String& Name, bool Const, bool& Flag );
 	
 	virtual VariableBasePtr operator=(const VariableBase&);
 
@@ -131,14 +131,14 @@ private:
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 /**
-	\brief Binds a SS::STRING to a storyscript variable.
+	\brief Binds a SS::String to a storyscript variable.
 
-	Create an instance of this to bind a SS::STRING to a storyscript (magic) variable.
+	Create an instance of this to bind a SS::String to a storyscript (magic) variable.
 */
 class BoundStringVar : public MagicVarBase
 {
 public:
-	BoundStringVar( const SS::STRING& Name, bool Const, SS::STRING& String );
+	BoundStringVar( const SS::String& Name, bool Const, SS::String& String );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 
@@ -149,7 +149,7 @@ public:
 	StringType GetStringData() const;
 
 private:
-	SS::STRING& mString;
+	SS::String& mString;
 };
 
 
@@ -163,7 +163,7 @@ private:
 class BoundNumVar : public MagicVarBase
 {
 public:
-	BoundNumVar( const SS::STRING& Name, bool Const, NumType& Num );
+	BoundNumVar( const SS::String& Name, bool Const, NumType& Num );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 
@@ -187,7 +187,7 @@ private:
 class BoundULongVar : public MagicVarBase
 {
 public:
-	BoundULongVar( const STRING& Name, bool Const, unsigned long& ULong );
+	BoundULongVar( const String& Name, bool Const, unsigned long& ULong );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 	
@@ -211,7 +211,7 @@ private:
 class BoundUShortVar : public MagicVarBase
 {
 public:
-	BoundUShortVar( const STRING& Name, bool Const, unsigned short& UShort );
+	BoundUShortVar( const String& Name, bool Const, unsigned short& UShort );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 	
@@ -234,7 +234,7 @@ private:
 class BoundRoundModeVar : public MagicVarBase
 {
 public:
-	BoundRoundModeVar( const STRING& Name, bool Const, mpfr_rnd_t& RoundMode );
+	BoundRoundModeVar( const String& Name, bool Const, mpfr_rnd_t& RoundMode );
 
 	virtual VariableBasePtr operator=( const VariableBase& );
 	
@@ -255,7 +255,7 @@ private:
 class FullNameVar : public MagicVarBase
 {
 public:
-	FullNameVar( const SS::STRING& Name, bool Const, const ScopeObject& Parent );
+	FullNameVar( const SS::String& Name, bool Const, const ScopeObject& Parent );
 
 	VarType GetVariableType() const;
 
@@ -278,7 +278,7 @@ private:
 class ListLengthVar : public MagicVarBase
 {
 public:
-	ListLengthVar( const SS::STRING& Name, bool Const, List& Parent );
+	ListLengthVar( const SS::String& Name, bool Const, List& Parent );
 
 	VariableBasePtr operator=(const VariableBase&);
 
@@ -302,7 +302,7 @@ private:
 class PrecisionVar : public MagicVarBase
 {
 public:
-	PrecisionVar( const SS::STRING& Name, Variable& Parent );
+	PrecisionVar( const SS::String& Name, Variable& Parent );
 
 	VariableBasePtr operator=( const VariableBase&);
 

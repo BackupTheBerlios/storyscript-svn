@@ -58,7 +58,7 @@ ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 	
 	if( Exists( pNewScopeObject->GetName() ) )
 	{
-		STRING Temp = TXT("An object called \'");
+		String Temp = TXT("An object called \'");
 		Temp += pNewScopeObject->GetName();
 		Temp += TXT("\' already exists in scope \'");	
 		Temp += this->GetFullName();
@@ -84,7 +84,7 @@ ScopeObjectPtr Scope::Register( ScopeObjectPtr pNewScopeObject )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
+ScopeObjectPtr Scope::UnRegister( const SS::String& ObjName )
 {
 	AssertNonConst();
 	
@@ -92,7 +92,7 @@ ScopeObjectPtr Scope::UnRegister( const SS::STRING& ObjName )
 	
 	if( i == mList.end() )
 	{
-		STRING tmp = TXT("Cannot delete object \'");
+		String tmp = TXT("Cannot delete object \'");
 		tmp += ObjName;
 		tmp += TXT("\'.  No such object exists.  This is probably caused by a bug in the interpreter.");
 		ThrowParserAnomaly( tmp, ANOMALY_PANIC );		
@@ -126,7 +126,7 @@ void Scope::Clear()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-bool Scope::Exists( const STRING& ID )
+bool Scope::Exists( const String& ID )
 {
 	//Unnamed objects are ignored by this
 	if( ID.length() == 0 ) return false;
@@ -201,7 +201,7 @@ ScopeObjectPtr Scope::GetScopeObject( const CompoundString& Identifer )
 	else 
 	{
 		//Nothing found
-		STRING Temp = TXT("Cannot find any object named \'");
+		String Temp = TXT("Cannot find any object named \'");
 		Temp += CollapseCompoundString( Identifer );
 		Temp += TXT("\'.");
 		ThrowParserAnomaly( Temp, ANOMALY_IDNOTFOUND );
@@ -209,7 +209,7 @@ ScopeObjectPtr Scope::GetScopeObject( const CompoundString& Identifer )
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObjectPtr Scope::GetScopeObjectLocal( const STRING& Identifier )
+ScopeObjectPtr Scope::GetScopeObjectLocal( const String& Identifier )
 {
 	ScopeObjectPtr pReturnValue;
 	if( (pReturnValue = GetScopeObjectLocal_NoThrow( Identifier )) )
@@ -219,14 +219,14 @@ ScopeObjectPtr Scope::GetScopeObjectLocal( const STRING& Identifier )
 	else 
 	{
 		//Nothing found
-		STRING Temp = TXT("Cannot find any object named \'");
+		String Temp = TXT("Cannot find any object named \'");
 		Temp += Identifier;
 		Temp += TXT("\'.");
 		ThrowParserAnomaly( Temp, ANOMALY_IDNOTFOUND );
 	}
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObjectPtr Scope::GetScopeObjectLocal_NoThrow( const STRING& Identifier )
+ScopeObjectPtr Scope::GetScopeObjectLocal_NoThrow( const String& Identifier )
 {
 	/*
 		This object's hook gets called in case the implementer wants
@@ -269,7 +269,7 @@ void Scope::Import( ScopePtr pScope )
 	for( i = 0; i < mImportedScopes.size(); i++ ){
 		if( pScope == mImportedScopes[i] )
 		{
-			STRING tmp = TXT("The scope \'");
+			String tmp = TXT("The scope \'");
 			tmp += pScope->GetFullName();
 			tmp += TXT("\' has already been imported into the scope \'");
 			tmp += this->GetFullName();
@@ -326,7 +326,7 @@ Scope& Scope::GetGlobalScope()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
+ScopeObjectPtr Scope::GetScopeObjectHook( const String& Name )
 {
 	if( !mNameCreated && Name == LC_Name )
 	{
@@ -341,7 +341,7 @@ ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 	else if( !mDocStringCreated && Name == LC_Doc )
 	{
 		mDocStringCreated = true;
-		ScopeObjectPtr Tmp = Register( ScopeObjectPtr( CreateVariable<Variable>( LC_Doc, false, STRING() ) ) );
+		ScopeObjectPtr Tmp = Register( ScopeObjectPtr( CreateVariable<Variable>( LC_Doc, false, String() ) ) );
 		return Tmp;
 	}
 	else return ScopeObjectPtr();
@@ -350,7 +350,7 @@ ScopeObjectPtr Scope::GetScopeObjectHook( const STRING& Name )
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
-STRING& Scope::GetDocString()
+String& Scope::GetDocString()
 {
 	return GetScopeObjectLocal( LC_Doc )->CastToVariable()->GetActualStringData();
 }

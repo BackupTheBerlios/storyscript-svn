@@ -159,7 +159,7 @@ void Generate() const;\
 class MathConstPrec : public MagicVarBase
 {
 	public:
-		MathConstPrec( const SS::STRING& Name, bool Const, MathConst& Parent );
+		MathConstPrec( const SS::String& Name, bool Const, MathConst& Parent );
 
 		VariableBasePtr operator=( const VariableBase& );
 	
