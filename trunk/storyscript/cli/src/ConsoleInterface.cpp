@@ -99,6 +99,7 @@ void ConsoleInterface::StartConversation()
 	{
 		HandleParserAnomaly( E );
 	}
+	SetDefaultColor();
 }
 
 void ConsoleInterface::StartConversation(  const SS::String& FileName, const SS::String& BlockName )
@@ -273,9 +274,10 @@ void ConsoleInterface::PrintPosition()
 */
 void ConsoleInterface::SetDefaultColor()
 {
-	CON.SetUnderline( false );
-	CON.SetBold( false );
-	CON.SetTextFGColor( ColorWhite );
+	CON.SetDefault();
+	//CON.SetUnderline( false );
+	//CON.SetBold( false );
+	//CON.SetTextFGColor( ColorWhite );
 //	CON.SetBackgroundFull( ColorPair( ColorBlack, ColorWhite ) );
 //	CON.SetTextColor( ColorPair( ColorBlack, ColorWhite ) );
 }

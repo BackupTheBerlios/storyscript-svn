@@ -83,6 +83,8 @@ public:
 	virtual Console& SetBackground( ColorPair, char FillChar = 0 ) { return *this; }
 	virtual Console& SetBackgroundFull( ColorPair, char FillChar = 0 ) { return *this; }
 	
+	virtual Console& SetDefault() { return *this; }
+	
 	void UseColor( bool Flag );
 	
 protected:
@@ -117,6 +119,7 @@ public:
 	Console& SetUnderline( bool Flag );
 	Console& SetTextFGColor( ConsoleOutColor Color );
 	Console& SetTextColor( ColorPair );
+	Console& SetDefault();
 	
 private:
 	void Fix();
@@ -162,6 +165,8 @@ public:
 
 	Console& SetBackground( ColorPair, char FillChar = 0 );
 	Console& SetBackgroundFull( ColorPair, char FillChar = 0 );
+	
+	Console& SetDefault();
 	
 
 private:

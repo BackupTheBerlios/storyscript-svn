@@ -1,10 +1,9 @@
 /*
-Copyright (c) 2004-2005 Daniel Jones (DanielCJones@gmail.com)
+Copyright (c) 2004-2006 Daniel Jones (DanielCJones@gmail.com)
 
-This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.  Full license information is included in the file in the top directory named "license".
-
-NOTES: The abstract base class that is responsible for reading from the script
-	from a source and tokenizing it.
+This is part of the  StoryScript (AKA: SS, S^2, SSqared, etc) software.
+Full license information is included in the file in the top
+directory named "license".
 */
 
 #include "ReaderSource.hpp"
@@ -19,9 +18,7 @@ using namespace SS;
 const Char EOF_Char = 3; //ETX Character (I'm not exactly sure what to use here)
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: ctor
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ReaderSource::ReaderSource() 
 	: mReadStringPos(0),
       mBufferPos(0),
@@ -31,19 +28,13 @@ ReaderSource::ReaderSource()
 	mLinePositions.push_back(0);
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: dtor
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ReaderSource::~ReaderSource()
 {
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: This _is_ the reader essentially.  This function is responsible for all
- 		the tokenizing.  This is some sloppy-ass code, but it gets the job done.
-*/
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const Word& ReaderSource::GetNextWord()
 {
 	static unsigned int BracketCount = 0;
@@ -326,6 +317,12 @@ const Word& ReaderSource::GetNextWord()
 			}
 			else
 			{
+				//If we ended with a scope-res operator, push the empty string.
+				//This is for unammed blocks mainly.
+				if( IDBeginning && TempString.length() == 0 ) {
+					NewID.Str.push_back( TempString );	
+				}
+				
 				UnGet();
 				break;
 			}
@@ -404,10 +401,7 @@ const Word& ReaderSource::GetNextWord()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Puts back the last word returned by GetNextWord, and then returns the
- 		Word prior it.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const Word& ReaderSource::PutBackWord()
 {
 	mBufferPos--;
@@ -415,11 +409,7 @@ const Word& ReaderSource::PutBackWord()
 	else return NULL_WORD; 
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Sets the stream to start reading at the given location.  The position
- 		is given as words into the stream.  It is not a good idea to set this
- 		forward without knowing what lies ahead.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ReaderSource::GotoPos( ReaderPos Pos )
 {
 	while( Pos > mBufferPos )
@@ -437,9 +427,7 @@ void ReaderSource::GotoPos( ReaderPos Pos )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Sets the position to the start of the given line.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ReaderSource::GotoLine( unsigned long LineNumber )
 {
 	if( LineNumber < mLinePositions.size() ){	
@@ -457,18 +445,14 @@ void ReaderSource::GotoLine( unsigned long LineNumber )
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns the position in how many words into the stream we are.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 ReaderPos ReaderSource::GetPos() const
 {
 	return (ReaderPos)mBufferPos;
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns the current line number.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 unsigned long ReaderSource::GetLineNumber() const
 {
 	UpdateCurrentLine();
@@ -488,11 +472,7 @@ unsigned long ReaderSource::GetLineNumber() const
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- ScriptFile::SkipWhitespace
- NOTES: Moves the position past any spaces, tabs, or linebreaks.
-		Returns true if anything was skipped.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool ReaderSource::SkipWhitespace()
 {
 	bool ReturnVal = IsWhitespace( Peek() );
@@ -502,11 +482,7 @@ bool ReaderSource::SkipWhitespace()
 	return ReturnVal;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Kind of a vague name.  This reads past any comments or whitespace.
-		If it skips anything it return true, if it doesn't it returns false.
-		!This is the function where comment types are defined!
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 bool ReaderSource::FastForward()
 {
 	bool SkippedChars = false;
@@ -567,11 +543,7 @@ bool ReaderSource::FastForward()
 
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns one character from the stream and advances the position.
- 		Also note that this and Peek do not care what the current position is
- 		they will just return the next character on the stream.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const Char& ReaderSource::Get()
 {
 	if( mReadStringPos >= mReadString.size() )
@@ -604,10 +576,7 @@ const Char& ReaderSource::Get()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Undoes a call to Get.  HOWEVER, it is limited in that the farthest it
- 		can go is the begining of the line.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const void ReaderSource::UnGet()
 {
 	//This is the compensate for the fact that any group of newline
@@ -626,9 +595,7 @@ const void ReaderSource::UnGet()
 	
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: Returns one character from the stream put does NOT advance the position.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const Char& ReaderSource::Peek()
 {
 	if( mReadStringPos >= mReadString.size() )
@@ -642,11 +609,7 @@ const Char& ReaderSource::Peek()
 }
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: This is a little shortcut for use by GetNextWord.  This allows us
- 		to write "return PushWord( w )" rather than have two line to push and
- 		return.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 const Word& ReaderSource::PushWord( const Word& W )
 {
 	mBuffer.push_back( W );
@@ -658,10 +621,7 @@ const Word& ReaderSource::PushWord( const Word& W )
 	return mBuffer.back();	
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
- NOTES: After mBufferPos is updated, this function is called to figure out
- 		what the current line is.
-*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 void ReaderSource::UpdateCurrentLine() const
 {
 	//Go down a line

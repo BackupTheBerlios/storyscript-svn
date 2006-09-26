@@ -341,6 +341,16 @@ unsigned int CursesConsole::GetCursesColorPair( ColorPair Pair )
 	}
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+Console& CursesConsole::SetDefault()
+{
+	//This is pretty dubious, verging on a hack.
+	//The curses console shouldn't know what I consider default if what a really
+	//pure design.  Oh well.
+	this->SetUnderline( false ).SetBold( false ).SetTextFGColor( ColorWhite );
+	return *this;
+}
+
 
 
 //----------For use with StdConsole----------------------------
@@ -501,6 +511,14 @@ Console& StdConsole::SetTextColor( ColorPair CP )
 {
 	if( !mUseColor ) return *this;
 	return SetTextFGColor( CP.FG );	
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+Console& StdConsole::SetDefault()
+{
+	STD_COUT << ANSIColor::reset;
+	return *this;	
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~

@@ -150,7 +150,8 @@ int main( int argc, char* argv[] )
 	#endif
 		}
 	}
-
+	
+	CON.SetDefault();
 		
 	delete pCON;
 	delete pI;
