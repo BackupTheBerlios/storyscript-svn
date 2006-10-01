@@ -65,8 +65,12 @@ VariableBasePtr UnImportOperator::Operate( VariableBasePtr X )
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
 VariableBasePtr ReturnOperator::Operate( VariableBasePtr X )
 {
+	/*
 	mI.GetCurrentStaticScope()->CastToBlock()->GetOutString() = 
 			X->GetStringData();
+	*/
+	
+	*(mI.GetCurrentScope()->GetScopeObjectLocal_NoThrow( LC_Output )->CastToVariableBase()) = *X;	
 	mI.EndBlock();
 	return X;
 }

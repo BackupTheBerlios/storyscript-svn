@@ -7,7 +7,7 @@ directory named "license".
 */
 
 /**
-	\file Interpreter.hpp
+	\file Interface.hpp
 	\brief Declarations for Interface.  
 */
 

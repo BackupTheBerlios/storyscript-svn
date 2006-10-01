@@ -338,7 +338,7 @@ const Word& ReaderSource::GetNextWord()
 	{
 		TempString += TempChar;
 
-		//SSPECIAL CASE: for the bizarre list operators
+		//SPECIAL CASE: for the bizarre list operators
 		if( (TempChar == '+' || TempChar == '-') &&
 				   Peek() == '[' )
 		{
