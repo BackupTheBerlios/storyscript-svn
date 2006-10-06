@@ -230,6 +230,7 @@ extern const SS::Char* LC_Import;
 extern const SS::Char* LC_UnImport;
 extern const SS::Char* LC_Return;
 extern const SS::Char* LC_Print;
+extern const SS::Char* LC_PrintF;
 
 //Misc.
 extern const SS::Char* LC_Terminal;

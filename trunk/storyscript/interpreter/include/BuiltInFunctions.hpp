@@ -43,6 +43,26 @@ private:
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
 /**
+	\brief Prints a string.
+	
+	A replica of the famous C printf function.
+*/
+/*
+class PrintFOperator : public Operator
+{
+public:
+	/// Constructor
+	PrintFOperator( Interpreter& I );
+
+	VariableBasePtr Operate( VariableBasePtr );
+
+private:
+	Interpreter& mI;
+};
+*/
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CLASS~~~~~~
+/**
 	\brief Imports a scope or file into the current scope.
 */
 class ImportOperator : public Operator

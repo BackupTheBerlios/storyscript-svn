@@ -149,6 +149,7 @@ const SS::Char* LC_Import = TXT("use");
 const SS::Char* LC_UnImport = TXT("unuse");
 const SS::Char* LC_Return = TXT("return");
 const SS::Char* LC_Print = TXT("print");
+const SS::Char* LC_PrintF = TXT("printf");
 
 //Misc.
 const SS::Char* LC_Terminal = TXT(";");

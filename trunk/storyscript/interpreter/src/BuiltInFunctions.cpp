@@ -12,6 +12,10 @@ directory named "license".
 #include "Interface.hpp"
 #include "Block.hpp"
 
+//For PrintF
+#include <cstdio>
+#include <cstdarg>
+
 using namespace SS;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
@@ -83,4 +87,16 @@ VariableBasePtr PrintOperator::Operate( VariableBasePtr X )
 	return X;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCTION~~~~~~
+/*
+VariableBasePtr PrintFOperator::Operate( VariableBasePtr X )
+{
+	ListPtr lX = X->CastToList();
+	
+	vsprintf(  )
+	
+	mI.GetInterface().LogMessage( X->GetStringData(), true );
+	return X;
+}
+*/
 
